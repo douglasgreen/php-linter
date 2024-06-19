@@ -1,0 +1,22 @@
+{
+    "name": "douglasgreen/php-linter",
+    "description": "Linter for PHP",
+    "license": "MIT",
+    "engines": {
+        "node": ">=18",
+        "npm": ">=9"
+    },
+    "devDependencies": {
+        "@commitlint/cli": "^19.3",
+        "@commitlint/config-conventional": "^19.2",
+        "@prettier/plugin-php": "^0.22",
+        "@prettier/plugin-xml": "^3.4",
+        "husky": "^9.0",
+        "prettier": "^3.3"
+    },
+    "scripts": {
+        "commitlint": "commitlint --edit",
+        "lint:fix": "prettier --write .",
+        "prepare": "husky"
+    }
+}
