@@ -1,4 +1,7 @@
 <?php
+
+declare(strict_types=1);
+
 use PhpParser\Error;
 use PhpParser\NodeDumper;
 use PhpParser\ParserFactory;
@@ -6,23 +9,23 @@ use PhpParser\ParserFactory;
 require __DIR__ . '/../vendor/autoload.php';
 
 $code = <<<'CODE'
-<?php
+    <?php
 
-namespace ABC;
+    namespace ABC;
 
-function test($foo)
-{
-    var_dump($foo);
-}
-CODE;
+    function test($foo)
+    {
+        var_dump($foo);
+    }
+    CODE;
 
 $parser = (new ParserFactory())->createForNewestSupportedVersion();
 try {
     $ast = $parser->parse($code);
+    $dumper = new NodeDumper();
+    if ($ast !== null) {
+        echo $dumper->dump($ast) . "\n";
+    }
 } catch (Error $error) {
-    echo "Parse error: {$error->getMessage()}\n";
-    return;
+    echo sprintf('Parse error: %s%s', $error->getMessage(), PHP_EOL);
 }
-
-$dumper = new NodeDumper;
-echo $dumper->dump($ast) . "\n";
