@@ -12,12 +12,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/douglasgreen/optparser.git",
-                "reference": "0baf3b8a3fb3316284100467fb2020c37b95cc7f"
+                "reference": "888a3a5f211846194b5c3ddd1cb398499d3570ee"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/douglasgreen/optparser/zipball/0baf3b8a3fb3316284100467fb2020c37b95cc7f",
-                "reference": "0baf3b8a3fb3316284100467fb2020c37b95cc7f",
+                "url": "https://api.github.com/repos/douglasgreen/optparser/zipball/888a3a5f211846194b5c3ddd1cb398499d3570ee",
+                "reference": "888a3a5f211846194b5c3ddd1cb398499d3570ee",
                 "shasum": ""
             },
             "require": {
@@ -43,9 +43,9 @@
             "scripts": {
                 "lint": [
                     "ecs",
-                    "rector --dry-run",
-                    "./run_phpmd.sh",
-                    "./run_phpstan.sh"
+                    "phpstan analyse",
+                    "phpmd --cache --cache-file var/cache/phpmd/cache.php . text phpmd.xml",
+                    "rector --dry-run"
                 ],
                 "lint:fix": [
                     "ecs --fix",
@@ -97,7 +97,7 @@
                 "source": "https://github.com/douglasgreen/optparser/tree/main",
                 "issues": "https://github.com/douglasgreen/optparser/issues"
             },
-            "time": "2024-06-17T21:35:16+00:00"
+            "time": "2024-06-20T19:33:39+00:00"
         },
         {
             "name": "douglasgreen/utility",
@@ -105,12 +105,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/douglasgreen/utility.git",
-                "reference": "67a030299de4d046e7b55b099bcbddb2527c76e5"
+                "reference": "439ec5b6b32f6afccd3d3d029c6265829b3d63ce"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/douglasgreen/utility/zipball/67a030299de4d046e7b55b099bcbddb2527c76e5",
-                "reference": "67a030299de4d046e7b55b099bcbddb2527c76e5",
+                "url": "https://api.github.com/repos/douglasgreen/utility/zipball/439ec5b6b32f6afccd3d3d029c6265829b3d63ce",
+                "reference": "439ec5b6b32f6afccd3d3d029c6265829b3d63ce",
                 "shasum": ""
             },
             "require": {
@@ -179,7 +179,7 @@
                 "source": "https://github.com/douglasgreen/utility/tree/main",
                 "issues": "https://github.com/douglasgreen/utility/issues"
             },
-            "time": "2024-06-19T22:33:54+00:00"
+            "time": "2024-06-20T14:37:19+00:00"
         },
         {
             "name": "nikic/php-parser",
@@ -382,12 +382,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/douglasgreen/config-setup.git",
-                "reference": "a2e0c9e6af35521b9f0f5d97f2c78d00180c189c"
+                "reference": "b9422bb3662b14f94aef6a5c7a20e251564a05db"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/douglasgreen/config-setup/zipball/a2e0c9e6af35521b9f0f5d97f2c78d00180c189c",
-                "reference": "a2e0c9e6af35521b9f0f5d97f2c78d00180c189c",
+                "url": "https://api.github.com/repos/douglasgreen/config-setup/zipball/b9422bb3662b14f94aef6a5c7a20e251564a05db",
+                "reference": "b9422bb3662b14f94aef6a5c7a20e251564a05db",
                 "shasum": ""
             },
             "require": {
@@ -410,9 +410,9 @@
             "scripts": {
                 "lint": [
                     "ecs",
-                    "rector --dry-run",
-                    "./run_phpmd.sh",
-                    "./run_phpstan.sh"
+                    "phpstan analyse",
+                    "phpmd --cache --cache-file var/cache/phpmd/cache.php . text phpmd.xml",
+                    "rector --dry-run"
                 ],
                 "lint:fix": [
                     "ecs --fix",
@@ -452,7 +452,7 @@
                 "source": "https://github.com/douglasgreen/config-setup/tree/main",
                 "issues": "https://github.com/douglasgreen/config-setup/issues"
             },
-            "time": "2024-06-19T14:10:19+00:00"
+            "time": "2024-06-20T19:20:43+00:00"
         },
         {
             "name": "myclabs/deep-copy",
@@ -1227,16 +1227,16 @@
         },
         {
             "name": "phpunit/phpunit",
-            "version": "10.5.22",
+            "version": "10.5.24",
             "source": {
                 "type": "git",
                 "url": "https://github.com/sebastianbergmann/phpunit.git",
-                "reference": "8afb89b399b17c2ce2618015bdc9f81a117c5ee1"
+                "reference": "5f124e3e3e561006047b532fd0431bf5bb6b9015"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sebastianbergmann/phpunit/zipball/8afb89b399b17c2ce2618015bdc9f81a117c5ee1",
-                "reference": "8afb89b399b17c2ce2618015bdc9f81a117c5ee1",
+                "url": "https://api.github.com/repos/sebastianbergmann/phpunit/zipball/5f124e3e3e561006047b532fd0431bf5bb6b9015",
+                "reference": "5f124e3e3e561006047b532fd0431bf5bb6b9015",
                 "shasum": ""
             },
             "require": {
@@ -1308,7 +1308,7 @@
             "support": {
                 "issues": "https://github.com/sebastianbergmann/phpunit/issues",
                 "security": "https://github.com/sebastianbergmann/phpunit/security/policy",
-                "source": "https://github.com/sebastianbergmann/phpunit/tree/10.5.22"
+                "source": "https://github.com/sebastianbergmann/phpunit/tree/10.5.24"
             },
             "funding": [
                 {
@@ -1324,7 +1324,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2024-06-19T05:29:34+00:00"
+            "time": "2024-06-20T13:09:54+00:00"
         },
         {
             "name": "psr/container",
