@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "2d6436c04ebc6799843bdf01fc86011e",
+    "content-hash": "feba8d168479973da55831f4a0198f91",
     "packages": [
         {
             "name": "douglasgreen/optparser",
@@ -105,12 +105,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/douglasgreen/utility.git",
-                "reference": "439ec5b6b32f6afccd3d3d029c6265829b3d63ce"
+                "reference": "e847748afe0a7039d7aa988cbf971b195e029081"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/douglasgreen/utility/zipball/439ec5b6b32f6afccd3d3d029c6265829b3d63ce",
-                "reference": "439ec5b6b32f6afccd3d3d029c6265829b3d63ce",
+                "url": "https://api.github.com/repos/douglasgreen/utility/zipball/e847748afe0a7039d7aa988cbf971b195e029081",
+                "reference": "e847748afe0a7039d7aa988cbf971b195e029081",
                 "shasum": ""
             },
             "require": {
@@ -135,9 +135,9 @@
             "scripts": {
                 "lint": [
                     "ecs",
-                    "rector --dry-run",
-                    "./run_phpmd.sh",
-                    "./run_phpstan.sh"
+                    "phpstan analyse",
+                    "phpmd --cache --cache-file var/cache/phpmd/cache.php . text phpmd.xml",
+                    "rector --dry-run"
                 ],
                 "lint:fix": [
                     "ecs --fix",
@@ -179,7 +179,7 @@
                 "source": "https://github.com/douglasgreen/utility/tree/main",
                 "issues": "https://github.com/douglasgreen/utility/issues"
             },
-            "time": "2024-06-20T14:37:19+00:00"
+            "time": "2024-06-20T19:47:49+00:00"
         },
         {
             "name": "nikic/php-parser",
@@ -1431,16 +1431,16 @@
         },
         {
             "name": "rector/rector",
-            "version": "1.1.0",
+            "version": "1.1.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/rectorphp/rector.git",
-                "reference": "556509e2dcf527369892b7d411379c4a02f31859"
+                "reference": "c930cdb21294f10955ddfc31b720971e8333943d"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/rectorphp/rector/zipball/556509e2dcf527369892b7d411379c4a02f31859",
-                "reference": "556509e2dcf527369892b7d411379c4a02f31859",
+                "url": "https://api.github.com/repos/rectorphp/rector/zipball/c930cdb21294f10955ddfc31b720971e8333943d",
+                "reference": "c930cdb21294f10955ddfc31b720971e8333943d",
                 "shasum": ""
             },
             "require": {
@@ -1478,7 +1478,7 @@
             ],
             "support": {
                 "issues": "https://github.com/rectorphp/rector/issues",
-                "source": "https://github.com/rectorphp/rector/tree/1.1.0"
+                "source": "https://github.com/rectorphp/rector/tree/1.1.1"
             },
             "funding": [
                 {
@@ -1486,7 +1486,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2024-05-18T09:40:27+00:00"
+            "time": "2024-06-21T07:51:17+00:00"
         },
         {
             "name": "sebastian/cli-parser",
