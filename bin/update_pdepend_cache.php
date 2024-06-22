@@ -21,7 +21,8 @@ $baseDir = 'var/cache/pdepend/files/';
 
 echo 'Updating PDepend cache.' . PHP_EOL;
 
-$oldFiles = DirUtil::listFiles($baseDir);
+$oldCacheFiles = DirUtil::listFiles($baseDir);
+$newCacheFiles = [];
 
 // Iterate through each file from the git output
 foreach ($output as $file) {
@@ -29,9 +30,19 @@ foreach ($output as $file) {
         continue;
     }
 
+    $phpModTime = PathUtil::getWriteTime($file);
+
     // Define the output XML file path
     $xmlFilePath = PathUtil::addSubpath($baseDir, $file . '.xml');
     $xmlFileDir = dirname($xmlFilePath);
+
+    $xmlModTime = file_exists($xmlFilePath) ? PathUtil::getWriteTime($xmlFilePath) : 0;
+    $newCacheFiles[] = $xmlFilePath;
+
+    // Skip files already current in the cache.
+    if ($xmlModTime >= $phpModTime) {
+        continue;
+    }
 
     // Create the directory for the XML file if it doesn't exist
     if (! file_exists($xmlFileDir)) {
@@ -43,9 +54,14 @@ foreach ($output as $file) {
     $command->addFlag('--summary-xml', $xmlFilePath);
     $command->addArg($file);
     $command->run();
-    echo $xmlFilePath . ': ' . $command->buildCommand() . PHP_EOL;
 
     echo 'Processed: ' . $file . PHP_EOL;
+}
+
+echo 'Clearing cache.' . PHP_EOL;
+$obsoleteCacheFiles = array_diff($oldCacheFiles, $newCacheFiles);
+foreach ($obsoleteCacheFiles as $obsoleteCacheFile) {
+    PathUtil::delete($obsoleteCacheFile);
 }
 
 echo 'PDepend cache updated.' . PHP_EOL;
