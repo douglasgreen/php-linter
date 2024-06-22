@@ -15,10 +15,13 @@ use PhpParser\Error;
 use PhpParser\NodeTraverser;
 use PhpParser\ParserFactory;
 
-require_once __DIR__ . '/../vendor/autoload.php';
+// Must be run in repository root directory.
+$currentDir = getcwd();
+if ($currentDir === false) {
+    throw new Exception('Unable to get working dir');
+}
 
-// Change to repository root directory.
-DirUtil::setCurrent(__DIR__ . '/..');
+require_once $currentDir . '/vendor/autoload.php';
 
 echo '=> Checking PDepend metrics' . PHP_EOL;
 
