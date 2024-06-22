@@ -3,6 +3,7 @@
 
 declare(strict_types=1);
 
+use DouglasGreen\PhpLinter\PdependParser;
 use DouglasGreen\Utility\FileSystem\DirUtil;
 use DouglasGreen\Utility\FileSystem\PathUtil;
 use DouglasGreen\Utility\Program\Command;
@@ -16,12 +17,9 @@ DirUtil::setCurrent(__DIR__ . '/..');
 $command = new Command('git ls-files');
 $output = $command->run();
 
-// Define the base directory for the PDepend XML summaries
-$baseDir = 'var/cache/pdepend/files/';
-
 echo 'Updating PDepend cache.' . PHP_EOL;
 
-$oldCacheFiles = DirUtil::listFiles($baseDir);
+$oldCacheFiles = DirUtil::listFiles(PdependParser::FILE_DIR);
 $newCacheFiles = [];
 
 // Iterate through each file from the git output
@@ -33,7 +31,7 @@ foreach ($output as $file) {
     $phpModTime = PathUtil::getWriteTime($file);
 
     // Define the output XML file path
-    $xmlFilePath = PathUtil::addSubpath($baseDir, $file . '.xml');
+    $xmlFilePath = PathUtil::addSubpath(PdependParser::FILE_DIR, $file . '.xml');
     $xmlFileDir = dirname($xmlFilePath);
 
     $xmlModTime = file_exists($xmlFilePath) ? PathUtil::getWriteTime($xmlFilePath) : 0;

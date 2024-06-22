@@ -12,6 +12,8 @@ use DouglasGreen\Utility\FileSystem\FileException;
  */
 class PdependParser
 {
+    public const FILE_DIR = 'var/cache/pdepend/files';
+
     /**
      * @var array<string, mixed>
      */
@@ -45,6 +47,7 @@ class PdependParser
 
         $data = [];
         $data['metrics'] = self::parseMetrics($xml);
+        var_dump($data['metrics']);
         $data['files'] = self::parseFiles($xml->files);
         $data['packages'] = self::parsePackages($xml->package);
         $this->data = $data;
