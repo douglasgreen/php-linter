@@ -6,12 +6,26 @@ declare(strict_types=1);
 require_once __DIR__ . '/../vendor/autoload.php';
 
 use DouglasGreen\PhpLinter\ElementVisitor;
+use DouglasGreen\PhpLinter\PdependParser;
 use DouglasGreen\Utility\FileSystem\DirUtil;
 use DouglasGreen\Utility\FileSystem\Path;
 use DouglasGreen\Utility\FileSystem\PathUtil;
 use PhpParser\Error;
 use PhpParser\NodeTraverser;
 use PhpParser\ParserFactory;
+
+require_once __DIR__ . '/../vendor/autoload.php';
+
+// Change to repository root directory.
+DirUtil::setCurrent(__DIR__ . '/..');
+
+try {
+    $parser = new PdependParser();
+    $data = $parser->getData();
+    print_r($data);
+} catch (Exception $exception) {
+    echo 'Error: ' . $exception->getMessage();
+}
 
 $parser = (new ParserFactory())->createForNewestSupportedVersion();
 

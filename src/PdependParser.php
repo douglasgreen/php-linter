@@ -12,7 +12,7 @@ use DouglasGreen\Utility\FileSystem\FileException;
  */
 class PdependParser
 {
-    public const FILE_DIR = 'var/cache/pdepend/files';
+    public const SUMMARY_FILE = 'var/cache/pdepend/summary.xml';
 
     /**
      * @var array<string, mixed>
@@ -24,7 +24,7 @@ class PdependParser
     /**
      * @throws FileException
      */
-    public function __construct(string $xmlFile)
+    public function __construct(string $xmlFile = self::SUMMARY_FILE)
     {
         if (! file_exists($xmlFile)) {
             throw new FileException('File not found: ' . $xmlFile);
