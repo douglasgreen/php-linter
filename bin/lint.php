@@ -24,7 +24,8 @@ require_once $currentDir . '/vendor/autoload.php';
 echo '=> Checking PDepend metrics' . PHP_EOL;
 
 try {
-    $parser = new PdependParser();
+    $path = PathUtil::addSubpath($currentDir, PdependParser::SUMMARY_FILE);
+    $parser = new PdependParser($path);
     $packages = $parser->getPackages();
     if ($packages === null) {
         die('No packages found.' . PHP_EOL);
@@ -47,7 +48,7 @@ try {
         }
     }
 } catch (Exception $exception) {
-    echo 'Error: ' . $exception->getMessage();
+    echo 'Error: ' . $exception->getMessage() . PHP_EOL;
 }
 
 $parser = (new ParserFactory())->createForNewestSupportedVersion();

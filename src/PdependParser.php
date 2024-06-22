@@ -24,7 +24,7 @@ class PdependParser
     /**
      * @throws FileException
      */
-    public function __construct(string $xmlFile = self::SUMMARY_FILE)
+    public function __construct(string $xmlFile)
     {
         if (! file_exists($xmlFile)) {
             throw new FileException('File not found: ' . $xmlFile);
