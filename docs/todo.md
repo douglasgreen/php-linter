@@ -1,5 +1,18 @@
 # To-do List
 
+This project is a replacement for PHP Mess Detected (PHPMD).
+
+## Structure
+
+PHPMD uses the AST from PDepend to apply metrics. Unfortunately this is a bad design. PDepend only
+measures the complexity inside code units like classes and methods. It doesn't measure anything in
+standalone files that is not in a class or method. PHP isn't like Java and that it allows unlimited
+amounts of standalone code that is not in classes. Because PHPMD depends on PDepend, it has the same
+limitations.
+
+A better design is to use PDepend only for its measurements and then use Nikic Parser to parse the
+rest of the code and look for lint issues. This also enables the PDepend measurements to be cached.
+
 ## PDepend
 
 Use PDepend to generate and cache metrics.
