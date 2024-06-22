@@ -3,8 +3,6 @@
 
 declare(strict_types=1);
 
-require_once __DIR__ . '/../vendor/autoload.php';
-
 use DouglasGreen\PhpLinter\ElementVisitor;
 use DouglasGreen\PhpLinter\PdependClass;
 use DouglasGreen\PhpLinter\PdependParser;
