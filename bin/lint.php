@@ -6,6 +6,7 @@ declare(strict_types=1);
 require_once __DIR__ . '/../vendor/autoload.php';
 
 use DouglasGreen\PhpLinter\ElementVisitor;
+use DouglasGreen\PhpLinter\PdependClass;
 use DouglasGreen\PhpLinter\PdependParser;
 use DouglasGreen\Utility\FileSystem\DirUtil;
 use DouglasGreen\Utility\FileSystem\Path;
@@ -19,10 +20,31 @@ require_once __DIR__ . '/../vendor/autoload.php';
 // Change to repository root directory.
 DirUtil::setCurrent(__DIR__ . '/..');
 
+echo '=> Checking PDepend metrics' . PHP_EOL;
+
 try {
     $parser = new PdependParser();
-    $data = $parser->getData();
-    print_r($data);
+    $packages = $parser->getPackages();
+    if ($packages === null) {
+        die('No packages found.' . PHP_EOL);
+    }
+
+    foreach ($packages as $package) {
+        if (! isset($package['classes'])) {
+            continue;
+        }
+
+        $classes = $package['classes'];
+        foreach ($classes as $class) {
+            $pdependClass = new PdependClass($class);
+            $pdependClass->checkMaxLinesOfCode(100);
+            $pdependClass->checkMinCommentRatio(0.1);
+            $pdependClass->checkMaxClassSize(2);
+            $pdependClass->checkMaxPublicMethods(1);
+            $pdependClass->checkMaxProperties(1);
+            $pdependClass->checkMaxNonPrivateProperties(1);
+        }
+    }
 } catch (Exception $exception) {
     echo 'Error: ' . $exception->getMessage();
 }
@@ -39,7 +61,7 @@ $phpPaths = $path->loadLines(Path::IGNORE_NEW_LINES);
 foreach ($phpPaths as $phpPath) {
     $files = DirUtil::listFiles($phpPath);
     foreach ($files as $file) {
-        echo '===> ' . $file . PHP_EOL;
+        echo '==> ' . $file . PHP_EOL;
         try {
             $code = PathUtil::loadString($file);
             $stmts = $parser->parse($code);

@@ -47,7 +47,6 @@ class PdependParser
 
         $data = [];
         $data['metrics'] = self::parseMetrics($xml);
-        var_dump($data['metrics']);
         $data['files'] = self::parseFiles($xml->files);
         $data['packages'] = self::parsePackages($xml->package);
         $this->data = $data;
@@ -59,6 +58,14 @@ class PdependParser
     public function getData(): array
     {
         return $this->data;
+    }
+
+    /**
+     * @return array<int, mixed>
+     */
+    public function getPackages(): ?array
+    {
+        return $this->data['packages'];
     }
 
     /**
