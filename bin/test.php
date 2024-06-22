@@ -25,7 +25,7 @@ try {
     $ast = $parser->parse($code);
     $dumper = new NodeDumper();
     if ($ast !== null) {
-        echo $dumper->dump($ast) . "\n";
+        echo $dumper->dump($ast) . PHP_EOL;
     }
 } catch (Error $error) {
     echo sprintf('Parse error: %s%s', $error->getMessage(), PHP_EOL);

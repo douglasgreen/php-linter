@@ -3,14 +3,13 @@
 
 declare(strict_types=1);
 
-use DouglasGreen\PhpLinter\PDependParser;
+use DouglasGreen\PhpLinter\PdependParser;
 
 require __DIR__ . '/../vendor/autoload.php';
 
 // Usage example:
 try {
-    $parser = new PDependParser(__DIR__ . '/../var/pdepend/summary.xml');
-    $parser->parse();
+    $parser = new PdependParser(__DIR__ . '/../var/pdepend/summary.xml');
     $data = $parser->getData();
     print_r($data);
 } catch (Exception $exception) {

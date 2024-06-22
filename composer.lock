@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "feba8d168479973da55831f4a0198f91",
+    "content-hash": "dcc6a3ace3841800ab97f1bc81d2a05b",
     "packages": [
         {
             "name": "douglasgreen/optparser",
@@ -105,12 +105,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/douglasgreen/utility.git",
-                "reference": "e847748afe0a7039d7aa988cbf971b195e029081"
+                "reference": "9e0f96d4e01e4aecfcbfa93c9c129c63e5cdbf50"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/douglasgreen/utility/zipball/e847748afe0a7039d7aa988cbf971b195e029081",
-                "reference": "e847748afe0a7039d7aa988cbf971b195e029081",
+                "url": "https://api.github.com/repos/douglasgreen/utility/zipball/9e0f96d4e01e4aecfcbfa93c9c129c63e5cdbf50",
+                "reference": "9e0f96d4e01e4aecfcbfa93c9c129c63e5cdbf50",
                 "shasum": ""
             },
             "require": {
@@ -119,10 +119,10 @@
             "require-dev": {
                 "douglasgreen/config-setup": "dev-main",
                 "phpmd/phpmd": "^2.15",
-                "phpstan/phpstan": "^1.10",
+                "phpstan/phpstan": "^1.11",
                 "phpunit/phpunit": "^10.5",
-                "rector/rector": "^1.0",
-                "symplify/easy-coding-standard": "^12.2"
+                "rector/rector": "^1.1",
+                "symplify/easy-coding-standard": "^12.3"
             },
             "default-branch": true,
             "type": "library",
@@ -179,7 +179,7 @@
                 "source": "https://github.com/douglasgreen/utility/tree/main",
                 "issues": "https://github.com/douglasgreen/utility/issues"
             },
-            "time": "2024-06-20T19:47:49+00:00"
+            "time": "2024-06-22T19:20:35+00:00"
         },
         {
             "name": "nikic/php-parser",
@@ -382,12 +382,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/douglasgreen/config-setup.git",
-                "reference": "b9422bb3662b14f94aef6a5c7a20e251564a05db"
+                "reference": "dfe7be84e61dc7c7005d854a1bf20004862b4b5e"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/douglasgreen/config-setup/zipball/b9422bb3662b14f94aef6a5c7a20e251564a05db",
-                "reference": "b9422bb3662b14f94aef6a5c7a20e251564a05db",
+                "url": "https://api.github.com/repos/douglasgreen/config-setup/zipball/dfe7be84e61dc7c7005d854a1bf20004862b4b5e",
+                "reference": "dfe7be84e61dc7c7005d854a1bf20004862b4b5e",
                 "shasum": ""
             },
             "require": {
@@ -396,8 +396,8 @@
             },
             "require-dev": {
                 "phpmd/phpmd": "^2.15",
-                "phpstan/phpstan": "^1.10",
-                "rector/rector": "^1.0",
+                "phpstan/phpstan": "^1.11",
+                "rector/rector": "^1.1",
                 "symplify/easy-coding-standard": "^12.3"
             },
             "default-branch": true,
@@ -452,7 +452,7 @@
                 "source": "https://github.com/douglasgreen/config-setup/tree/main",
                 "issues": "https://github.com/douglasgreen/config-setup/issues"
             },
-            "time": "2024-06-20T19:20:43+00:00"
+            "time": "2024-06-21T20:31:27+00:00"
         },
         {
             "name": "myclabs/deep-copy",

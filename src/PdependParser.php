@@ -4,63 +4,83 @@ declare(strict_types=1);
 
 namespace DouglasGreen\PhpLinter;
 
-use Exception;
+use SimpleXMLElement;
+use DouglasGreen\Utility\FileSystem\FileException;
 
 /**
  * @see https://pdepend.org/documentation/software-metrics/index.html
  */
-final class PDependParser
+class PdependParser
 {
-    private readonly string $xmlFile;
-
     /**
      * @var array<string, mixed>
      */
-    private array $data = [];
+    protected readonly array $data;
 
+    protected readonly string $xmlFile;
+
+    /**
+     * @throws FileException
+     */
     public function __construct(string $xmlFile)
     {
         if (! file_exists($xmlFile)) {
-            throw new Exception('File not found: ' . $xmlFile);
+            throw new FileException('File not found: ' . $xmlFile);
         }
 
         $this->xmlFile = $xmlFile;
-    }
 
-    public function parse(): void
-    {
         $xml = simplexml_load_file($this->xmlFile);
         if ($xml === false) {
-            throw new Exception('Unable to load XML');
+            throw new FileException('Unable to load XML file');
         }
-        /*
-        if ($xml->files === false || $xml->package === false) {
-            throw new Exception('Bad XML format');
+
+        if ($xml->files === null) {
+            throw new FileException('No files found');
         }
-         */
-        $this->data['metrics'] = $this->parseMetrics($xml);
-        $this->data['files'] = $this->parseFiles($xml->files);
-        $this->data['packages'] = $this->parsePackages($xml->package);
+
+        if ($xml->package === null) {
+            throw new FileException('No package found');
+        }
+
+        $data = [];
+        $data['metrics'] = self::parseMetrics($xml);
+        $data['files'] = self::parseFiles($xml->files);
+        $data['packages'] = self::parsePackages($xml->package);
+        $this->data = $data;
     }
 
     /**
-     * @return string[]
+     * @return array<string, mixed>
      */
-    private function parseMetrics(\SimpleXMLElement $xml): array
+    public function getData(): array
     {
-        $attributes = $xml->attributes();
-        $metrics = [];
-        foreach ($attributes as $key => $value) {
-            $metrics[$key] = (string) $value;
-        }
-
-        return $metrics;
+        return $this->data;
     }
 
     /**
-     * @return array<string, array<int|string, string>>
+     * @return array<string|int, mixed>[]
      */
-    private function parseFiles($files): array
+    protected static function parseClasses(SimpleXMLElement $classes): array
+    {
+        $classList = [];
+        foreach ($classes as $class) {
+            $classData = [];
+            foreach ($class->attributes() as $key => $value) {
+                $classData[$key] = (string) $value;
+            }
+
+            $classData['methods'] = self::parseMethods($class->method);
+            $classList[] = $classData;
+        }
+
+        return $classList;
+    }
+
+    /**
+     * @return array<int<0, max>, array<string|int, string>>
+     */
+    protected static function parseFiles(SimpleXMLElement $files): array
     {
         $fileList = [];
         foreach ($files->file as $file) {
@@ -76,47 +96,9 @@ final class PDependParser
     }
 
     /**
-     * @return \non-empty-array<(\int | \string), \mixed>[]
+     * @return array<mixed, array<string|int, string>>
      */
-    private function parsePackages($packages): array
-    {
-        $packageList = [];
-        foreach ($packages as $package) {
-            $packageData = [];
-            foreach ($package->attributes() as $key => $value) {
-                $packageData[$key] = (string) $value;
-            }
-
-            $packageData['classes'] = $this->parseClasses($package->class);
-            $packageList[] = $packageData;
-        }
-
-        return $packageList;
-    }
-
-    /**
-     * @return \non-empty-array<(\int | \string), \mixed>[]
-     */
-    private function parseClasses($classes): array
-    {
-        $classList = [];
-        foreach ($classes as $class) {
-            $classData = [];
-            foreach ($class->attributes() as $key => $value) {
-                $classData[$key] = (string) $value;
-            }
-
-            $classData['methods'] = $this->parseMethods($class->method);
-            $classList[] = $classData;
-        }
-
-        return $classList;
-    }
-
-    /**
-     * @return array<mixed, array<int|string, string>>
-     */
-    private function parseMethods($methods): array
+    protected static function parseMethods(SimpleXMLElement $methods): array
     {
         $methodList = [];
         foreach ($methods as $method) {
@@ -131,8 +113,36 @@ final class PDependParser
         return $methodList;
     }
 
-    public function getData(): array
+    /**
+     * @return string[]
+     */
+    protected static function parseMetrics(SimpleXMLElement $xml): array
     {
-        return $this->data;
+        $attributes = $xml->attributes();
+        $metrics = [];
+        foreach ($attributes as $key => $value) {
+            $metrics[$key] = (string) $value;
+        }
+
+        return $metrics;
+    }
+
+    /**
+     * @return array<string|int, mixed>[]
+     */
+    protected static function parsePackages(SimpleXMLElement $packages): array
+    {
+        $packageList = [];
+        foreach ($packages as $package) {
+            $packageData = [];
+            foreach ($package->attributes() as $key => $value) {
+                $packageData[$key] = (string) $value;
+            }
+
+            $packageData['classes'] = self::parseClasses($package->class);
+            $packageList[] = $packageData;
+        }
+
+        return $packageList;
     }
 }

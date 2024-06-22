@@ -15,7 +15,7 @@ use PhpParser\Node\Stmt\Namespace_;
 use PhpParser\Node\Stmt\Trait_;
 use PhpParser\NodeVisitorAbstract;
 
-class ElementVisitor extends NodeVisitorAbstract
+final class ElementVisitor extends NodeVisitorAbstract
 {
     public function enterNode(Node $node): Node|int|null
     {
@@ -24,28 +24,28 @@ class ElementVisitor extends NodeVisitorAbstract
             // echo 'Namespace: ' . $name . PHP_EOL;
             $parts = explode('\\', $name);
             foreach ($parts as $part) {
-                if (! $this->checkUpperName($part)) {
+                if (! self::checkUpperName($part)) {
                     break;
                 }
             }
         } elseif ($node instanceof Class_) {
             // echo 'Class: ' . $name . PHP_EOL;
-            $this->checkUpperName($name);
+            self::checkUpperName($name);
         } elseif ($node instanceof Interface_) {
             // echo 'Interface: ' . $name . PHP_EOL;
-            $this->checkUpperName($name);
+            self::checkUpperName($name);
         } elseif ($node instanceof Trait_) {
             // echo 'Trait: ' . $name . PHP_EOL;
-            $this->checkUpperName($name);
+            self::checkUpperName($name);
         } elseif ($node instanceof ClassMethod) {
             // echo 'Method: ' . $name . PHP_EOL;
-            $this->checkLowerName($name);
+            self::checkLowerName($name);
         } elseif ($node instanceof Function_) {
             // echo 'Function: ' . $name . PHP_EOL;
-            $this->checkLowerName($name);
+            self::checkLowerName($name);
         } elseif ($node instanceof Variable) {
             // echo 'Variable: ' . $name . PHP_EOL;
-            $this->checkLowerName($name);
+            self::checkLowerName($name);
         } elseif ($name !== '') {
             //var_dump(get_class($node), $name);
         }
@@ -53,9 +53,9 @@ class ElementVisitor extends NodeVisitorAbstract
         return null;
     }
 
-    protected function checkUpperName(string $name): bool
+    private static function checkLowerName(string $name): bool
     {
-        if (! $this->isUpperCamelCase($name)) {
+        if (! self::isLowerCamelCase($name)) {
             echo 'Not camel case: ' . $name . PHP_EOL;
             return false;
         }
@@ -63,9 +63,9 @@ class ElementVisitor extends NodeVisitorAbstract
         return true;
     }
 
-    protected function checkLowerName(string $name): bool
+    private static function checkUpperName(string $name): bool
     {
-        if (! $this->isLowerCamelCase($name)) {
+        if (! self::isUpperCamelCase($name)) {
             echo 'Not camel case: ' . $name . PHP_EOL;
             return false;
         }
@@ -73,12 +73,12 @@ class ElementVisitor extends NodeVisitorAbstract
         return true;
     }
 
-    protected function isLowerCamelCase(string $name): bool
+    private static function isLowerCamelCase(string $name): bool
     {
         return ! Regex::hasMatch('/\$[A-Z]|^[A-Z]|[A-Z]{2}|_/', $name);
     }
 
-    protected function isUpperCamelCase(string $name): bool
+    private static function isUpperCamelCase(string $name): bool
     {
         return ! Regex::hasMatch('/[A-Z]{2}|_/', $name);
     }
