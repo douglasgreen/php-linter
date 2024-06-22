@@ -10,6 +10,8 @@ standalone files that is not in a class or method. PHP isn't like Java and that 
 amounts of standalone code that is not in classes. Because PHPMD depends on PDepend, it has the same
 limitations.
 
+PHPMD also offers limited access to the metrics of PDepend.
+
 A better design is to use PDepend only for its measurements and then use Nikic Parser to parse the
 rest of the code and look for lint issues. This also enables the PDepend measurements to be cached.
 
