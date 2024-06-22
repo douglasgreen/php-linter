@@ -90,7 +90,7 @@ class PdependClass
             $this->report(sprintf($message, $value, $maxError), true);
             $this->errorCount++;
         } elseif ($value > $maxWarn) {
-            $this->report(sprintf($message, $value, $maxError));
+            $this->report(sprintf($message, $value, $maxWarn));
         }
     }
 
@@ -104,7 +104,7 @@ class PdependClass
             $this->report(sprintf($message, $value, $minError), true);
             $this->errorCount++;
         } elseif ($value < $minWarn) {
-            $this->report(sprintf($message, $value, $minError));
+            $this->report(sprintf($message, $value, $minWarn));
         }
     }
 
