@@ -38,13 +38,24 @@ try {
 
         $classes = $package['classes'];
         foreach ($classes as $class) {
+            // Warnings exceed 95% of similar code, errors exceed 99%.
             $pdependClass = new PdependClass($class);
-            $pdependClass->checkMaxLinesOfCode(100);
-            $pdependClass->checkMinCommentRatio(0.1);
-            $pdependClass->checkMaxClassSize(2);
-            $pdependClass->checkMaxPublicMethods(1);
-            $pdependClass->checkMaxProperties(1);
-            $pdependClass->checkMaxNonPrivateProperties(1);
+
+            $pdependClass->checkMaxLinesOfCode(440, 1050);
+
+            $pdependClass->checkMaxClassSize(24, 66);
+
+            // Has no error level.
+            $pdependClass->checkMaxCodeRank(0.66);
+
+            $pdependClass->checkMaxNonPrivateProperties(1, 8);
+
+            $pdependClass->checkMaxProperties(9, 21);
+
+            $pdependClass->checkMaxPublicMethods(13, 38);
+
+            // @see https://everything2.com/title/comment-to-code+ratio
+            $pdependClass->checkMinCommentRatio(0.1, 0.05);
         }
     }
 } catch (Exception $exception) {
