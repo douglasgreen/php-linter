@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace DouglasGreen\PhpLinter;
+namespace DouglasGreen\PhpLinter\Pdepend;
 
 /**
  * @see https://pdepend.org/documentation/software-metrics/index.html
  */
-class PdependClass
+class MetricChecker
 {
     /**
      * @var int
@@ -24,89 +24,155 @@ class PdependClass
      */
     public const STATUS_ERROR = 2;
 
+    /**
+     * @var array<int, list<string>>
+     */
+    protected array $issues = [];
+
     protected int $errorCount = 0;
 
     /**
-     * @param array<string, mixed> $class
+     * @param array<string, mixed> $data
      */
     public function __construct(
-        protected readonly array $class
+        protected readonly array $data,
+        protected readonly ?string $className = null,
     ) {}
 
     public function checkMaxAfferentCoupling(int $maxWarn, int $maxError): int
     {
-        $afferentCoupling = (int) $this->class['ca'];
+        $afferentCoupling = (int) $this->data['ca'];
         $message = 'Afferent coupling = %d > %d';
         return $this->checkMax($message, $afferentCoupling, $maxWarn, $maxError);
     }
 
     public function checkMaxCodeRank(float $maxWarn): int
     {
-        $codeRank = (float) $this->class['cr'];
+        $codeRank = (float) $this->data['cr'];
         $message = 'Code rank = %0.2f > %0.2f';
         return $this->checkMax($message, $codeRank, $maxWarn);
     }
 
     public function checkMaxClassSize(int $maxWarn, int $maxError): int
     {
-        $csz = (int) $this->class['csz'];
+        $csz = (int) $this->data['csz'];
         $message = 'Class size (# methods + # properties) = %d > %d';
         return $this->checkMax($message, $csz, $maxWarn, $maxError);
     }
 
     public function checkMaxEfferentCoupling(int $maxWarn, int $maxError): int
     {
-        $efferentCoupling = (int) $this->class['ce'];
+        $efferentCoupling = (int) $this->data['ce'];
         $message = 'Efferent coupling = %d > %d';
         return $this->checkMax($message, $efferentCoupling, $maxWarn, $maxError);
     }
 
+    public function checkMaxExtendedCyclomaticComplexity(int $maxWarn, int $maxError): int
+    {
+        $ecc = (int) $this->data['ccn2'];
+        $message = 'Extended cyclomatic complexity = %d > %d';
+        return $this->checkMax($message, $ecc, $maxWarn, $maxError);
+    }
+
+    public function checkMaxHalsteadEffort(int $maxWarn, int $maxError): int
+    {
+        $halsteadEffort = (int) $this->data['he'];
+        $message = 'Halstead effort = %d > %d';
+        return $this->checkMax($message, $halsteadEffort, $maxWarn, $maxError);
+    }
+
     public function checkMaxInheritanceDepth(int $maxWarn, int $maxError): int
     {
-        $dit = (int) $this->class['dit'];
+        $dit = (int) $this->data['dit'];
         $message = 'Inheritance depth = %d > %d';
         return $this->checkMax($message, $dit, $maxWarn, $maxError);
     }
 
     public function checkMaxLinesOfCode(int $maxWarn, int $maxError): int
     {
-        $loc = (int) $this->class['loc'];
+        $loc = (int) $this->data['loc'];
         $message = '# lines of code = %d > %d';
         return $this->checkMax($message, $loc, $maxWarn, $maxError);
     }
 
+    public function checkMaxNpathComplexity(int $maxWarn, int $maxError): int
+    {
+        $npath = (int) $this->data['npath'];
+        $message = 'NPath complexity = %d > %d';
+        return $this->checkMax($message, $npath, $maxWarn, $maxError);
+    }
+
     public function checkMaxProperties(int $maxWarn, int $maxError): int
     {
-        $vars = (int) $this->class['vars'];
+        $vars = (int) $this->data['vars'];
         $message = '# properties = %d > %d';
         return $this->checkMax($message, $vars, $maxWarn, $maxError);
     }
 
     public function checkMaxNonPrivateProperties(int $maxWarn, int $maxError): int
     {
-        $varsnp = (int) $this->class['varsnp'];
+        $varsnp = (int) $this->data['varsnp'];
         $message = '# non-private properties = %d > %d';
         return $this->checkMax($message, $varsnp, $maxWarn, $maxError);
     }
 
     public function checkMaxPublicMethods(int $maxWarn, int $maxError): int
     {
-        $npm = (int) $this->class['npm'];
+        $npm = (int) $this->data['npm'];
         $message = '# public methods = %d > %d';
         return $this->checkMax($message, $npm, $maxWarn, $maxError);
     }
 
     public function checkMinCommentRatio(float $minWarn, float $minError): int
     {
-        $eloc = (int) $this->class['eloc'];
+        $eloc = (int) $this->data['eloc'];
         if ($eloc === 0) {
             return self::STATUS_OK;
         }
 
-        $cloc = (int) $this->class['cloc'];
+        $cloc = (int) $this->data['cloc'];
         $ratio = $cloc / $eloc;
         $message = 'Comment to code ratio = %0.2f < %0.2f';
         return $this->checkMin($message, $ratio, $minWarn, $minError);
+    }
+
+    public function checkMinMaintainabilityIndex(float $minWarn, float $minError): int
+    {
+        $maintainabilityIndex = (int) $this->data['mi'];
+        $message = 'Maintainability index = %0.2f < %0.2f';
+        return $this->checkMin($message, $maintainabilityIndex, $minWarn, $minError);
+    }
+
+    /**
+     * @return list<string>
+     */
+    public function getErrors(): array
+    {
+        return $this->issues[self::STATUS_ERROR] ?? [];
+    }
+
+    /**
+     * @return list<string>
+     */
+    public function getWarnings(): array
+    {
+        return $this->issues[self::STATUS_WARN] ?? [];
+    }
+
+    public function hasIssues(): bool
+    {
+        return $this->issues !== [];
+    }
+
+    public function printIssues(): void
+    {
+        foreach ($this->getErrors() as $error) {
+            echo $error . PHP_EOL;
+        }
+
+        foreach ($this->getWarnings() as $warning) {
+            echo $warning . PHP_EOL;
+        }
     }
 
     protected function checkMax(
@@ -154,7 +220,20 @@ class PdependClass
      */
     protected function report(string $issue, bool $isError = false): void
     {
-        $desc = $isError ? 'error' : 'warning';
-        printf('%s: %s (%s)' . PHP_EOL, $this->class['fqname'], $issue, $desc);
+        if ($isError) {
+            $level = self::STATUS_ERROR;
+            $desc = 'error';
+        } else {
+            $level = self::STATUS_WARN;
+            $desc = 'warning';
+        }
+
+        $name = $this->data['name'];
+        if ($this->className !== null) {
+            $name = $this->className . '::' . $name;
+        }
+
+        $issue = sprintf('%s - %s (%s)', $name, $issue, $desc);
+        $this->issues[$level][] = $issue;
     }
 }

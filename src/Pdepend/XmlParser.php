@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace DouglasGreen\PhpLinter;
+namespace DouglasGreen\PhpLinter\Pdepend;
 
 use SimpleXMLElement;
 use DouglasGreen\Utility\FileSystem\FileException;
@@ -10,7 +10,7 @@ use DouglasGreen\Utility\FileSystem\FileException;
 /**
  * @see https://pdepend.org/documentation/software-metrics/index.html
  */
-class PdependParser
+class XmlParser
 {
     public const SUMMARY_FILE = 'var/cache/pdepend/summary.xml';
 
@@ -73,7 +73,11 @@ class PdependParser
                 $classData[$key] = (string) $value;
             }
 
+            $fileAttribs = $class->file->attributes();
+            $classData['filename'] = (string) $fileAttribs['name'];
+
             $classData['methods'] = self::parseMethods($class->method);
+
             $classList[] = $classData;
         }
 
@@ -96,6 +100,27 @@ class PdependParser
         }
 
         return $fileList;
+    }
+
+    /**
+     * @return array<mixed, array<string|int, string>>
+     */
+    protected static function parseFunctions(SimpleXMLElement $functions): array
+    {
+        $functionList = [];
+        foreach ($functions as $function) {
+            $functionData = [];
+            foreach ($function->attributes() as $key => $value) {
+                $functionData[$key] = (string) $value;
+            }
+
+            $fileAttribs = $function->file->attributes();
+            $functionData['filename'] = (string) $fileAttribs['name'];
+
+            $functionList[] = $functionData;
+        }
+
+        return $functionList;
     }
 
     /**
@@ -143,6 +168,7 @@ class PdependParser
             }
 
             $packageData['classes'] = self::parseClasses($package->class);
+            $packageData['functions'] = self::parseFunctions($package->function);
             $packageList[] = $packageData;
         }
 
