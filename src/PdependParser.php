@@ -19,19 +19,12 @@ class PdependParser
      */
     protected readonly array $data;
 
-    protected readonly string $xmlFile;
-
     /**
      * @throws FileException
      */
-    public function __construct(string $xmlFile)
-    {
-        if (! file_exists($xmlFile)) {
-            throw new FileException('File not found: ' . $xmlFile);
-        }
-
-        $this->xmlFile = $xmlFile;
-
+    public function __construct(
+        protected readonly string $xmlFile
+    ) {
         $xml = simplexml_load_file($this->xmlFile);
         if ($xml === false) {
             throw new FileException('Unable to load XML file');
