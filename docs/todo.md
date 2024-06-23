@@ -30,3 +30,7 @@ PHPMD gives warnings too frequently and then they are disabled. Once you exceed 
 code can grow without limit and not have any further warnings.
 
 There should be a warning level (> 95%) and an error level (> 99.5%).
+
+## Values
+
+Update the values with vendor files (vendor.xml).
