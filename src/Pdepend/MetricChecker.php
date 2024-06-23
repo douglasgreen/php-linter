@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace DouglasGreen\PhpLinter\Pdepend;
 
+use DouglasGreen\Utility\Data\ValueException;
+
 /**
  * @see https://pdepend.org/documentation/software-metrics/index.html
  */
@@ -29,15 +31,29 @@ class MetricChecker
      */
     protected array $issues = [];
 
+    protected ?string $currentFile = null;
+
     protected int $errorCount = 0;
 
     /**
      * @param array<string, mixed> $data
+     * @throws ValueException
      */
     public function __construct(
         protected readonly array $data,
         protected readonly ?string $className = null,
-    ) {}
+        protected readonly ?string $functionName = null,
+    ) {
+        if ($this->className !== null) {
+            return;
+        }
+
+        if ($this->functionName !== null) {
+            return;
+        }
+
+        throw new ValueException('Either class or function name must be set');
+    }
 
     public function checkMaxAfferentCoupling(int $maxWarn, int $maxError): int
     {
@@ -164,8 +180,17 @@ class MetricChecker
         return $this->issues !== [];
     }
 
-    public function printIssues(): void
+    public function printIssues(string $filename): void
     {
+        if (! $this->hasIssues()) {
+            return;
+        }
+
+        if ($this->currentFile !== $filename) {
+            echo PHP_EOL . '==> ' . $filename . PHP_EOL;
+            $this->currentFile = $filename;
+        }
+
         foreach ($this->getErrors() as $error) {
             echo $error . PHP_EOL;
         }
@@ -228,9 +253,13 @@ class MetricChecker
             $desc = 'warning';
         }
 
-        $name = $this->data['name'];
         if ($this->className !== null) {
-            $name = $this->className . '::' . $name;
+            $name = $this->className;
+            if ($this->functionName !== null) {
+                $name .= '::' . $this->functionName . '()';
+            }
+        } else {
+            $name = $this->functionName . '()';
         }
 
         $issue = sprintf('%s - %s (%s)', $name, $issue, $desc);

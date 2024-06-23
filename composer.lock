@@ -105,12 +105,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/douglasgreen/utility.git",
-                "reference": "342f67e248482290b193b3faf7f8dc9c1c49d604"
+                "reference": "068cf1eefa05b16b515eb04016fa1da82b3e536d"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/douglasgreen/utility/zipball/342f67e248482290b193b3faf7f8dc9c1c49d604",
-                "reference": "342f67e248482290b193b3faf7f8dc9c1c49d604",
+                "url": "https://api.github.com/repos/douglasgreen/utility/zipball/068cf1eefa05b16b515eb04016fa1da82b3e536d",
+                "reference": "068cf1eefa05b16b515eb04016fa1da82b3e536d",
                 "shasum": ""
             },
             "require": {
@@ -179,7 +179,7 @@
                 "source": "https://github.com/douglasgreen/utility/tree/main",
                 "issues": "https://github.com/douglasgreen/utility/issues"
             },
-            "time": "2024-06-23T10:47:57+00:00"
+            "time": "2024-06-23T19:09:54+00:00"
         },
         {
             "name": "nikic/php-parser",
