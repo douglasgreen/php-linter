@@ -34,3 +34,15 @@ There should be a warning level (> 95%) and an error level (> 99.5%).
 ## Values
 
 Update the values with vendor files (vendor.xml).
+
+## Config File
+
+Transfer the values to a config file and install with config-setup.
+
+## Docs
+
+Write documentation
+
+## Update
+
+Add an update flag(?) to update the cache.
