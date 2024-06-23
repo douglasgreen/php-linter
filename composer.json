@@ -31,6 +31,10 @@
             "DouglasGreen\\PhpLinter\\Tests\\": "tests/"
         }
     },
+    "bin": [
+        "bin/check_metrics.php",
+        "bin/check_style.php"
+    ],
     "config": {
         "sort-packages": true
     },
