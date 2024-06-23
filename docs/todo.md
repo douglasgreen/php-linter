@@ -46,3 +46,11 @@ Write documentation
 ## Update
 
 Add an update flag(?) to update the cache.
+
+## Linter
+
+Remove extra lines from linter and finish.
+
+## PHPMD
+
+Remove PHPMD from config and replace with this.
