@@ -41,19 +41,19 @@ try {
             // Warnings exceed 95% of similar code, errors exceed 99%.
             $pdependClass = new PdependClass($class);
 
-            $pdependClass->checkMaxClassSize(24, 66);
+            $pdependClass->checkMaxClassSize(24, 56);
 
             // Has no error level.
-            $pdependClass->checkMaxCodeRank(0.66);
+            $pdependClass->checkMaxCodeRank(0.55);
 
-            $pdependClass->checkMaxLinesOfCode(440, 1050);
+            $pdependClass->checkMaxLinesOfCode(420, 1140);
 
-            $pdependClass->checkMaxNonPrivateProperties(1, 8);
-            $pdependClass->checkMaxProperties(9, 21);
-            $pdependClass->checkMaxPublicMethods(13, 38);
+            $pdependClass->checkMaxNonPrivateProperties(1, 5);
+            $pdependClass->checkMaxProperties(7, 17);
+            $pdependClass->checkMaxPublicMethods(14, 35);
 
-            $pdependClass->checkMaxAfferentCoupling(7, 34);
-            $pdependClass->checkMaxEfferentCoupling(9, 16);
+            $pdependClass->checkMaxAfferentCoupling(7, 24);
+            $pdependClass->checkMaxEfferentCoupling(10, 19);
 
             // @see https://everything2.com/title/comment-to-code+ratio
             $pdependClass->checkMinCommentRatio(0.1, 0.05);
