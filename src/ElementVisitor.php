@@ -15,7 +15,7 @@ use PhpParser\Node\Stmt\Namespace_;
 use PhpParser\Node\Stmt\Trait_;
 use PhpParser\NodeVisitorAbstract;
 
-final class ElementVisitor extends NodeVisitorAbstract
+class ElementVisitor extends NodeVisitorAbstract
 {
     public function enterNode(Node $node): Node|int|null
     {
@@ -53,7 +53,7 @@ final class ElementVisitor extends NodeVisitorAbstract
         return null;
     }
 
-    private static function checkLowerName(string $name): bool
+    protected static function checkLowerName(string $name): bool
     {
         if (! self::isLowerCamelCase($name)) {
             echo 'Not camel case: ' . $name . PHP_EOL;
@@ -63,7 +63,7 @@ final class ElementVisitor extends NodeVisitorAbstract
         return true;
     }
 
-    private static function checkUpperName(string $name): bool
+    protected static function checkUpperName(string $name): bool
     {
         if (! self::isUpperCamelCase($name)) {
             echo 'Not camel case: ' . $name . PHP_EOL;
@@ -73,12 +73,12 @@ final class ElementVisitor extends NodeVisitorAbstract
         return true;
     }
 
-    private static function isLowerCamelCase(string $name): bool
+    protected static function isLowerCamelCase(string $name): bool
     {
         return ! Regex::hasMatch('/\$[A-Z]|^[A-Z]|[A-Z]{2}|_/', $name);
     }
 
-    private static function isUpperCamelCase(string $name): bool
+    protected static function isUpperCamelCase(string $name): bool
     {
         return ! Regex::hasMatch('/[A-Z]{2}|_/', $name);
     }

@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace DouglasGreen\PhpLinter\Pdepend;
 
-use DouglasGreen\Utility\Data\ValueException;
-
 /**
  * @see https://pdepend.org/documentation/software-metrics/index.html
  */
@@ -37,23 +35,12 @@ class MetricChecker
 
     /**
      * @param array<string, mixed> $data
-     * @throws ValueException
      */
     public function __construct(
         protected readonly array $data,
         protected readonly ?string $className = null,
         protected readonly ?string $functionName = null,
-    ) {
-        if ($this->className !== null) {
-            return;
-        }
-
-        if ($this->functionName !== null) {
-            return;
-        }
-
-        throw new ValueException('Either class or function name must be set');
-    }
+    ) {}
 
     public function checkMaxAfferentCoupling(int $maxWarn, int $maxError): int
     {
@@ -258,8 +245,10 @@ class MetricChecker
             if ($this->functionName !== null) {
                 $name .= '::' . $this->functionName . '()';
             }
-        } else {
+        } elseif ($this->functionName !== null) {
             $name = $this->functionName . '()';
+        } else {
+            $name = 'File';
         }
 
         $issue = sprintf('%s - %s (%s)', $name, $issue, $desc);

@@ -6,6 +6,7 @@ declare(strict_types=1);
 use DouglasGreen\PhpLinter\ElementVisitor;
 use DouglasGreen\PhpLinter\Pdepend\MetricChecker;
 use DouglasGreen\PhpLinter\Pdepend\XmlParser;
+use DouglasGreen\PhpLinter\Repository;
 use DouglasGreen\Utility\FileSystem\DirUtil;
 use DouglasGreen\Utility\FileSystem\Path;
 use DouglasGreen\Utility\FileSystem\PathUtil;
@@ -22,6 +23,11 @@ if ($currentDir === false) {
 require_once $currentDir . '/vendor/autoload.php';
 
 $currentPath = new Path($currentDir);
+
+$filesChecked = [];
+
+$repository = new Repository();
+$phpFiles = $repository->getFilesByExtension('php');
 
 $xmlPath = new Path();
 $xmlPath->addSubpath(XmlParser::SUMMARY_FILE);
@@ -59,6 +65,7 @@ if ($xmlPath->exists()) {
                 $classChecker->checkMinCommentRatio(0.1, 0.05);
 
                 $filename = $currentPath->getSubpath($class['filename']);
+                $filesChecked[$filename] = true;
                 $classChecker->printIssues($filename);
 
                 foreach ($class['methods'] as $method) {
@@ -82,7 +89,26 @@ if ($xmlPath->exists()) {
                 $functionChecker->checkMinMaintainabilityIndex(40, 25);
 
                 $filename = $currentPath->getSubpath($function['filename']);
+                $filesChecked[$filename] = true;
                 $functionChecker->printIssues($filename);
+            }
+        }
+
+        // Check other files that don't contain classes or functions.
+        foreach ($phpFiles as $phpFile) {
+            $filename = $currentPath->getSubpath($phpFile);
+            if (! isset($filesChecked[$filename])) {
+                if (! file_exists($filename)) {
+                    continue;
+                }
+
+                $loc = count(PathUtil::loadLines($phpFile));
+                $fileChecker = new MetricChecker([
+                    'loc' => $loc,
+                ]);
+                $fileChecker->checkMaxLinesOfCode(100, 200);
+                $filesChecked[$filename] = true;
+                $fileChecker->printIssues($filename);
             }
         }
     } catch (Exception $exception) {
