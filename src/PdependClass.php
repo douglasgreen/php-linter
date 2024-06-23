@@ -18,6 +18,13 @@ class PdependClass
         protected readonly array $class
     ) {}
 
+    public function checkMaxAfferentCoupling(int $maxWarn, int $maxError): void
+    {
+        $afferentCoupling = (int) $this->class['ca'];
+        $message = 'Afferent coupling = %d > %d';
+        $this->checkMax($message, $afferentCoupling, $maxWarn, $maxError);
+    }
+
     public function checkMaxCodeRank(float $maxWarn): void
     {
         $codeRank = (float) $this->class['cr'];
@@ -30,6 +37,13 @@ class PdependClass
         $csz = (int) $this->class['csz'];
         $message = 'Class size (# methods + # properties) = %d > %d';
         $this->checkMax($message, $csz, $maxWarn, $maxError);
+    }
+
+    public function checkMaxEfferentCoupling(int $maxWarn, int $maxError): void
+    {
+        $efferentCoupling = (int) $this->class['ce'];
+        $message = 'Efferent coupling = %d > %d';
+        $this->checkMax($message, $efferentCoupling, $maxWarn, $maxError);
     }
 
     public function checkMaxInheritanceDepth(int $maxWarn, int $maxError): void
