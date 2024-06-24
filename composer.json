@@ -33,7 +33,8 @@
     },
     "bin": [
         "bin/check_metrics.php",
-        "bin/check_style.php"
+        "bin/check_style.php",
+        "script/run_pdepend.sh"
     ],
     "config": {
         "sort-packages": true
@@ -78,8 +79,8 @@
             "ecs --fix",
             "rector"
         ],
-        "post-install-cmd": "vendor/douglasgreen/config-setup/bin/copy_files.php",
-        "post-update-cmd": "vendor/douglasgreen/config-setup/bin/copy_files.php",
+        "post-install-cmd": "config_setup.php",
+        "post-update-cmd": "config_setup.php",
         "test": "phpunit"
     }
 }
