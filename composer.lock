@@ -12,12 +12,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/douglasgreen/optparser.git",
-                "reference": "888a3a5f211846194b5c3ddd1cb398499d3570ee"
+                "reference": "a8789c2e31191e1336c336fc97cda9046d571cd6"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/douglasgreen/optparser/zipball/888a3a5f211846194b5c3ddd1cb398499d3570ee",
-                "reference": "888a3a5f211846194b5c3ddd1cb398499d3570ee",
+                "url": "https://api.github.com/repos/douglasgreen/optparser/zipball/a8789c2e31191e1336c336fc97cda9046d571cd6",
+                "reference": "a8789c2e31191e1336c336fc97cda9046d571cd6",
                 "shasum": ""
             },
             "require": {
@@ -25,12 +25,13 @@
             },
             "require-dev": {
                 "douglasgreen/config-setup": "dev-main",
+                "douglasgreen/php-linter": "dev-main",
                 "douglasgreen/utility": "dev-main",
                 "phpmd/phpmd": "^2.15",
-                "phpstan/phpstan": "^1.10",
+                "phpstan/phpstan": "^1.11",
                 "phpunit/phpunit": "^10.5",
-                "rector/rector": "^1.0",
-                "symplify/easy-coding-standard": "^12.2"
+                "rector/rector": "^1.1",
+                "symplify/easy-coding-standard": "^12.3"
             },
             "default-branch": true,
             "type": "library",
@@ -42,6 +43,8 @@
             },
             "scripts": {
                 "lint": [
+                    "check_metrics.php",
+                    "check_style.php",
                     "ecs",
                     "phpstan analyse",
                     "phpmd --cache --cache-file var/cache/phpmd/cache.php . text phpmd.xml",
@@ -52,10 +55,10 @@
                     "rector"
                 ],
                 "post-install-cmd": [
-                    "vendor/douglasgreen/config-setup/bin/copy_files.php"
+                    "config_setup.php"
                 ],
                 "post-update-cmd": [
-                    "vendor/douglasgreen/config-setup/bin/copy_files.php"
+                    "config_setup.php"
                 ],
                 "test": [
                     "phpunit"
@@ -97,7 +100,7 @@
                 "source": "https://github.com/douglasgreen/optparser/tree/main",
                 "issues": "https://github.com/douglasgreen/optparser/issues"
             },
-            "time": "2024-06-20T19:33:39+00:00"
+            "time": "2024-06-24T14:25:40+00:00"
         },
         {
             "name": "douglasgreen/utility",
@@ -105,12 +108,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/douglasgreen/utility.git",
-                "reference": "857fb6b9ccf10c1cc1130000b915d1bff7069431"
+                "reference": "b5824d863884e3d2dae2b638d6e67c2d9d649aec"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/douglasgreen/utility/zipball/857fb6b9ccf10c1cc1130000b915d1bff7069431",
-                "reference": "857fb6b9ccf10c1cc1130000b915d1bff7069431",
+                "url": "https://api.github.com/repos/douglasgreen/utility/zipball/b5824d863884e3d2dae2b638d6e67c2d9d649aec",
+                "reference": "b5824d863884e3d2dae2b638d6e67c2d9d649aec",
                 "shasum": ""
             },
             "require": {
@@ -182,7 +185,7 @@
                 "source": "https://github.com/douglasgreen/utility/tree/main",
                 "issues": "https://github.com/douglasgreen/utility/issues"
             },
-            "time": "2024-06-24T12:53:04+00:00"
+            "time": "2024-06-24T14:26:34+00:00"
         },
         {
             "name": "nikic/php-parser",
@@ -385,12 +388,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/douglasgreen/config-setup.git",
-                "reference": "b644ccd91418bda85082f1328864a55decfe4781"
+                "reference": "1ab6bd41aa85f0a4f3522cc42d55618d8a82e013"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/douglasgreen/config-setup/zipball/b644ccd91418bda85082f1328864a55decfe4781",
-                "reference": "b644ccd91418bda85082f1328864a55decfe4781",
+                "url": "https://api.github.com/repos/douglasgreen/config-setup/zipball/1ab6bd41aa85f0a4f3522cc42d55618d8a82e013",
+                "reference": "1ab6bd41aa85f0a4f3522cc42d55618d8a82e013",
                 "shasum": ""
             },
             "require": {
@@ -461,7 +464,7 @@
                 "source": "https://github.com/douglasgreen/config-setup/tree/main",
                 "issues": "https://github.com/douglasgreen/config-setup/issues"
             },
-            "time": "2024-06-24T13:56:38+00:00"
+            "time": "2024-06-24T14:29:38+00:00"
         },
         {
             "name": "myclabs/deep-copy",

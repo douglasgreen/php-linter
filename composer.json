@@ -34,6 +34,7 @@
     "bin": [
         "bin/check_metrics.php",
         "bin/check_style.php",
+        "bin/php_linter",
         "bin/run_pdepend.php"
     ],
     "config": {
@@ -70,6 +71,7 @@
     },
     "scripts": {
         "lint": [
+            "php_linter",
             "ecs",
             "phpstan analyse",
             "phpmd --cache --cache-file var/cache/phpmd/cache.php . text phpmd.xml",

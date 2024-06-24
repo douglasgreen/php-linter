@@ -2,12 +2,6 @@
 
 Linter for PHP
 
-This project features two scripts:
-
--   `bin/check_metrics.php` - Runs metric checks using [PDepend](https://pdepend.org/)
--   `bin/check_style.php` - Runs style checks using
-    [Nikic PHP Parser](https://github.com/nikic/PHP-Parser). This part is still under development.
-
 This project is being developed as a potential replacement for
 [PHP Mess Detector](https://phpmd.org/) (PHPMD).That project is also a wrapper for PDepend. Compared
 to PHPMD, this project:
@@ -30,18 +24,32 @@ to PHPMD, this project:
 
 ## Usage
 
-Add the scripts to your lint section in composer.json:
+This project features two scripts to run project checks:
+
+-   `bin/check_metrics.php` - Runs metric checks using [PDepend](https://pdepend.org/)
+-   `bin/check_style.php` - Runs style checks using
+    [Nikic PHP Parser](https://github.com/nikic/PHP-Parser). This part is still under development.
+
+There is a third script, `bin/run_pdepend.php`, that updates the cache file at
+`var/cache/pdepend/summary.xml` by running PDepend. This file is used by `check_metrics.php` for
+most of its metrics so it should be run before running checks.
+
+There is a fourth script, `bin/php_linter`, that runs the two check scripts. It also runs the third
+script `run_pdepend.php` if you pass `--update-cache` or `-u` as an argument.
+
+You can add the individual scripts or the combined linter script to your lint section in
+composer.json:
 
 ```
    "scripts": {
         "lint": [
-            "check_metrics.php",
-            "check_style.php"
+            "php_linter"
         ]
     }
 ```
 
-Before running `check_metrics.php`, run `run_pdepend.php` to update your PDepend cache.
+I leave the `--update-cache` argument off here so the scripts don't run in Continuous Integration. I
+just run them manually during development.
 
 ## Project setup
 

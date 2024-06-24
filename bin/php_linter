@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+
+# Get the directory of the current script
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
+# Check if the script was run with -u or --update-cache argument
+if [[ "$1" == "-u" || "$1" == "--update-cache" ]]; then
+    "$SCRIPT_DIR/run_pdepend.php"
+fi
+
+"$SCRIPT_DIR/check_metrics.php"
+"$SCRIPT_DIR/check_style.php"
