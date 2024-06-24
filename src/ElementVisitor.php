@@ -14,6 +14,7 @@ use PhpParser\Node\Stmt\Interface_;
 use PhpParser\Node\Stmt\Namespace_;
 use PhpParser\Node\Stmt\Trait_;
 use PhpParser\NodeVisitorAbstract;
+use PhpParser\Node\Expr\PropertyFetch;
 
 class ElementVisitor extends NodeVisitorAbstract
 {
@@ -67,7 +68,23 @@ class ElementVisitor extends NodeVisitorAbstract
 
     public function enterNode(Node $node): Node|int|null
     {
-        $name = property_exists($node, 'name') ? (string) $node->name : '';
+        if (! property_exists($node, 'name')) {
+            return null;
+        }
+
+        if ($node->name === null) {
+            return null;
+        }
+
+        if ($node->name instanceof PropertyFetch) {
+            // @todo Find out why this doesn't work.
+            // Cannot cast PhpParser\Node\Expr|PhpParser\Node\Identifier to string.
+            // $name = (string) $node->name->name;
+            return null;
+        }
+
+        $name = (string) $node->name;
+
         if ($node instanceof Namespace_) {
             // echo 'Namespace: ' . $name . PHP_EOL;
             $parts = explode('\\', $name);
