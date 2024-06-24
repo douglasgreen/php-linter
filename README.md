@@ -41,7 +41,7 @@ Add the scripts to your lint section in composer.json:
     }
 ```
 
-Before running `check_metrics.php`, run `run_pdepend.sh` to update your PDepend cache.
+Before running `check_metrics.php`, run `run_pdepend.php` to update your PDepend cache.
 
 ## Project setup
 

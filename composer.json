@@ -34,7 +34,7 @@
     "bin": [
         "bin/check_metrics.php",
         "bin/check_style.php",
-        "script/run_pdepend.sh"
+        "bin/run_pdepend.php"
     ],
     "config": {
         "sort-packages": true
