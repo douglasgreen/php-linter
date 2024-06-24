@@ -32,6 +32,9 @@ if (! $xmlPath->exists()) {
     die('=> Skipping metrics checks (PDepend summary XML file not found)' . PHP_EOL);
 }
 
+/**
+ * @todo Remove cache path from non-.php extension files.
+ */
 try {
     $parser = new XmlParser((string) $xmlPath);
     $packages = $parser->getPackages();
