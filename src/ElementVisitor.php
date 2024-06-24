@@ -17,6 +17,54 @@ use PhpParser\NodeVisitorAbstract;
 
 class ElementVisitor extends NodeVisitorAbstract
 {
+    /**
+     * @var list<string>
+     */
+    protected const MAGIC_METHODS = [
+        '__construct',
+        '__destruct',
+        '__call',
+        '__callStatic',
+        '__get',
+        '__set',
+        '__isset',
+        '__unset',
+        '__sleep',
+        '__wakeup',
+        '__serialize',
+        '__unserialize',
+        '__toString',
+        '__invoke',
+        '__set_state',
+        '__clone',
+        '__debugInfo',
+    ];
+
+    /**
+     * @var list<string>
+     */
+    protected const SUPERGLOBALS = [
+        '$GLOBALS',
+        '$_SERVER',
+        '$_GET',
+        '$_POST',
+        '$_FILES',
+        '$_REQUEST',
+        '$_SESSION',
+        '$_ENV',
+        '$_COOKIE',
+        '$http_response_header',
+        '$argc',
+        '$argv',
+    ];
+
+    /**
+     * @var list<string>
+     */
+    protected array $issues = [];
+
+    protected ?string $currentFile = null;
+
     public function enterNode(Node $node): Node|int|null
     {
         $name = property_exists($node, 'name') ? (string) $node->name : '';
@@ -24,28 +72,22 @@ class ElementVisitor extends NodeVisitorAbstract
             // echo 'Namespace: ' . $name . PHP_EOL;
             $parts = explode('\\', $name);
             foreach ($parts as $part) {
-                if (! self::checkUpperName($part)) {
+                if (! $this->checkUpperName($part)) {
                     break;
                 }
             }
         } elseif ($node instanceof Class_) {
-            // echo 'Class: ' . $name . PHP_EOL;
-            self::checkUpperName($name);
+            $this->checkUpperName($name);
         } elseif ($node instanceof Interface_) {
-            // echo 'Interface: ' . $name . PHP_EOL;
-            self::checkUpperName($name);
+            $this->checkUpperName($name);
         } elseif ($node instanceof Trait_) {
-            // echo 'Trait: ' . $name . PHP_EOL;
-            self::checkUpperName($name);
+            $this->checkUpperName($name);
         } elseif ($node instanceof ClassMethod) {
-            // echo 'Method: ' . $name . PHP_EOL;
-            self::checkLowerName($name);
+            $this->checkLowerName($name);
         } elseif ($node instanceof Function_) {
-            // echo 'Function: ' . $name . PHP_EOL;
-            self::checkLowerName($name);
+            $this->checkLowerName($name);
         } elseif ($node instanceof Variable) {
-            // echo 'Variable: ' . $name . PHP_EOL;
-            self::checkLowerName($name);
+            $this->checkLowerName($name);
         } elseif ($name !== '') {
             //var_dump(get_class($node), $name);
         }
@@ -53,20 +95,43 @@ class ElementVisitor extends NodeVisitorAbstract
         return null;
     }
 
-    protected static function checkLowerName(string $name): bool
+    public function hasIssues(): bool
+    {
+        return $this->issues !== [];
+    }
+
+    public function printIssues(string $filename): void
+    {
+        if (! $this->hasIssues()) {
+            return;
+        }
+
+        if ($this->currentFile !== $filename) {
+            echo PHP_EOL . '==> ' . $filename . PHP_EOL;
+            $this->currentFile = $filename;
+        }
+
+        foreach ($this->issues as $issue) {
+            echo $issue . PHP_EOL;
+        }
+    }
+
+    protected function checkLowerName(string $name): bool
     {
         if (! self::isLowerCamelCase($name)) {
-            echo 'Not camel case: ' . $name . PHP_EOL;
+            $issue = 'Not camel case: ' . $name;
+            $this->issues[] = $issue;
             return false;
         }
 
         return true;
     }
 
-    protected static function checkUpperName(string $name): bool
+    protected function checkUpperName(string $name): bool
     {
         if (! self::isUpperCamelCase($name)) {
-            echo 'Not camel case: ' . $name . PHP_EOL;
+            $issue = 'Not camel case: ' . $name;
+            $this->issues[] = $issue;
             return false;
         }
 
@@ -75,11 +140,27 @@ class ElementVisitor extends NodeVisitorAbstract
 
     protected static function isLowerCamelCase(string $name): bool
     {
+        if (in_array($name, self::MAGIC_METHODS, true)) {
+            return true;
+        }
+
+        if (in_array($name, self::SUPERGLOBALS, true)) {
+            return true;
+        }
+
         return ! Regex::hasMatch('/\$[A-Z]|^[A-Z]|[A-Z]{2}|_/', $name);
     }
 
     protected static function isUpperCamelCase(string $name): bool
     {
+        if (in_array($name, self::MAGIC_METHODS, true)) {
+            return true;
+        }
+
+        if (in_array($name, self::SUPERGLOBALS, true)) {
+            return true;
+        }
+
         return ! Regex::hasMatch('/[A-Z]{2}|_/', $name);
     }
 }

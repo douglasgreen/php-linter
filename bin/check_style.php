@@ -39,7 +39,6 @@ $phpPaths = $phpPath->loadLines(Path::IGNORE_NEW_LINES);
 foreach ($phpPaths as $phpPath) {
     $files = DirUtil::listFiles($phpPath);
     foreach ($files as $file) {
-        echo '==> ' . $file . PHP_EOL;
         try {
             $code = PathUtil::loadString($file);
             $stmts = $parser->parse($code);
@@ -49,8 +48,10 @@ foreach ($phpPaths as $phpPath) {
             }
 
             $traverser = new NodeTraverser();
-            $traverser->addVisitor(new ElementVisitor());
+            $visitor = new ElementVisitor();
+            $traverser->addVisitor($visitor);
             $traverser->traverse($stmts);
+            $visitor->printIssues($file);
         } catch (Error $e) {
             echo 'Parse Error: ', $e->getMessage();
         }
