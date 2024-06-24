@@ -58,3 +58,7 @@ Remove PHPMD from config and replace with this.
 ## More metrics
 
 Replace the https://phpmd.org/rules/codesize.html#excessiveparameterlist with a parameter count.
+
+## Cache
+
+Give `check_style.php` its own cache file and update `php-linter`.

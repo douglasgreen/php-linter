@@ -34,7 +34,7 @@ There is a third script, `bin/run_pdepend.php`, that updates the cache file at
 `var/cache/pdepend/summary.xml` by running PDepend. This file is used by `check_metrics.php` for
 most of its metrics so it should be run before running checks.
 
-There is a fourth script, `bin/php_linter`, that runs the two check scripts. It also runs the third
+There is a fourth script, `bin/php-linter`, that runs the two check scripts. It also runs the third
 script `run_pdepend.php` if you pass `--update-cache` or `-u` as an argument.
 
 You can add the individual scripts or the combined linter script to your lint section in
@@ -43,7 +43,7 @@ composer.json:
 ```
    "scripts": {
         "lint": [
-            "php_linter"
+            "php-linter"
         ]
     }
 ```
