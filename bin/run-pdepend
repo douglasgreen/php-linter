@@ -3,42 +3,53 @@
 
 declare(strict_types=1);
 
-// Ensure the var/cache/pdepend directory exists
-$cacheDir = 'var/cache/pdepend';
-if (! is_dir($cacheDir)) {
-    mkdir($cacheDir, 0o777, true);
+use DouglasGreen\PhpLinter\CacheManager;
+use DouglasGreen\PhpLinter\Repository;
+
+// Must be run in repository root directory.
+$currentDir = getcwd();
+if ($currentDir === false) {
+    throw new Exception('Unable to get working dir');
 }
 
-// Execute git ls-files to get a list of all files tracked by Git
-exec('git ls-files', $gitFiles, $returnCode);
-if ($returnCode !== 0) {
-    die('Failed to get a list of Git files.' . PHP_EOL);
-}
+require_once $currentDir . '/vendor/autoload.php';
 
-// Initialize an array to store top-level directories with PHP files
-$phpPaths = [];
+$cache = new CacheManager($currentDir);
+$summaryCacheDir = $cache->getCacheDir();
+$fileCacheDir = $cache->getFileCacheDir();
 
-// Iterate over the list of Git files
-foreach ($gitFiles as $gitFile) {
-    if (pathinfo($gitFile, PATHINFO_EXTENSION) === 'php') {
-        // Get the top-level directory of the PHP file
-        $topLevelDir = explode('/', $gitFile)[0];
-        // Store the top-level directory in the phpPaths array
-        $phpPaths[$topLevelDir] = true;
+$repository = new Repository();
+$phpFiles = $repository->getPhpFiles();
+
+$phpDirs = [];
+
+// PDepend doesn't recognize files without .php extension so we must copy them to the cache.
+foreach ($phpFiles as $file) {
+    if (substr($file, -4) === '.php') {
+        // Get the top-level directory name
+        $topLevelDir = explode('/', $file)[0];
+        $phpDirs[$topLevelDir] = true;
+    } else {
+        // Copy the file to file cache directory with .php extension
+        $newFile = $file . '.php';
+        $cache->copyFile($file, $newFile);
+
+        // Add file cache directory to $phpDirs
+        $phpDirs[$fileCacheDir] = true;
     }
 }
 
-// Get the list of unique top-level directories
-$files = array_keys($phpPaths);
+// Remove duplicate directories
+$phpDirs = array_keys($phpDirs);
 
 // Join array elements with a comma
-$fileList = implode(',', $files);
+$dirList = implode(',', $phpDirs);
 
 // Run PDepend with the file list
 $command = sprintf(
     'vendor/bin/pdepend --summary-xml=%s/summary.xml %s',
-    $cacheDir,
-    escapeshellarg($fileList),
+    $summaryCacheDir,
+    escapeshellarg($dirList),
 );
 
 // Open process and capture stdout and stderr

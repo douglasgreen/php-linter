@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace DouglasGreen\PhpLinter;
 
+use DouglasGreen\Utility\FileSystem\PathUtil;
 use DouglasGreen\Utility\Program\Command;
-use DouglasGreen\Utility\Regex\Regex;
 
 class Repository
 {
@@ -23,11 +23,11 @@ class Repository
     /**
      * @return mixed[]
      */
-    public function getFilesByExtension(string $ext): array
+    public function getPhpFiles(): array
     {
         $matches = [];
         foreach ($this->files as $file) {
-            if (Regex::hasMatch('/\.' . $ext . '$/i', $file)) {
+            if (PathUtil::getFileType($file) === 'php') {
                 $matches[] = $file;
             }
         }

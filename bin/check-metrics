@@ -3,6 +3,7 @@
 
 declare(strict_types=1);
 
+use DouglasGreen\PhpLinter\CacheManager;
 use DouglasGreen\PhpLinter\Pdepend\MetricChecker;
 use DouglasGreen\PhpLinter\Pdepend\XmlParser;
 use DouglasGreen\PhpLinter\Repository;
@@ -17,15 +18,16 @@ if ($currentDir === false) {
 
 require_once $currentDir . '/vendor/autoload.php';
 
+$cache = new CacheManager($currentDir);
+
 $currentPath = new Path($currentDir);
 
 $filesChecked = [];
 
 $repository = new Repository();
-$phpFiles = $repository->getFilesByExtension('php');
+$phpFiles = $repository->getPhpFiles();
 
-$xmlPath = new Path();
-$xmlPath->addSubpath(XmlParser::SUMMARY_FILE);
+$xmlPath = new Path($cache->getSummaryFile());
 if (! $xmlPath->exists()) {
     die('=> Skipping metrics checks (PDepend summary XML file not found)' . PHP_EOL);
 }

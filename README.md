@@ -31,8 +31,8 @@ This project features two scripts to run project checks:
     [Nikic PHP Parser](https://github.com/nikic/PHP-Parser). This part is still under development.
 
 There is a third script, `bin/run-pdepend`, that updates the cache file at
-`var/cache/pdepend/summary.xml` by running PDepend. This file is used by `check-metrics` for
-most of its metrics so it should be run before running checks.
+`var/cache/pdepend/summary.xml` by running PDepend. This file is used by `check-metrics` for most of
+its metrics so it should be run before running checks.
 
 There is a fourth script, `bin/php-linter`, that runs the two check scripts. It also runs the third
 script `run-pdepend` if you pass `--update-cache` or `-u` as an argument.

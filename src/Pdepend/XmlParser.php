@@ -12,8 +12,6 @@ use DouglasGreen\Utility\FileSystem\FileException;
  */
 class XmlParser
 {
-    public const SUMMARY_FILE = 'var/cache/pdepend/summary.xml';
-
     /**
      * @var array<string, mixed>
      */
