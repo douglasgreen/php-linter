@@ -5,11 +5,11 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
 # Check if the script was run with -u or --update-cache argument
 if [[ "$1" == "-u" || "$1" == "--update-cache" ]]; then
-    "$SCRIPT_DIR/run_pdepend.php"
+    "$SCRIPT_DIR/run-pdepend"
 fi
 
 # Check if var/cache/pdepend/summary.xml exists relative to the current directory
 if [[ -f "var/cache/pdepend/summary.xml" ]]; then
-    "$SCRIPT_DIR/check_metrics.php"
-    "$SCRIPT_DIR/check_style.php"
+    "$SCRIPT_DIR/check-metrics"
+    "$SCRIPT_DIR/check-style"
 fi

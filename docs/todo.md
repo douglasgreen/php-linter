@@ -61,4 +61,4 @@ Replace the https://phpmd.org/rules/codesize.html#excessiveparameterlist with a 
 
 ## Cache
 
-Give `check_style.php` its own cache file and update `php-linter`.
+Give `check-style` its own cache file and update `php-linter`.

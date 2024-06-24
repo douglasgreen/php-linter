@@ -32,10 +32,10 @@
         }
     },
     "bin": [
-        "bin/check_metrics.php",
-        "bin/check_style.php",
+        "bin/check-metrics",
+        "bin/check-style",
         "bin/php-linter",
-        "bin/run_pdepend.php"
+        "bin/run-pdepend"
     ],
     "config": {
         "sort-packages": true
@@ -81,8 +81,8 @@
             "ecs --fix",
             "rector"
         ],
-        "post-install-cmd": "config_setup.php",
-        "post-update-cmd": "config_setup.php",
+        "post-install-cmd": "config-setup",
+        "post-update-cmd": "config-setup",
         "test": "phpunit"
     }
 }

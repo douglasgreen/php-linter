@@ -26,16 +26,16 @@ to PHPMD, this project:
 
 This project features two scripts to run project checks:
 
--   `bin/check_metrics.php` - Runs metric checks using [PDepend](https://pdepend.org/)
--   `bin/check_style.php` - Runs style checks using
+-   `bin/check-metrics` - Runs metric checks using [PDepend](https://pdepend.org/)
+-   `bin/check-style` - Runs style checks using
     [Nikic PHP Parser](https://github.com/nikic/PHP-Parser). This part is still under development.
 
-There is a third script, `bin/run_pdepend.php`, that updates the cache file at
-`var/cache/pdepend/summary.xml` by running PDepend. This file is used by `check_metrics.php` for
+There is a third script, `bin/run-pdepend`, that updates the cache file at
+`var/cache/pdepend/summary.xml` by running PDepend. This file is used by `check-metrics` for
 most of its metrics so it should be run before running checks.
 
 There is a fourth script, `bin/php-linter`, that runs the two check scripts. It also runs the third
-script `run_pdepend.php` if you pass `--update-cache` or `-u` as an argument.
+script `run-pdepend` if you pass `--update-cache` or `-u` as an argument.
 
 You can add the individual scripts or the combined linter script to your lint section in
 composer.json:
