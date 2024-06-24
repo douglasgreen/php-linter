@@ -54,3 +54,7 @@ Remove extra lines from linter and finish.
 ## PHPMD
 
 Remove PHPMD from config and replace with this.
+
+## More metrics
+
+Replace the https://phpmd.org/rules/codesize.html#excessiveparameterlist with a parameter count.
