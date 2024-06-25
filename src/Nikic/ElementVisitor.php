@@ -19,7 +19,11 @@ class ElementVisitor extends NodeVisitorAbstract
     public function enterNode(Node $node): Node|int|null
     {
         $nameChecker = new NameChecker($node);
-        $this->issues = array_merge($this->issues, $nameChecker->check());
+        $this->addIssues($nameChecker->check());
+
+        $funcChecker = new FunctionCallChecker($node);
+        $this->addIssues($funcChecker->check());
+
         return null;
     }
 
@@ -42,5 +46,13 @@ class ElementVisitor extends NodeVisitorAbstract
         foreach (array_keys($this->issues) as $issue) {
             echo $issue . PHP_EOL;
         }
+    }
+
+    /**
+     * @param array<string, bool> $issues
+     */
+    protected function addIssues(array $issues): void
+    {
+        $this->issues = array_merge($this->issues, $issues);
     }
 }
