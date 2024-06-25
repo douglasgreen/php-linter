@@ -58,23 +58,28 @@ class NameChecker extends BaseChecker
     ];
 
     /**
-     * @return list<string>
+     * @var list<string>
+     */
+    protected const VALID_SHORT_NAMES = ['db', 'id'];
+
+    /**
+     * @return array<string, bool>
      */
     public function check(): array
     {
         if (! property_exists($this->node, 'name')) {
-            return $this->issues;
+            return $this->getIssues();
         }
 
         if ($this->node->name === null) {
-            return $this->issues;
+            return $this->getIssues();
         }
 
         if ($this->node->name instanceof PropertyFetch) {
             // @todo Find out why this doesn't work.
             // Cannot cast PhpParser\Node\Expr|PhpParser\Node\Identifier to string.
             // $name = (string) $this->node->name->name;
-            return $this->issues;
+            return $this->getIssues();
         }
 
         $name = (string) $this->node->name;
@@ -99,18 +104,36 @@ class NameChecker extends BaseChecker
             $this->checkLowerName($name);
         } elseif ($this->node instanceof Variable) {
             $this->checkLowerName($name);
+            $this->checkNameLength($name);
         } elseif ($name !== '') {
             //var_dump(get_class($this->node), $name);
         }
 
-        return $this->issues;
+        return $this->getIssues();
     }
 
     protected function checkLowerName(string $name): bool
     {
         if (! self::isLowerCamelCase($name)) {
             $issue = 'Not camel case: ' . $name;
-            $this->issues[] = $issue;
+            $this->addIssue($issue);
+            return false;
+        }
+
+        return true;
+    }
+
+    protected function checkNameLength(string $name): bool
+    {
+        if (strlen($name) > 25) {
+            $issue = 'Variable name too long: ' . $name;
+            $this->addIssue($issue);
+            return false;
+        }
+
+        if (strlen($name) < 3 && ! in_array($name, self::VALID_SHORT_NAMES, true)) {
+            $issue = 'Variable name too short: ' . $name;
+            $this->addIssue($issue);
             return false;
         }
 
@@ -121,7 +144,7 @@ class NameChecker extends BaseChecker
     {
         if (! self::isUpperCamelCase($name)) {
             $issue = 'Not camel case: ' . $name;
-            $this->issues[] = $issue;
+            $this->addIssue($issue);
             return false;
         }
 

@@ -10,7 +10,7 @@ use PhpParser\NodeVisitorAbstract;
 class ElementVisitor extends NodeVisitorAbstract
 {
     /**
-     * @var list<string>
+     * @var array<string, bool>
      */
     protected array $issues = [];
 
@@ -39,7 +39,7 @@ class ElementVisitor extends NodeVisitorAbstract
             $this->currentFile = $filename;
         }
 
-        foreach ($this->issues as $issue) {
+        foreach (array_keys($this->issues) as $issue) {
             echo $issue . PHP_EOL;
         }
     }
