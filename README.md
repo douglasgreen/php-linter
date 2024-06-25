@@ -30,12 +30,12 @@ This project features two scripts to run project checks:
 -   `bin/check-style` - Runs style checks using
     [Nikic PHP Parser](https://github.com/nikic/PHP-Parser). This part is still under development.
 
-There is a third script, `bin/run-pdepend`, that updates the cache file at
+There is a third script, `bin/generate-metrics`, that updates the cache file at
 `var/cache/pdepend/summary.xml` by running PDepend. This file is used by `check-metrics` for most of
 its metrics so it should be run before running checks.
 
 There is a fourth script, `bin/php-linter`, that runs the two check scripts. It also runs the third
-script `run-pdepend` if you pass `--update-cache` or `-u` as an argument.
+script `generate-metrics` if you pass `--generate` or `-g` as an argument.
 
 You can add the individual scripts or the combined linter script to your lint section in
 composer.json:
@@ -48,7 +48,7 @@ composer.json:
     }
 ```
 
-I leave the `--update-cache` argument off here so the scripts don't run in Continuous Integration. I
+I leave the `--generate` argument off here so the scripts don't run in Continuous Integration. I
 just run them manually during development.
 
 ## Project setup

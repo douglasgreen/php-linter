@@ -3,13 +3,15 @@
 # Get the directory of the current script
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
-# Check if the script was run with -u or --update-cache argument
-if [[ "$1" == "-u" || "$1" == "--update-cache" ]]; then
-    "$SCRIPT_DIR/run-pdepend"
+# Check the script arguments
+if [[ "$1" == "-g" || "$1" == "--generate" ]]; then
+    "$SCRIPT_DIR/generate-metrics"
 fi
 
-# Check if var/cache/pdepend/summary.xml exists relative to the current directory
+# Check if PDepend summary file exists relative to the current directory
 if [[ -f "var/cache/pdepend/summary.xml" ]]; then
     "$SCRIPT_DIR/check-metrics"
     "$SCRIPT_DIR/check-style"
+else
+    echo "PDepend summary file not found; run generate-metrics."
 fi

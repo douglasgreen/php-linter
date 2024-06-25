@@ -34,8 +34,8 @@
     "bin": [
         "bin/check-metrics",
         "bin/check-style",
-        "bin/php-linter",
-        "bin/run-pdepend"
+        "bin/generate-metrics",
+        "bin/php-linter"
     ],
     "config": {
         "sort-packages": true

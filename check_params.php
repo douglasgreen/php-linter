@@ -1,32 +1,33 @@
 <?php
 
+declare(strict_types=1);
+
 /*
  * @todo Use this method instead of visitor.
  */
 
-require 'vendor/autoload.php';
+require __DIR__ . '/vendor/autoload.php';
 
 use PhpParser\Error;
-use PhpParser\Node;
 use PhpParser\Node\Stmt\Function_;
 use PhpParser\NodeFinder;
 use PhpParser\ParserFactory;
 
 $code = <<<'CODE'
-<?php
+    <?php
 
-function foo($a, $b) {
-    return $a + $b;
-}
+    function foo($a, $b) {
+        return $a + $b;
+    }
 
-function bar($x) {
-    return $x * 2;
-}
+    function bar($x) {
+        return $x * 2;
+    }
 
-function baz() {
-    return 42;
-}
-CODE;
+    function baz() {
+        return 42;
+    }
+    CODE;
 
 // Create a parser
 $parser = (new ParserFactory())->create(ParserFactory::PREFER_PHP7);
@@ -35,7 +36,7 @@ try {
     // Parse the code into an AST
     $ast = $parser->parse($code);
 } catch (Error $error) {
-    echo "Parse error: {$error->getMessage()}\n";
+    echo sprintf('Parse error: %s%s', $error->getMessage(), PHP_EOL);
     return;
 }
 
@@ -49,5 +50,5 @@ $functions = $nodeFinder->findInstanceOf($ast, Function_::class);
 foreach ($functions as $function) {
     $functionName = $function->name->name;
     $paramCount = count($function->params);
-    echo "Function '$functionName' has $paramCount parameter(s).\n";
+    echo "Function '{$functionName}' has {$paramCount} parameter(s).\n";
 }
