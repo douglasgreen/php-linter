@@ -73,16 +73,16 @@ class NameChecker extends BaseChecker
             if ($this->node->name === null) {
                 return $this->getIssues();
             }
-    
+
             if ($this->node->name instanceof PropertyFetch) {
                 // @todo Find out why this doesn't work.
                 // Cannot cast PhpParser\Node\Expr|PhpParser\Node\Identifier to string.
                 // $name = (string) $this->node->name->name;
                 return $this->getIssues();
             }
-    
+
             $name = (string) $this->node->name;
-    
+
             if ($this->node instanceof Namespace_) {
                 $parts = explode('\\', $name);
                 foreach ($parts as $part) {
@@ -111,8 +111,7 @@ class NameChecker extends BaseChecker
             } elseif ($name !== '') {
                 //var_dump(get_class($this->node), $name);
             }
-        }
-        elseif (property_exists($this->node, 'consts')) {
+        } elseif (property_exists($this->node, 'consts')) {
             if ($this->node instanceof Const_) {
                 foreach ($this->node->consts as $const) {
                     $constName = (string) $const->name;

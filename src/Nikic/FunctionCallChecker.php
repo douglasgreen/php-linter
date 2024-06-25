@@ -24,7 +24,7 @@ class FunctionCallChecker extends BaseChecker
      */
     public function check(): array
     {
-        if (!$this->node instanceof FuncCall) {
+        if (! $this->node instanceof FuncCall) {
             return [];
         }
 
@@ -34,7 +34,7 @@ class FunctionCallChecker extends BaseChecker
             return [];
         }
 
-        if (in_array(strtolower($functionName), self::DEBUG_FUNCTIONS)) {
+        if (in_array(strtolower($functionName), self::DEBUG_FUNCTIONS, true)) {
             $this->addIssue('Debug function found: ' . $functionName);
         }
 

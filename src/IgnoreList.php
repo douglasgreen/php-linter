@@ -26,7 +26,7 @@ class IgnoreList
      */
     protected function loadIgnoreFile(string $ignoreFile): array
     {
-        if (!file_exists($ignoreFile)) {
+        if (! file_exists($ignoreFile)) {
             return [];
         }
 
@@ -34,9 +34,15 @@ class IgnoreList
         $patterns = [];
         foreach ($lines as $line) {
             $line = trim($line);
-            if ($line !== '' && substr($line, 0, 1) !== '#') {
-                $patterns[] = $this->preparePattern($line);
+            if ($line === '') {
+                continue;
             }
+
+            if (str_starts_with($line, '#')) {
+                continue;
+            }
+
+            $patterns[] = $this->preparePattern($line);
         }
 
         return $patterns;
@@ -48,16 +54,17 @@ class IgnoreList
         $pattern = preg_quote($pattern, '#');
         $pattern = str_replace('\*', '.*', $pattern);
         $pattern = str_replace('\?', '.', $pattern);
-        return "#^$pattern#";
+        return sprintf('#^%s#', $pattern);
     }
 
     public function shouldIgnore(string $filePath): bool
     {
-        foreach ($this->ignorePatterns as $pattern) {
-            if (preg_match($pattern, $filePath)) {
+        foreach ($this->ignorePatterns as $ignorePattern) {
+            if (preg_match($ignorePattern, $filePath)) {
                 return true;
             }
         }
+
         return false;
     }
 }
