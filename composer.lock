@@ -344,12 +344,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/douglasgreen/config-setup.git",
-                "reference": "dfb516c47f13a32fab77a0e034aa6ecb271f4aa8"
+                "reference": "e571bc2c86cf71dc38846d019ac55221b6c11d70"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/douglasgreen/config-setup/zipball/dfb516c47f13a32fab77a0e034aa6ecb271f4aa8",
-                "reference": "dfb516c47f13a32fab77a0e034aa6ecb271f4aa8",
+                "url": "https://api.github.com/repos/douglasgreen/config-setup/zipball/e571bc2c86cf71dc38846d019ac55221b6c11d70",
+                "reference": "e571bc2c86cf71dc38846d019ac55221b6c11d70",
                 "shasum": ""
             },
             "require": {
@@ -420,7 +420,7 @@
                 "source": "https://github.com/douglasgreen/config-setup/tree/main",
                 "issues": "https://github.com/douglasgreen/config-setup/issues"
             },
-            "time": "2024-06-25T22:35:34+00:00"
+            "time": "2024-06-25T23:45:10+00:00"
         },
         {
             "name": "myclabs/deep-copy",

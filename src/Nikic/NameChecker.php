@@ -133,7 +133,7 @@ class NameChecker extends BaseChecker
 
     protected function checkAllCapName(string $name): bool
     {
-        if (! Regex::hasMatch('/^[A-Z]+(_[A-Z])*$/', $name)) {
+        if (! Regex::hasMatch('/^[A-Z]+(_[A-Z]+)*$/', $name)) {
             $issue = 'Not all caps: ' . $name;
             $this->addIssue($issue);
             return false;
