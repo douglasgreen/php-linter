@@ -27,9 +27,20 @@ $filesChecked = [];
 $repository = new Repository();
 $phpFiles = $repository->getPhpFiles();
 
-$xmlPath = new Path($cache->getSummaryFile());
+$summaryFile = $cache->getSummaryFile();
+$xmlPath = new Path($summaryFile);
 if (! $xmlPath->exists()) {
     die('=> Skipping metrics checks (PDepend summary XML file not found)' . PHP_EOL);
+}
+
+$summaryTimestamp = PathUtil::getWriteTime($summaryFile);
+
+foreach ($phpFiles as $phpFile) {
+    if (PathUtil::getWriteTime($phpFile) > $summaryTimestamp) {
+        echo '=> You need to run generate-metrics to update the PDepend metrics with your recent code changes.' .
+            PHP_EOL;
+        break;
+    }
 }
 
 /**
@@ -65,7 +76,7 @@ try {
             // @see https://everything2.com/title/comment-to-code+ratio
             $classChecker->checkMinCommentRatio(0.1, 0.05);
 
-            $filename = $currentPath->getSubpath($class['filename']);
+            $filename = $cache->getOriginalFile($currentPath->getSubpath($class['filename']));
             $filesChecked[$filename] = true;
             $classChecker->printIssues($filename);
 
@@ -89,7 +100,7 @@ try {
             $functionChecker->checkMaxHalsteadEffort(25000, 135000);
             $functionChecker->checkMinMaintainabilityIndex(40, 25);
 
-            $filename = $currentPath->getSubpath($function['filename']);
+            $filename = $cache->getOriginalFile($currentPath->getSubpath($function['filename']));
             $filesChecked[$filename] = true;
             $functionChecker->printIssues($filename);
         }
