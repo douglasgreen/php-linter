@@ -5,14 +5,16 @@ declare(strict_types=1);
 namespace DouglasGreen\PhpLinter\Nikic;
 
 use DouglasGreen\Utility\Regex\Regex;
+use PhpParser\Node\Expr\PropertyFetch;
 use PhpParser\Node\Expr\Variable;
 use PhpParser\Node\Stmt\Class_;
+use PhpParser\Node\Stmt\ClassConst;
 use PhpParser\Node\Stmt\ClassMethod;
+use PhpParser\Node\Stmt\Const_;
 use PhpParser\Node\Stmt\Function_;
 use PhpParser\Node\Stmt\Interface_;
 use PhpParser\Node\Stmt\Namespace_;
 use PhpParser\Node\Stmt\Trait_;
-use PhpParser\Node\Expr\PropertyFetch;
 
 class NameChecker extends BaseChecker
 {
@@ -67,54 +69,77 @@ class NameChecker extends BaseChecker
      */
     public function check(): array
     {
-        if (! property_exists($this->node, 'name')) {
-            return $this->getIssues();
+        if (property_exists($this->node, 'name')) {
+            if ($this->node->name === null) {
+                return $this->getIssues();
+            }
+    
+            if ($this->node->name instanceof PropertyFetch) {
+                // @todo Find out why this doesn't work.
+                // Cannot cast PhpParser\Node\Expr|PhpParser\Node\Identifier to string.
+                // $name = (string) $this->node->name->name;
+                return $this->getIssues();
+            }
+    
+            $name = (string) $this->node->name;
+    
+            if ($this->node instanceof Namespace_) {
+                $parts = explode('\\', $name);
+                foreach ($parts as $part) {
+                    if (! $this->checkUpperName($part)) {
+                        break;
+                    }
+                }
+            } elseif ($this->node instanceof Class_) {
+                $this->checkUpperName($name);
+                $this->checkGlobalNameLength($name, 'Class');
+            } elseif ($this->node instanceof Interface_) {
+                $this->checkUpperName($name);
+                $this->checkGlobalNameLength($name, 'Interface');
+            } elseif ($this->node instanceof Trait_) {
+                $this->checkUpperName($name);
+                $this->checkGlobalNameLength($name, 'Trait');
+            } elseif ($this->node instanceof ClassMethod) {
+                $this->checkLowerName($name);
+                $this->checkGlobalNameLength($name, 'Method');
+            } elseif ($this->node instanceof Function_) {
+                $this->checkLowerName($name);
+                $this->checkGlobalNameLength($name, 'Function');
+            } elseif ($this->node instanceof Variable) {
+                $this->checkLowerName($name);
+                $this->checkLocalNameLength($name, 'Variable');
+            } elseif ($name !== '') {
+                //var_dump(get_class($this->node), $name);
+            }
         }
-
-        if ($this->node->name === null) {
-            return $this->getIssues();
-        }
-
-        if ($this->node->name instanceof PropertyFetch) {
-            // @todo Find out why this doesn't work.
-            // Cannot cast PhpParser\Node\Expr|PhpParser\Node\Identifier to string.
-            // $name = (string) $this->node->name->name;
-            return $this->getIssues();
-        }
-
-        $name = (string) $this->node->name;
-
-        if ($this->node instanceof Namespace_) {
-            // echo 'Namespace: ' . $name . PHP_EOL;
-            $parts = explode('\\', $name);
-            foreach ($parts as $part) {
-                if (! $this->checkUpperName($part)) {
-                    break;
+        elseif (property_exists($this->node, 'consts')) {
+            if ($this->node instanceof Const_) {
+                foreach ($this->node->consts as $const) {
+                    $constName = (string) $const->name;
+                    $this->checkAllCapName($constName);
+                    $this->checkGlobalNameLength($constName, 'Constant');
+                }
+            } elseif ($this->node instanceof ClassConst) {
+                foreach ($this->node->consts as $const) {
+                    $constName = (string) $const->name;
+                    $this->checkAllCapName($constName);
+                    $this->checkGlobalNameLength($constName, 'Constant');
                 }
             }
-        } elseif ($this->node instanceof Class_) {
-            $this->checkUpperName($name);
-            $this->checkGlobalNameLength($name, 'Class');
-        } elseif ($this->node instanceof Interface_) {
-            $this->checkUpperName($name);
-            $this->checkGlobalNameLength($name, 'Interface');
-        } elseif ($this->node instanceof Trait_) {
-            $this->checkUpperName($name);
-            $this->checkGlobalNameLength($name, 'Trait');
-        } elseif ($this->node instanceof ClassMethod) {
-            $this->checkLowerName($name);
-            $this->checkGlobalNameLength($name, 'Method');
-        } elseif ($this->node instanceof Function_) {
-            $this->checkLowerName($name);
-            $this->checkGlobalNameLength($name, 'Function');
-        } elseif ($this->node instanceof Variable) {
-            $this->checkLowerName($name);
-            $this->checkLocalNameLength($name, 'Variable');
-        } elseif ($name !== '') {
-            //var_dump(get_class($this->node), $name);
         }
 
         return $this->getIssues();
+    }
+
+    protected function checkAllCapName(string $name): bool
+    {
+        if (! Regex::hasMatch('/^[A-Z]+(_[A-Z])*$/', $name)) {
+            $issue = 'Not all caps: ' . $name;
+            $this->addIssue($issue);
+            return false;
+        }
+
+        return true;
     }
 
     protected function checkLowerName(string $name): bool
