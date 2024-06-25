@@ -3,7 +3,7 @@
 
 declare(strict_types=1);
 
-use DouglasGreen\PhpLinter\ElementVisitor;
+use DouglasGreen\PhpLinter\Nikic\ElementVisitor;
 use DouglasGreen\PhpLinter\Repository;
 use DouglasGreen\Utility\FileSystem\Path;
 use DouglasGreen\Utility\FileSystem\PathUtil;

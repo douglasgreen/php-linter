@@ -2,10 +2,9 @@
 
 declare(strict_types=1);
 
-namespace DouglasGreen\PhpLinter;
+namespace DouglasGreen\PhpLinter\Nikic;
 
 use DouglasGreen\Utility\Regex\Regex;
-use PhpParser\Node;
 use PhpParser\Node\Expr\Variable;
 use PhpParser\Node\Stmt\Class_;
 use PhpParser\Node\Stmt\ClassMethod;
@@ -13,10 +12,9 @@ use PhpParser\Node\Stmt\Function_;
 use PhpParser\Node\Stmt\Interface_;
 use PhpParser\Node\Stmt\Namespace_;
 use PhpParser\Node\Stmt\Trait_;
-use PhpParser\NodeVisitorAbstract;
 use PhpParser\Node\Expr\PropertyFetch;
 
-class ElementVisitor extends NodeVisitorAbstract
+class NameChecker extends BaseChecker
 {
     /**
      * @var list<string>
@@ -60,32 +58,28 @@ class ElementVisitor extends NodeVisitorAbstract
     ];
 
     /**
-     * @var list<string>
+     * @return list<string>
      */
-    protected array $issues = [];
-
-    protected ?string $currentFile = null;
-
-    public function enterNode(Node $node): Node|int|null
+    public function check(): array
     {
-        if (! property_exists($node, 'name')) {
-            return null;
+        if (! property_exists($this->node, 'name')) {
+            return $this->issues;
         }
 
-        if ($node->name === null) {
-            return null;
+        if ($this->node->name === null) {
+            return $this->issues;
         }
 
-        if ($node->name instanceof PropertyFetch) {
+        if ($this->node->name instanceof PropertyFetch) {
             // @todo Find out why this doesn't work.
             // Cannot cast PhpParser\Node\Expr|PhpParser\Node\Identifier to string.
-            // $name = (string) $node->name->name;
-            return null;
+            // $name = (string) $this->node->name->name;
+            return $this->issues;
         }
 
-        $name = (string) $node->name;
+        $name = (string) $this->node->name;
 
-        if ($node instanceof Namespace_) {
+        if ($this->node instanceof Namespace_) {
             // echo 'Namespace: ' . $name . PHP_EOL;
             $parts = explode('\\', $name);
             foreach ($parts as $part) {
@@ -93,44 +87,23 @@ class ElementVisitor extends NodeVisitorAbstract
                     break;
                 }
             }
-        } elseif ($node instanceof Class_) {
+        } elseif ($this->node instanceof Class_) {
             $this->checkUpperName($name);
-        } elseif ($node instanceof Interface_) {
+        } elseif ($this->node instanceof Interface_) {
             $this->checkUpperName($name);
-        } elseif ($node instanceof Trait_) {
+        } elseif ($this->node instanceof Trait_) {
             $this->checkUpperName($name);
-        } elseif ($node instanceof ClassMethod) {
+        } elseif ($this->node instanceof ClassMethod) {
             $this->checkLowerName($name);
-        } elseif ($node instanceof Function_) {
+        } elseif ($this->node instanceof Function_) {
             $this->checkLowerName($name);
-        } elseif ($node instanceof Variable) {
+        } elseif ($this->node instanceof Variable) {
             $this->checkLowerName($name);
         } elseif ($name !== '') {
-            //var_dump(get_class($node), $name);
+            //var_dump(get_class($this->node), $name);
         }
 
-        return null;
-    }
-
-    public function hasIssues(): bool
-    {
-        return $this->issues !== [];
-    }
-
-    public function printIssues(string $filename): void
-    {
-        if (! $this->hasIssues()) {
-            return;
-        }
-
-        if ($this->currentFile !== $filename) {
-            echo PHP_EOL . '==> ' . $filename . PHP_EOL;
-            $this->currentFile = $filename;
-        }
-
-        foreach ($this->issues as $issue) {
-            echo $issue . PHP_EOL;
-        }
+        return $this->issues;
     }
 
     protected function checkLowerName(string $name): bool
