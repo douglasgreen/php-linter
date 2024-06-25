@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "dcc6a3ace3841800ab97f1bc81d2a05b",
+    "content-hash": "d1855f49ec372b2e0f5a9f81d8abbb26",
     "packages": [
         {
             "name": "douglasgreen/optparser",
@@ -41,28 +41,7 @@
                     "DouglasGreen\\OptParser\\Tests\\": "tests/"
                 }
             },
-            "scripts": {
-                "lint": [
-                    "ecs",
-                    "php-linter",
-                    "phpstan analyse",
-                    "phpmd --cache --cache-file var/cache/phpmd/cache.php . text phpmd.xml",
-                    "rector --dry-run"
-                ],
-                "lint:fix": [
-                    "ecs --fix",
-                    "rector"
-                ],
-                "post-install-cmd": [
-                    "config-setup"
-                ],
-                "post-update-cmd": [
-                    "config-setup"
-                ],
-                "test": [
-                    "phpunit"
-                ]
-            },
+            "notification-url": "https://packagist.org/downloads/",
             "license": [
                 "MIT"
             ],
@@ -77,10 +56,10 @@
             "description": "Parser for command-line options in PHP programs",
             "homepage": "https://github.com/douglasgreen/optparser",
             "keywords": [
+                "CLI Tool",
                 "automation",
                 "cli",
                 "cli library",
-                "cli tool",
                 "command",
                 "command line",
                 "command-line interface",
@@ -96,8 +75,8 @@
                 "terminal"
             ],
             "support": {
-                "source": "https://github.com/douglasgreen/optparser/tree/main",
-                "issues": "https://github.com/douglasgreen/optparser/issues"
+                "issues": "https://github.com/douglasgreen/optparser/issues",
+                "source": "https://github.com/douglasgreen/optparser/tree/main"
             },
             "time": "2024-06-24T20:40:52+00:00"
         },
@@ -107,12 +86,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/douglasgreen/utility.git",
-                "reference": "ce282c383e6375c4cc0b20c86ce2147191364e04"
+                "reference": "9b7be8326d041efdc4c00e90cd83d1248545a66d"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/douglasgreen/utility/zipball/ce282c383e6375c4cc0b20c86ce2147191364e04",
-                "reference": "ce282c383e6375c4cc0b20c86ce2147191364e04",
+                "url": "https://api.github.com/repos/douglasgreen/utility/zipball/9b7be8326d041efdc4c00e90cd83d1248545a66d",
+                "reference": "9b7be8326d041efdc4c00e90cd83d1248545a66d",
                 "shasum": ""
             },
             "require": {
@@ -135,28 +114,7 @@
                     "DouglasGreen\\Utility\\Tests\\": "tests/"
                 }
             },
-            "scripts": {
-                "lint": [
-                    "ecs",
-                    "php-linter",
-                    "phpstan analyse",
-                    "phpmd --cache --cache-file var/cache/phpmd/cache.php . text phpmd.xml",
-                    "rector --dry-run"
-                ],
-                "lint:fix": [
-                    "ecs --fix",
-                    "rector"
-                ],
-                "post-install-cmd": [
-                    "config-setup"
-                ],
-                "post-update-cmd": [
-                    "config-setup"
-                ],
-                "test": [
-                    "phpunit"
-                ]
-            },
+            "notification-url": "https://packagist.org/downloads/",
             "license": [
                 "MIT"
             ],
@@ -180,10 +138,10 @@
                 "wrapper"
             ],
             "support": {
-                "source": "https://github.com/douglasgreen/utility/tree/main",
-                "issues": "https://github.com/douglasgreen/utility/issues"
+                "issues": "https://github.com/douglasgreen/utility/issues",
+                "source": "https://github.com/douglasgreen/utility/tree/main"
             },
-            "time": "2024-06-24T22:36:40+00:00"
+            "time": "2024-06-25T11:14:41+00:00"
         },
         {
             "name": "nikic/php-parser",
@@ -386,16 +344,17 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/douglasgreen/config-setup.git",
-                "reference": "79ccace6df2c39c0f49e1c5d6bfcc108a61a0ebd"
+                "reference": "4ee84d8f3a9113cb1d836d32a6b42c2e26c119a3"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/douglasgreen/config-setup/zipball/79ccace6df2c39c0f49e1c5d6bfcc108a61a0ebd",
-                "reference": "79ccace6df2c39c0f49e1c5d6bfcc108a61a0ebd",
+                "url": "https://api.github.com/repos/douglasgreen/config-setup/zipball/4ee84d8f3a9113cb1d836d32a6b42c2e26c119a3",
+                "reference": "4ee84d8f3a9113cb1d836d32a6b42c2e26c119a3",
                 "shasum": ""
             },
             "require": {
                 "douglasgreen/php-linter": "dev-main",
+                "douglasgreen/utility": "dev-main",
                 "nette/neon": "^3.4",
                 "php": ">=8.1"
             },
@@ -461,7 +420,7 @@
                 "source": "https://github.com/douglasgreen/config-setup/tree/main",
                 "issues": "https://github.com/douglasgreen/config-setup/issues"
             },
-            "time": "2024-06-24T17:51:14+00:00"
+            "time": "2024-06-24T22:48:27+00:00"
         },
         {
             "name": "myclabs/deep-copy",
