@@ -80,7 +80,7 @@ class CacheManager
             $originalFile = substr($cacheFile, strlen($fileCacheDir));
             // Strip the .php extension from the end
             if (str_ends_with($originalFile, '.php')) {
-                $originalFile = substr($originalFile, 0, -4);
+                return substr($originalFile, 0, -4);
             }
 
             return $originalFile;

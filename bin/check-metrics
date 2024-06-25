@@ -43,9 +43,6 @@ foreach ($phpFiles as $phpFile) {
     }
 }
 
-/**
- * @todo Remove cache path from non-.php extension files.
- */
 try {
     $parser = new XmlParser((string) $xmlPath);
     $packages = $parser->getPackages();
@@ -77,7 +74,10 @@ try {
             $classChecker->checkMinCommentRatio(0.1, 0.05);
 
             $filename = $cache->getOriginalFile($currentPath->getSubpath($class['filename']));
-            $filesChecked[$filename] = true;
+            $loc = $class['loc'] ?? 0;
+            $filesChecked[$filename] = isset($filesChecked[$filename])
+                ? $filesChecked[$filename] + $loc
+                : $loc;
             $classChecker->printIssues($filename);
 
             foreach ($class['methods'] as $method) {
@@ -101,7 +101,10 @@ try {
             $functionChecker->checkMinMaintainabilityIndex(40, 25);
 
             $filename = $cache->getOriginalFile($currentPath->getSubpath($function['filename']));
-            $filesChecked[$filename] = true;
+            $loc = $function['loc'] ?? 0;
+            $filesChecked[$filename] = isset($filesChecked[$filename])
+                ? $filesChecked[$filename] + $loc
+                : $loc;
             $functionChecker->printIssues($filename);
         }
     }
@@ -109,19 +112,28 @@ try {
     // Check other files that don't contain classes or functions.
     foreach ($phpFiles as $phpFile) {
         $filename = $currentPath->getSubpath($phpFile);
-        if (! isset($filesChecked[$filename])) {
-            if (! file_exists($filename)) {
-                continue;
-            }
-
-            $loc = count(PathUtil::loadLines($phpFile));
-            $fileChecker = new MetricChecker([
-                'loc' => $loc,
-            ]);
-            $fileChecker->checkMaxLinesOfCode(100, 200);
-            $filesChecked[$filename] = true;
-            $fileChecker->printIssues($filename);
+        if (isset($filesChecked[$filename])) {
+            $locChecked = $filesChecked[$filename];
+        } else {
+            $locChecked = 0;
+            $filesChecked[$filename] = 0;
         }
+
+        if (! file_exists($filename)) {
+            continue;
+        }
+
+        $totalLoc = count(PathUtil::loadLines($phpFile));
+
+        // Other LOC is outside classes and functions
+        $otherLoc = $totalLoc - $locChecked;
+        $fileChecker = new MetricChecker([
+            'loc' => $otherLoc,
+        ]);
+
+        $fileChecker->checkMaxLinesOfCode(100, 200);
+        $filesChecked[$filename] += $otherLoc;
+        $fileChecker->printIssues($filename);
     }
 } catch (Exception $exception) {
     echo 'PDepend error: ' . $exception->getMessage() . PHP_EOL;

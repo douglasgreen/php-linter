@@ -35,9 +35,11 @@ $parser = (new ParserFactory())->create(ParserFactory::PREFER_PHP7);
 try {
     // Parse the code into an AST
     $ast = $parser->parse($code);
+    if ($ast === null) {
+        die('Parser error' . PHP_EOL);
+    }
 } catch (Error $error) {
-    echo sprintf('Parse error: %s%s', $error->getMessage(), PHP_EOL);
-    return;
+    die(sprintf('Parse error: %s%s', $error->getMessage(), PHP_EOL));
 }
 
 // Create a NodeFinder instance
@@ -48,6 +50,10 @@ $functions = $nodeFinder->findInstanceOf($ast, Function_::class);
 
 // Iterate over the functions and count their parameters
 foreach ($functions as $function) {
+    if (! $function instanceof Function_) {
+        continue;
+    }
+
     $functionName = $function->name->name;
     $paramCount = count($function->params);
     echo "Function '{$functionName}' has {$paramCount} parameter(s).\n";
