@@ -94,17 +94,22 @@ class NameChecker extends BaseChecker
             }
         } elseif ($this->node instanceof Class_) {
             $this->checkUpperName($name);
+            $this->checkGlobalNameLength($name, 'Class');
         } elseif ($this->node instanceof Interface_) {
             $this->checkUpperName($name);
+            $this->checkGlobalNameLength($name, 'Interface');
         } elseif ($this->node instanceof Trait_) {
             $this->checkUpperName($name);
+            $this->checkGlobalNameLength($name, 'Trait');
         } elseif ($this->node instanceof ClassMethod) {
             $this->checkLowerName($name);
+            $this->checkGlobalNameLength($name, 'Method');
         } elseif ($this->node instanceof Function_) {
             $this->checkLowerName($name);
+            $this->checkGlobalNameLength($name, 'Function');
         } elseif ($this->node instanceof Variable) {
             $this->checkLowerName($name);
-            $this->checkNameLength($name);
+            $this->checkLocalNameLength($name, 'Variable');
         } elseif ($name !== '') {
             //var_dump(get_class($this->node), $name);
         }
@@ -123,16 +128,39 @@ class NameChecker extends BaseChecker
         return true;
     }
 
-    protected function checkNameLength(string $name): bool
+    /**
+     * Global names are names of classes, methods, functions. etc. that are globally visible.
+     */
+    protected function checkGlobalNameLength(string $name, string $type): bool
     {
-        if (strlen($name) > 25) {
-            $issue = 'Variable name too long: ' . $name;
+        if (strlen($name) > 32) {
+            $issue = $type . ' name too long: ' . $name;
             $this->addIssue($issue);
             return false;
         }
 
         if (strlen($name) < 3 && ! in_array($name, self::VALID_SHORT_NAMES, true)) {
-            $issue = 'Variable name too short: ' . $name;
+            $issue = $type . ' name too short: ' . $name;
+            $this->addIssue($issue);
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
+     * Local names are names of variables that are only locally visible and can be shorter.
+     */
+    protected function checkLocalNameLength(string $name, string $type): bool
+    {
+        if (strlen($name) > 24) {
+            $issue = $type . ' name too long: ' . $name;
+            $this->addIssue($issue);
+            return false;
+        }
+
+        if (strlen($name) < 3 && ! in_array($name, self::VALID_SHORT_NAMES, true)) {
+            $issue = $type . ' name too short: ' . $name;
             $this->addIssue($issue);
             return false;
         }
