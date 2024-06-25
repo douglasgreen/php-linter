@@ -51,6 +51,37 @@ composer.json:
 I leave the `--generate` argument off here so the scripts don't run in Continuous Integration. I
 just run them manually during development.
 
+## Ignore list
+
+### Overview
+
+The ignore list allows you to specify patterns of files and directories to ignore, similar to a
+`.gitignore` file. You only have to ignore PHP files that are contained in directories that are in
+version control. You don't have to ignore the `vendor/` directory, for example, because it isn't in
+version control.
+
+### How It Works
+
+1. **Loading the Ignore File**: The class reads the `.phplintignore` file, ignoring any lines that
+   are comments or empty.
+2. **Storing Patterns**: Valid ignore patterns are converted into regular expressions and stored
+   internally.
+3. **Checking Paths**: The class provides a method to check if a given file path should be ignored
+   based on the stored patterns.
+
+### Syntax
+
+The `.phplintignore` file supports a simple syntax for specifying ignore patterns:
+
+-   **Comments**: Lines starting with `#` are considered comments and are ignored.
+-   **Wildcards**:
+    -   `*` matches any number of characters (including none).
+    -   `?` matches any single character.
+-   **Examples**:
+    -   `*.log` ignores all files with the `.log` extension.
+    -   `build/*.tmp` ignores all `.tmp` files in the `build` directory.
+    -   `config/*.php` ignores all `.php` files in the `config` directory.
+
 ## Project setup
 
 Standard config files for linting and testing are copied into place from a GitHub repository called
