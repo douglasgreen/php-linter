@@ -48,7 +48,7 @@ class IgnoreList
         $pattern = preg_quote($pattern, '#');
         $pattern = str_replace('\*', '.*', $pattern);
         $pattern = str_replace('\?', '.', $pattern);
-        return "#^$pattern$#";
+        return "#^$pattern#";
     }
 
     public function shouldIgnore(string $filePath): bool

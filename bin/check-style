@@ -3,6 +3,7 @@
 
 declare(strict_types=1);
 
+use DouglasGreen\PhpLinter\IgnoreList;
 use DouglasGreen\PhpLinter\Nikic\ElementVisitor;
 use DouglasGreen\PhpLinter\Repository;
 use DouglasGreen\Utility\FileSystem\Path;
@@ -19,6 +20,8 @@ if ($currentDir === false) {
 
 require_once $currentDir . '/vendor/autoload.php';
 
+$ignoreList = new IgnoreList($currentDir);
+
 $currentPath = new Path($currentDir);
 
 $filesChecked = [];
@@ -29,6 +32,10 @@ $phpFiles = $repository->getPhpFiles();
 $parser = (new ParserFactory())->createForNewestSupportedVersion();
 
 foreach ($phpFiles as $phpFile) {
+    if ($ignoreList->shouldIgnore($phpFile)) {
+        continue;
+    }
+
     try {
         $code = PathUtil::loadString($phpFile);
         $stmts = $parser->parse($code);

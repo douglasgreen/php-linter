@@ -4,6 +4,7 @@
 declare(strict_types=1);
 
 use DouglasGreen\PhpLinter\CacheManager;
+use DouglasGreen\PhpLinter\IgnoreList;
 use DouglasGreen\PhpLinter\Pdepend\MetricChecker;
 use DouglasGreen\PhpLinter\Pdepend\XmlParser;
 use DouglasGreen\PhpLinter\Repository;
@@ -19,6 +20,8 @@ if ($currentDir === false) {
 require_once $currentDir . '/vendor/autoload.php';
 
 $cache = new CacheManager($currentDir);
+
+$ignoreList = new IgnoreList($currentDir);
 
 $currentPath = new Path($currentDir);
 
@@ -53,6 +56,11 @@ try {
     foreach ($packages as $package) {
         $classes = $package['classes'];
         foreach ($classes as $class) {
+            $filename = $cache->getOriginalFile($currentPath->getSubpath($class['filename']));
+            if ($ignoreList->shouldIgnore($filename)) {
+                continue;
+            }
+
             // Warnings exceed 95% of similar code, errors exceed 99%.
             $classChecker = new MetricChecker($class, $class['name']);
 
@@ -73,7 +81,6 @@ try {
             // @see https://everything2.com/title/comment-to-code+ratio
             $classChecker->checkMinCommentRatio(0.1, 0.05);
 
-            $filename = $cache->getOriginalFile($currentPath->getSubpath($class['filename']));
             $loc = $class['loc'] ?? 0;
             $filesChecked[$filename] = isset($filesChecked[$filename])
                 ? $filesChecked[$filename] + $loc
@@ -93,6 +100,10 @@ try {
         }
 
         foreach ($package['functions'] as $function) {
+            $filename = $cache->getOriginalFile($currentPath->getSubpath($function['filename']));
+            if ($ignoreList->shouldIgnore($filename)) {
+                continue;
+            }
             $functionChecker = new MetricChecker($function, null, $function['name']);
             $functionChecker->checkMaxExtendedCyclomaticComplexity(9, 25);
             $functionChecker->checkMaxLinesOfCode(50, 130);
@@ -100,7 +111,6 @@ try {
             $functionChecker->checkMaxHalsteadEffort(25000, 135000);
             $functionChecker->checkMinMaintainabilityIndex(40, 25);
 
-            $filename = $cache->getOriginalFile($currentPath->getSubpath($function['filename']));
             $loc = $function['loc'] ?? 0;
             $filesChecked[$filename] = isset($filesChecked[$filename])
                 ? $filesChecked[$filename] + $loc
@@ -112,6 +122,10 @@ try {
     // Check other files that don't contain classes or functions.
     foreach ($phpFiles as $phpFile) {
         $filename = $currentPath->getSubpath($phpFile);
+        if ($ignoreList->shouldIgnore($filename)) {
+            continue;
+        }
+
         if (isset($filesChecked[$filename])) {
             $locChecked = $filesChecked[$filename];
         } else {
