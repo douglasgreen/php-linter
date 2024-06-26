@@ -10,7 +10,7 @@ use PhpParser\Node\Param;
 use PhpParser\Node\Stmt\ClassMethod;
 use PhpParser\Node\Stmt\Function_;
 
-class FunctionParameterChecker extends BaseChecker
+class FunctionChecker extends BaseChecker
 {
     /**
      * @return array<string, bool>
