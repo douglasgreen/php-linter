@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace DouglasGreen\PhpLinter\Nikic;
 
+use DouglasGreen\Utility\Regex\Regex;
 use PhpParser\Node\Expr\Variable;
 use PhpParser\Node\Identifier;
 use PhpParser\Node\Param;
@@ -29,6 +30,11 @@ class FunctionChecker extends BaseChecker
         $params = $this->node->params;
         $this->checkBool($params, $funcName, $funcType);
         $this->checkCount($params, $funcName, $funcType);
+
+        if ($this->node->returnType instanceof Identifier) {
+            $returnType = $this->node->returnType->name;
+            $this->checkReturnType($funcName, $funcType, $returnType);
+        }
 
         return $this->getIssues();
     }
@@ -73,5 +79,24 @@ class FunctionChecker extends BaseChecker
                 sprintf('%s %s() has too many parameters: %d', $funcType, $funcName, $paramCount),
             );
         }
+    }
+
+    protected function checkReturnType(string $funcName, string $funcType, string $returnType): void
+    {
+        if ($returnType !== 'bool') {
+            return;
+        }
+
+        if (Regex::hasMatch('/^(has|is|should)[A-Z]/', $funcName)) {
+            return;
+        }
+
+        $this->addIssue(
+            sprintf(
+                '%s %s() returns a boolean; consider naming it hasX(), isX() or shouldX()',
+                $funcType,
+                $funcName,
+            ),
+        );
     }
 }
