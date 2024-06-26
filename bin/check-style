@@ -49,7 +49,7 @@ foreach ($phpFiles as $phpFile) {
         $traverser->addVisitor($visitor);
         $traverser->traverse($stmts);
         $visitor->printIssues($phpFile);
-    } catch (Error $e) {
-        echo 'Parse Error: ', $e->getMessage();
+    } catch (Error $error) {
+        echo 'Parse Error: ', $error->getMessage();
     }
 }

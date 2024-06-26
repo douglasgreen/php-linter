@@ -21,8 +21,11 @@ class ElementVisitor extends NodeVisitorAbstract
         $nameChecker = new NameChecker($node);
         $this->addIssues($nameChecker->check());
 
-        $funcChecker = new FunctionCallChecker($node);
-        $this->addIssues($funcChecker->check());
+        $funcCallChecker = new FunctionCallChecker($node);
+        $this->addIssues($funcCallChecker->check());
+
+        $funcParamChecker = new FunctionParameterChecker($node);
+        $this->addIssues($funcParamChecker->check());
 
         return null;
     }

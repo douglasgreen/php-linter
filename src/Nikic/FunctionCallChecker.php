@@ -28,8 +28,7 @@ class FunctionCallChecker extends BaseChecker
             return [];
         }
 
-        $functionName =
-            $this->node->name instanceof Name ? $this->node->name->toString() : null;
+        $functionName = $this->node->name instanceof Name ? $this->node->name->toString() : null;
         if ($functionName === null) {
             return [];
         }
