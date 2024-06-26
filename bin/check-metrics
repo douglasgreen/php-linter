@@ -78,6 +78,8 @@ try {
             $classChecker->checkMaxAfferentCoupling(7, 24);
             $classChecker->checkMaxEfferentCoupling(10, 19);
 
+            $classChecker->checkMaxNumberOfChildClasses(5, 10);
+
             // @see https://everything2.com/title/comment-to-code+ratio
             $classChecker->checkMinCommentRatio(0.1, 0.05);
 

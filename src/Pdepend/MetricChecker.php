@@ -119,6 +119,13 @@ class MetricChecker
         return $this->checkMax($message, $varsnp, $maxWarn, $maxError);
     }
 
+    public function checkMaxNumberOfChildClasses(int $maxWarn, int $maxError): int
+    {
+        $nocc = (int) $this->data['nocc'];
+        $message = '# child classes = %d > %d';
+        return $this->checkMax($message, $nocc, $maxWarn, $maxError);
+    }
+
     public function checkMaxPublicMethods(int $maxWarn, int $maxError): int
     {
         $npm = (int) $this->data['npm'];
