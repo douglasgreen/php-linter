@@ -80,6 +80,7 @@ try {
 
             $classChecker->checkMaxInheritanceDepth(4, 6);
             $classChecker->checkMaxNumberOfChildClasses(5, 10);
+            $classChecker->checkMaxObjectCoupling(10, 20);
 
             // @see https://everything2.com/title/comment-to-code+ratio
             $classChecker->checkMinCommentRatio(0.1, 0.05);

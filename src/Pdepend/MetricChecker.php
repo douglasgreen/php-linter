@@ -98,6 +98,13 @@ class MetricChecker
         return $this->checkMax($message, $loc, $maxWarn, $maxError);
     }
 
+    public function checkMaxObjectCoupling(int $maxWarn, int $maxError): int
+    {
+        $objectCoupling = (int) $this->data['cbo'];
+        $message = 'Coupling between objects = %d > %d';
+        return $this->checkMax($message, $objectCoupling, $maxWarn, $maxError);
+    }
+
     public function checkMaxNpathComplexity(int $maxWarn, int $maxError): int
     {
         $npath = (int) $this->data['npath'];
