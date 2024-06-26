@@ -70,8 +70,8 @@ class ElementVisitor extends NodeVisitorAbstract
             $this->addIssues($classChecker->check($this->currentClassName));
         }
 
-        $funcCallChecker = new FunctionCallChecker($node);
-        $this->addIssues($funcCallChecker->check());
+        $exprChecker = new ExpressionChecker($node);
+        $this->addIssues($exprChecker->check());
 
         $funcChecker = new FunctionChecker($node);
         $this->addIssues($funcChecker->check());
