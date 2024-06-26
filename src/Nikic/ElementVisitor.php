@@ -5,7 +5,11 @@ declare(strict_types=1);
 namespace DouglasGreen\PhpLinter\Nikic;
 
 use PhpParser\Node;
+use PhpParser\Node\Expr\Closure;
 use PhpParser\Node\Stmt\Class_;
+use PhpParser\Node\Stmt\ClassMethod;
+use PhpParser\Node\Stmt\Function_;
+use PhpParser\Node\Stmt\Trait_;
 use PhpParser\NodeVisitorAbstract;
 
 class ElementVisitor extends NodeVisitorAbstract
@@ -19,10 +23,51 @@ class ElementVisitor extends NodeVisitorAbstract
 
     protected ?string $currentFile = null;
 
+    protected ?string $currentFunctionName = null;
+
+    protected ?string $currentMethodName = null;
+
+    protected ?string $currentTraitName = null;
+
+    /**
+     * Are we inside a class, trait, method, function, or closure?
+     */
+    protected bool $isLocalScope = false;
+
     public function enterNode(Node $node): null
     {
         if ($node instanceof Class_ && $node->name !== null) {
             $this->currentClassName = $node->name->toString();
+            $this->isLocalScope = true;
+        }
+
+        if ($node instanceof Trait_ && $node->name !== null) {
+            $this->currentTraitName = $node->name->toString();
+            $this->isLocalScope = true;
+        }
+
+        if ($node instanceof Function_ && $node->name !== null) {
+            $this->currentFunctionName = $node->name->toString();
+            $this->isLocalScope = true;
+        }
+
+        if ($node instanceof ClassMethod && $node->name !== null) {
+            $this->currentMethodName = $node->name->toString();
+            $this->isLocalScope = true;
+        }
+
+        if ($node instanceof Closure) {
+            $this->isLocalScope = true;
+        }
+
+        if ($this->isLocalScope) {
+            $localScopeChecker = new LocalScopeChecker($node);
+            $this->addIssues($localScopeChecker->check());
+        }
+
+        if ($this->currentClassName !== null) {
+            $classChecker = new ClassChecker($node);
+            $this->addIssues($classChecker->check($this->currentClassName));
         }
 
         $funcCallChecker = new FunctionCallChecker($node);
@@ -30,11 +75,6 @@ class ElementVisitor extends NodeVisitorAbstract
 
         $funcChecker = new FunctionChecker($node);
         $this->addIssues($funcChecker->check());
-
-        if ($this->currentClassName !== null) {
-            $classChecker = new ClassChecker($node);
-            $this->addIssues($classChecker->check($this->currentClassName));
-        }
 
         $nameChecker = new NameChecker($node);
         $this->addIssues($nameChecker->check());
@@ -50,10 +90,35 @@ class ElementVisitor extends NodeVisitorAbstract
         return $this->issues !== [];
     }
 
+    public function isLocalScope(): bool
+    {
+        return $this->isLocalScope;
+    }
+
     public function leaveNode(Node $node): null
     {
         if ($node instanceof Class_) {
             $this->currentClassName = null;
+            $this->isLocalScope = false;
+        }
+
+        if ($node instanceof Trait_) {
+            $this->currentTraitName = null;
+            $this->isLocalScope = false;
+        }
+
+        if ($node instanceof Function_) {
+            $this->currentFunctionName = null;
+            $this->isLocalScope = false;
+        }
+
+        if ($node instanceof ClassMethod) {
+            $this->currentMethodName = null;
+            $this->isLocalScope = false;
+        }
+
+        if ($node instanceof Closure) {
+            $this->isLocalScope = false;
         }
 
         return null;
