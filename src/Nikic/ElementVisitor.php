@@ -18,14 +18,17 @@ class ElementVisitor extends NodeVisitorAbstract
 
     public function enterNode(Node $node): Node|int|null
     {
-        $nameChecker = new NameChecker($node);
-        $this->addIssues($nameChecker->check());
-
         $funcCallChecker = new FunctionCallChecker($node);
         $this->addIssues($funcCallChecker->check());
 
         $funcParamChecker = new FunctionParameterChecker($node);
         $this->addIssues($funcParamChecker->check());
+
+        $nameChecker = new NameChecker($node);
+        $this->addIssues($nameChecker->check());
+
+        $opChecker = new OperatorChecker($node);
+        $this->addIssues($opChecker->check());
 
         return null;
     }
