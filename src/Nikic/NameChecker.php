@@ -5,8 +5,11 @@ declare(strict_types=1);
 namespace DouglasGreen\PhpLinter\Nikic;
 
 use DouglasGreen\Utility\Regex\Regex;
+use PhpParser\Node;
 use PhpParser\Node\Expr\PropertyFetch;
 use PhpParser\Node\Expr\Variable;
+use PhpParser\Node\Identifier;
+use PhpParser\Node\Name;
 use PhpParser\Node\Stmt\Class_;
 use PhpParser\Node\Stmt\ClassConst;
 use PhpParser\Node\Stmt\ClassMethod;
@@ -70,18 +73,10 @@ class NameChecker extends BaseChecker
     public function check(): array
     {
         if (property_exists($this->node, 'name')) {
-            if ($this->node->name === null) {
+            $name = $this->getName($this->node);
+            if ($name === null) {
                 return $this->getIssues();
             }
-
-            if ($this->node->name instanceof PropertyFetch) {
-                // @todo Find out why this doesn't work.
-                // Cannot cast PhpParser\Node\Expr|PhpParser\Node\Identifier to string.
-                // $name = (string) $this->node->name->name;
-                return $this->getIssues();
-            }
-
-            $name = (string) $this->node->name;
 
             if ($this->node instanceof Namespace_) {
                 $parts = explode('\\', $name);
@@ -201,6 +196,68 @@ class NameChecker extends BaseChecker
         }
 
         return true;
+    }
+
+    protected function getName(Node $node): ?string
+    {
+        if (! property_exists($node, 'name')) {
+            return null;
+        }
+
+        $name = $node->name;
+
+        if ($name === null) {
+            return null;
+        }
+
+        if ($name instanceof Name) {
+            return $name->toString();
+        }
+
+        if ($name instanceof Identifier) {
+            return $name->name;
+        }
+
+        if ($name instanceof PropertyFetch) {
+            return $this->getPropertyFetchName($name);
+        }
+
+        if ($name instanceof Variable) {
+            return $this->getVariableName($name);
+        }
+
+        if (is_string($name)) {
+            return $name;
+        }
+
+        // Handle other cases or log unhandled types
+        return null;
+    }
+
+    protected function getPropertyFetchName(PropertyFetch $propertyFetch): ?string
+    {
+        $varName = $this->getName($propertyFetch->var);
+        $propName = $this->getName($propertyFetch->name);
+        if ($varName === null) {
+            return null;
+        }
+
+        if ($propName === null) {
+            return null;
+        }
+
+        return sprintf('%s->%s', $varName, $propName);
+    }
+
+    protected function getVariableName(Variable $variable): ?string
+    {
+        if (is_string($variable->name)) {
+            return '$' . $variable->name;
+        }
+
+        // For complex variable names like ${$expr}, $variable->name is an instance of Expr, so
+        // implement further logic if needed.
+        return null;
     }
 
     protected static function isLowerCamelCase(string $name): bool
