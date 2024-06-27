@@ -62,3 +62,7 @@ Replace the https://phpmd.org/rules/codesize.html#excessiveparameterlist with a 
 ## Cache
 
 Give `check-style` its own cache file and update `php-linter`.
+
+## Variable metric
+
+Complexity is in the state manipulation, not the structures. Check the local variable count.
