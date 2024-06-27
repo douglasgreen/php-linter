@@ -68,6 +68,7 @@ class ExpressionChecker extends BaseChecker
             $this->addIssue('Use structured programming instead of goto statements');
         }
 
+        // @todo Figure out why it doesn't find new \stdClass and replace MissingImport
         if ($this->node instanceof Name && $this->node->isFullyQualified()) {
             $this->addQualifiedName($this->node->toString());
         } elseif ($this->node instanceof New_) {
