@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace DouglasGreen\PhpLinter;
 
 use DouglasGreen\Utility\FileSystem\PathUtil;
+use DouglasGreen\Utility\Regex\Regex;
 
 class IgnoreList
 {
@@ -19,6 +20,26 @@ class IgnoreList
     {
         $ignoreFile = PathUtil::addSubpath($currentDir, self::IGNORE_FILE);
         $this->ignorePatterns = $this->loadIgnoreFile($ignoreFile);
+    }
+
+    public function shouldIgnore(string $filePath): bool
+    {
+        foreach ($this->ignorePatterns as $ignorePattern) {
+            if (Regex::hasMatch($ignorePattern, $filePath)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    protected static function preparePattern(string $pattern): string
+    {
+        // Convert the ignore pattern to a regex pattern
+        $pattern = preg_quote($pattern, '#');
+        $pattern = str_replace('\*', '.*', $pattern);
+        $pattern = str_replace('\?', '.', $pattern);
+        return sprintf('#^%s#', $pattern);
     }
 
     /**
@@ -42,29 +63,9 @@ class IgnoreList
                 continue;
             }
 
-            $patterns[] = $this->preparePattern($line);
+            $patterns[] = self::preparePattern($line);
         }
 
         return $patterns;
-    }
-
-    protected function preparePattern(string $pattern): string
-    {
-        // Convert the ignore pattern to a regex pattern
-        $pattern = preg_quote($pattern, '#');
-        $pattern = str_replace('\*', '.*', $pattern);
-        $pattern = str_replace('\?', '.', $pattern);
-        return sprintf('#^%s#', $pattern);
-    }
-
-    public function shouldIgnore(string $filePath): bool
-    {
-        foreach ($this->ignorePatterns as $ignorePattern) {
-            if (preg_match($ignorePattern, $filePath)) {
-                return true;
-            }
-        }
-
-        return false;
     }
 }

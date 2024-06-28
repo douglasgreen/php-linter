@@ -49,18 +49,18 @@ class MetricChecker
         return $this->checkMax($message, $afferentCoupling, $maxWarn, $maxError);
     }
 
-    public function checkMaxCodeRank(float $maxWarn): int
-    {
-        $codeRank = (float) $this->data['cr'];
-        $message = 'Code rank = %0.2f > %0.2f';
-        return $this->checkMax($message, $codeRank, $maxWarn);
-    }
-
     public function checkMaxClassSize(int $maxWarn, int $maxError): int
     {
         $csz = (int) $this->data['csz'];
         $message = 'Class size (# methods + # properties) = %d > %d';
         return $this->checkMax($message, $csz, $maxWarn, $maxError);
+    }
+
+    public function checkMaxCodeRank(float $maxWarn): int
+    {
+        $codeRank = (float) $this->data['cr'];
+        $message = 'Code rank = %0.2f > %0.2f';
+        return $this->checkMax($message, $codeRank, $maxWarn);
     }
 
     public function checkMaxEfferentCoupling(int $maxWarn, int $maxError): int
@@ -98,11 +98,11 @@ class MetricChecker
         return $this->checkMax($message, $loc, $maxWarn, $maxError);
     }
 
-    public function checkMaxObjectCoupling(int $maxWarn, int $maxError): int
+    public function checkMaxNonPrivateProperties(int $maxWarn, int $maxError): int
     {
-        $objectCoupling = (int) $this->data['cbo'];
-        $message = 'Coupling between objects = %d > %d';
-        return $this->checkMax($message, $objectCoupling, $maxWarn, $maxError);
+        $varsnp = (int) $this->data['varsnp'];
+        $message = '# non-private properties = %d > %d';
+        return $this->checkMax($message, $varsnp, $maxWarn, $maxError);
     }
 
     public function checkMaxNpathComplexity(int $maxWarn, int $maxError): int
@@ -112,25 +112,25 @@ class MetricChecker
         return $this->checkMax($message, $npath, $maxWarn, $maxError);
     }
 
-    public function checkMaxProperties(int $maxWarn, int $maxError): int
-    {
-        $vars = (int) $this->data['vars'];
-        $message = '# properties = %d > %d';
-        return $this->checkMax($message, $vars, $maxWarn, $maxError);
-    }
-
-    public function checkMaxNonPrivateProperties(int $maxWarn, int $maxError): int
-    {
-        $varsnp = (int) $this->data['varsnp'];
-        $message = '# non-private properties = %d > %d';
-        return $this->checkMax($message, $varsnp, $maxWarn, $maxError);
-    }
-
     public function checkMaxNumberOfChildClasses(int $maxWarn, int $maxError): int
     {
         $nocc = (int) $this->data['nocc'];
         $message = '# child classes = %d > %d';
         return $this->checkMax($message, $nocc, $maxWarn, $maxError);
+    }
+
+    public function checkMaxObjectCoupling(int $maxWarn, int $maxError): int
+    {
+        $objectCoupling = (int) $this->data['cbo'];
+        $message = 'Coupling between objects = %d > %d';
+        return $this->checkMax($message, $objectCoupling, $maxWarn, $maxError);
+    }
+
+    public function checkMaxProperties(int $maxWarn, int $maxError): int
+    {
+        $vars = (int) $this->data['vars'];
+        $message = '# properties = %d > %d';
+        return $this->checkMax($message, $vars, $maxWarn, $maxError);
     }
 
     public function checkMaxPublicMethods(int $maxWarn, int $maxError): int

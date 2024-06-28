@@ -125,21 +125,47 @@ class NameChecker extends BaseChecker
         return $this->getIssues();
     }
 
+    protected static function getVariableName(Variable $variable): ?string
+    {
+        if (is_string($variable->name)) {
+            return '$' . $variable->name;
+        }
+
+        // For complex variable names like ${$expr}, $variable->name is an instance of Expr, so
+        // implement further logic if needed.
+        return null;
+    }
+
+    protected static function isLowerCamelCase(string $name): bool
+    {
+        if (in_array($name, self::MAGIC_METHODS, true)) {
+            return true;
+        }
+
+        if (in_array($name, self::SUPERGLOBALS, true)) {
+            return true;
+        }
+
+        return ! Regex::hasMatch('/\$[A-Z]|^[A-Z]|[A-Z]{2}|_/', $name);
+    }
+
+    protected static function isUpperCamelCase(string $name): bool
+    {
+        if (in_array($name, self::MAGIC_METHODS, true)) {
+            return true;
+        }
+
+        if (in_array($name, self::SUPERGLOBALS, true)) {
+            return true;
+        }
+
+        return ! Regex::hasMatch('/[A-Z]{2}|_/', $name);
+    }
+
     protected function checkAllCapName(string $name): bool
     {
         if (! Regex::hasMatch('/^[A-Z]+(_[A-Z]+)*$/', $name)) {
             $issue = 'Not all caps: ' . $name;
-            $this->addIssue($issue);
-            return false;
-        }
-
-        return true;
-    }
-
-    protected function checkLowerName(string $name): bool
-    {
-        if (! self::isLowerCamelCase($name)) {
-            $issue = 'Not camel case: ' . $name;
             $this->addIssue($issue);
             return false;
         }
@@ -187,6 +213,17 @@ class NameChecker extends BaseChecker
         return true;
     }
 
+    protected function checkLowerName(string $name): bool
+    {
+        if (! self::isLowerCamelCase($name)) {
+            $issue = 'Not camel case: ' . $name;
+            $this->addIssue($issue);
+            return false;
+        }
+
+        return true;
+    }
+
     protected function checkUpperName(string $name): bool
     {
         if (! self::isUpperCamelCase($name)) {
@@ -223,7 +260,7 @@ class NameChecker extends BaseChecker
         }
 
         if ($name instanceof Variable) {
-            return $this->getVariableName($name);
+            return self::getVariableName($name);
         }
 
         if (is_string($name)) {
@@ -247,42 +284,5 @@ class NameChecker extends BaseChecker
         }
 
         return sprintf('%s->%s', $varName, $propName);
-    }
-
-    protected function getVariableName(Variable $variable): ?string
-    {
-        if (is_string($variable->name)) {
-            return '$' . $variable->name;
-        }
-
-        // For complex variable names like ${$expr}, $variable->name is an instance of Expr, so
-        // implement further logic if needed.
-        return null;
-    }
-
-    protected static function isLowerCamelCase(string $name): bool
-    {
-        if (in_array($name, self::MAGIC_METHODS, true)) {
-            return true;
-        }
-
-        if (in_array($name, self::SUPERGLOBALS, true)) {
-            return true;
-        }
-
-        return ! Regex::hasMatch('/\$[A-Z]|^[A-Z]|[A-Z]{2}|_/', $name);
-    }
-
-    protected static function isUpperCamelCase(string $name): bool
-    {
-        if (in_array($name, self::MAGIC_METHODS, true)) {
-            return true;
-        }
-
-        if (in_array($name, self::SUPERGLOBALS, true)) {
-            return true;
-        }
-
-        return ! Regex::hasMatch('/[A-Z]{2}|_/', $name);
     }
 }

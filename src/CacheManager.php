@@ -21,6 +21,28 @@ class CacheManager
 
     protected readonly string $summaryFile;
 
+    /**
+     * Get the original name of the file from its cache name.
+     */
+    public static function getOriginalFile(string $cacheFile): string
+    {
+        $fileCacheDir = self::FILE_CACHE_DIR . DIRECTORY_SEPARATOR;
+        // Check if the cache file starts with the cache directory path
+        if (str_starts_with($cacheFile, $fileCacheDir)) {
+            // Strip the cache directory path from the beginning
+            $originalFile = substr($cacheFile, strlen($fileCacheDir));
+            // Strip the .php extension from the end
+            if (str_ends_with($originalFile, '.php')) {
+                return substr($originalFile, 0, -4);
+            }
+
+            return $originalFile;
+        }
+
+        // Return the original cache file if it does not start with the cache directory path
+        return $cacheFile;
+    }
+
     public function __construct(
         protected readonly string $currentDir
     ) {
@@ -66,28 +88,6 @@ class CacheManager
     public function getFileCacheDir(): string
     {
         return $this->fileCacheDir;
-    }
-
-    /**
-     * Get the original name of the file from its cache name.
-     */
-    public function getOriginalFile(string $cacheFile): string
-    {
-        $fileCacheDir = self::FILE_CACHE_DIR . DIRECTORY_SEPARATOR;
-        // Check if the cache file starts with the cache directory path
-        if (str_starts_with($cacheFile, $fileCacheDir)) {
-            // Strip the cache directory path from the beginning
-            $originalFile = substr($cacheFile, strlen($fileCacheDir));
-            // Strip the .php extension from the end
-            if (str_ends_with($originalFile, '.php')) {
-                return substr($originalFile, 0, -4);
-            }
-
-            return $originalFile;
-        }
-
-        // Return the original cache file if it does not start with the cache directory path
-        return $cacheFile;
     }
 
     public function getSummaryFile(): string

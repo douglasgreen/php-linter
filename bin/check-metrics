@@ -56,7 +56,7 @@ try {
     foreach ($packages as $package) {
         $classes = $package['classes'];
         foreach ($classes as $class) {
-            $filename = $cache->getOriginalFile($currentPath->removeBase($class['filename']));
+            $filename = CacheManager::getOriginalFile($currentPath->removeBase($class['filename']));
             if ($ignoreList->shouldIgnore($filename)) {
                 continue;
             }
@@ -104,7 +104,9 @@ try {
         }
 
         foreach ($package['functions'] as $function) {
-            $filename = $cache->getOriginalFile($currentPath->removeBase($function['filename']));
+            $filename = CacheManager::getOriginalFile(
+                $currentPath->removeBase($function['filename'])
+            );
             if ($ignoreList->shouldIgnore($filename)) {
                 continue;
             }

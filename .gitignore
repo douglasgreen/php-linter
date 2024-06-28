@@ -8,7 +8,7 @@ bower_components/
 # Build directories
 build/
 .cache/
-.next
+.next/
 
 # Composer
 vendor/
@@ -18,9 +18,6 @@ vendor/
 
 # Grunt
 .grunt/
-
-# Husky
-.husky/_/
 
 # Minified css/js files
 *.min.*

@@ -133,6 +133,13 @@ class ExpressionChecker extends BaseChecker
         }
     }
 
+    protected function handleInstanceofExpression(Instanceof_ $instanceof): void
+    {
+        if ($instanceof->class instanceof Name) {
+            $this->addQualifiedName($instanceof->class->toString());
+        }
+    }
+
     protected function handleNewExpression(New_ $new): void
     {
         if ($new->class instanceof Name) {
@@ -144,13 +151,6 @@ class ExpressionChecker extends BaseChecker
         } elseif ($new->class instanceof String_) {
             // Handle cases where the class name is a string literal
             $this->addQualifiedName($new->class->value);
-        }
-    }
-
-    protected function handleInstanceofExpression(Instanceof_ $instanceof): void
-    {
-        if ($instanceof->class instanceof Name) {
-            $this->addQualifiedName($instanceof->class->toString());
         }
     }
 

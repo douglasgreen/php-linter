@@ -12,7 +12,7 @@ class Repository
     /**
      * @var list<string>
      */
-    protected array $files;
+    protected readonly array $files;
 
     public function __construct()
     {
