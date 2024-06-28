@@ -4,17 +4,19 @@ declare(strict_types=1);
 
 namespace DouglasGreen\PhpLinter\Nikic;
 
-use PhpParser\Node;
-use PhpParser\Node\Expr\Assign;
-use PhpParser\Node\Expr\ClassConstFetch;
-use PhpParser\Node\Expr\Eval_;
-use PhpParser\Node\Expr\FuncCall;
-use PhpParser\Node\Expr\Instanceof_;
 use PhpParser\Node\Expr\New_;
+use PhpParser\Node\Expr\Instanceof_;
 use PhpParser\Node\Expr\StaticCall;
 use PhpParser\Node\Expr\StaticPropertyFetch;
-use PhpParser\Node\Name;
+use PhpParser\Node\Stmt\ClassLike;
+use PhpParser\Node\Expr\ConstFetch;
+use PhpParser\Node\Expr\ClassConstFetch;
 use PhpParser\Node\Scalar\String_;
+use PhpParser\Node;
+use PhpParser\Node\Expr\Assign;
+use PhpParser\Node\Expr\Eval_;
+use PhpParser\Node\Expr\FuncCall;
+use PhpParser\Node\Name;
 use PhpParser\Node\Stmt\Goto_;
 use PhpParser\Node\Stmt\If_;
 
@@ -68,7 +70,7 @@ class ExpressionChecker extends BaseChecker
             $this->addIssue('Use structured programming instead of goto statements');
         }
 
-        // @todo Figure out why it doesn't find new \stdClass and replace MissingImport
+        // Check for fully-qualified names.
         if ($this->node instanceof Name && $this->node->isFullyQualified()) {
             $this->addQualifiedName($this->node->toString());
         } elseif ($this->node instanceof New_) {
@@ -77,6 +79,12 @@ class ExpressionChecker extends BaseChecker
             $this->handleInstanceofExpression($this->node);
         } elseif ($this->node instanceof StaticCall || $this->node instanceof StaticPropertyFetch) {
             $this->handleStaticExpression($this->node);
+        } elseif ($this->node instanceof ClassLike) {
+            $this->handleClassLike($this->node);
+        } elseif ($this->node instanceof FuncCall) {
+            $this->handleFuncCall($this->node);
+        } elseif ($this->node instanceof ConstFetch) {
+            $this->handleConstFetch($this->node);
         }
 
         // Check for any Name nodes that might be part of other expressions
@@ -91,9 +99,7 @@ class ExpressionChecker extends BaseChecker
 
     protected function addQualifiedName(string $name): void
     {
-        if (str_contains($name, '\\')) {
-            $this->qualifiedNames[$name] = true;
-        }
+        $this->qualifiedNames[$name] = true;
     }
 
     protected function checkCondition(Node $condition, string $clauseType): void
@@ -133,30 +139,54 @@ class ExpressionChecker extends BaseChecker
         }
     }
 
+    protected function handleClassLike(ClassLike $classLike): void
+    {
+        if ($classLike->namespacedName !== null) {
+            $this->addQualifiedName($classLike->namespacedName->toString());
+        }
+    }
+
+    protected function handleConstFetch(ConstFetch $constFetch): void
+    {
+        if ($constFetch->name instanceof Name && $constFetch->name->isFullyQualified()) {
+            $this->addQualifiedName($constFetch->name->toString());
+        }
+    }
+
+    protected function handleFuncCall(FuncCall $funcCall): void
+    {
+        if ($funcCall->name instanceof Name && $funcCall->name->isFullyQualified()) {
+            $this->addQualifiedName($funcCall->name->toString());
+        }
+    }
+
     protected function handleInstanceofExpression(Instanceof_ $instanceof): void
     {
-        if ($instanceof->class instanceof Name) {
+        if ($instanceof->class instanceof Name && $instanceof->class->isFullyQualified()) {
             $this->addQualifiedName($instanceof->class->toString());
         }
     }
 
     protected function handleNewExpression(New_ $new): void
     {
-        if ($new->class instanceof Name) {
+        if ($new->class instanceof Name && $new->class->isFullyQualified()) {
             $this->addQualifiedName($new->class->toString());
         } elseif ($new->class instanceof ClassConstFetch) {
-            if ($new->class->class instanceof Name) {
+            if ($new->class->class instanceof Name && $new->class->class->isFullyQualified()) {
                 $this->addQualifiedName($new->class->class->toString());
             }
         } elseif ($new->class instanceof String_) {
             // Handle cases where the class name is a string literal
-            $this->addQualifiedName($new->class->value);
+            $name = $new->class->value;
+            if (str_contains($name, '\\')) {
+                $this->addQualifiedName($new->class->value);
+            }
         }
     }
 
     protected function handleStaticExpression(StaticCall|StaticPropertyFetch $node): void
     {
-        if ($node->class instanceof Name) {
+        if ($node->class instanceof Name && $node->class->isFullyQualified()) {
             $this->addQualifiedName($node->class->toString());
         }
     }
