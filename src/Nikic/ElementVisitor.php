@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace DouglasGreen\PhpLinter\Nikic;
 
 use PhpParser\Node;
+use PhpParser\Node\Expr\Array_;
 use PhpParser\Node\Expr\Closure;
 use PhpParser\Node\Stmt\Class_;
 use PhpParser\Node\Stmt\ClassMethod;
@@ -46,13 +47,13 @@ class ElementVisitor extends NodeVisitorAbstract
             $this->isLocalScope = true;
         }
 
-        if ($node instanceof Function_ && $node->name !== null) {
-            $this->currentFunctionName = $node->name->toString();
+        if ($node instanceof ClassMethod && $node->name !== null) {
+            $this->currentMethodName = $node->name->toString();
             $this->isLocalScope = true;
         }
 
-        if ($node instanceof ClassMethod && $node->name !== null) {
-            $this->currentMethodName = $node->name->toString();
+        if ($node instanceof Function_ && $node->name !== null) {
+            $this->currentFunctionName = $node->name->toString();
             $this->isLocalScope = true;
         }
 
@@ -70,11 +71,18 @@ class ElementVisitor extends NodeVisitorAbstract
             $this->addIssues($classChecker->check($this->currentClassName));
         }
 
+        if ($node instanceof Function_ || $node instanceof ClassMethod) {
+            $funcChecker = new FunctionChecker($node);
+            $this->addIssues($funcChecker->check());
+        }
+
+        if ($node instanceof Array_) {
+            $arrayChecker = new ArrayChecker($node);
+            $this->addIssues($arrayChecker->check());
+        }
+
         $exprChecker = new ExpressionChecker($node);
         $this->addIssues($exprChecker->check());
-
-        $funcChecker = new FunctionChecker($node);
-        $this->addIssues($funcChecker->check());
 
         $nameChecker = new NameChecker($node);
         $this->addIssues($nameChecker->check());
