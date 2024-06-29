@@ -11,6 +11,7 @@ use PhpParser\Node\Stmt\Class_;
 use PhpParser\Node\Stmt\ClassMethod;
 use PhpParser\Node\Stmt\Function_;
 use PhpParser\Node\Stmt\Trait_;
+use PhpParser\Node\Stmt\TryCatch;
 use PhpParser\NodeVisitorAbstract;
 
 class ElementVisitor extends NodeVisitorAbstract
@@ -74,6 +75,11 @@ class ElementVisitor extends NodeVisitorAbstract
         if ($node instanceof Function_ || $node instanceof ClassMethod) {
             $funcChecker = new FunctionChecker($node);
             $this->addIssues($funcChecker->check());
+        }
+
+        if ($node instanceof TryCatch) {
+            $tryCatchChecker = new TryCatchChecker($node);
+            $this->addIssues($tryCatchChecker->check());
         }
 
         if ($node instanceof Array_) {
