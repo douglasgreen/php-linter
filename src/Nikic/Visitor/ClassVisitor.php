@@ -24,6 +24,56 @@ class ClassVisitor extends VisitorChecker
      */
     protected array $properties = [];
 
+    /**
+     * @param array<string, bool> $attribs
+     */
+    public function __construct(
+        protected ?string $className,
+        protected array $attribs
+    ) {}
+
+    /**
+     * Check the class when we have completely traversed it.
+     *
+     * Call this function in leaveNode().
+     */
+    public function checkClass(): void
+    {
+        foreach ($this->methods as $methodName => $methodInfo) {
+            if ($methodInfo['visibility'] === 'private' && ! $methodInfo['used']) {
+                $type = $methodInfo['static'] ? 'static' : 'non-static';
+                $className = $this->className ?? '<anonymous>';
+                $issue = sprintf(
+                    'Private %s method %s::%s() is not used within the class.',
+                    $type,
+                    $className,
+                    $methodName
+                );
+                $this->issues[$issue] = true;
+            }
+        }
+
+        foreach ($this->properties as $propName => $propInfo) {
+            if ($propInfo['used']) {
+                continue;
+            }
+
+            $type = $propInfo['static'] ? 'static' : 'non-static';
+
+            if ($propInfo['visibility'] === 'private') {
+                $issue = sprintf(
+                    'Private %s property %s is not used within the class.',
+                    $type,
+                    $propName
+                );
+                $this->issues[$issue] = true;
+            } elseif ($propInfo['visibility'] === 'public') {
+                $issue = sprintf('Avoid using public properties like %s', $propName);
+                $this->issues[$issue] = true;
+            }
+        }
+    }
+
     public function checkNode(Node $node): void
     {
         if ($node instanceof Property) {
@@ -53,35 +103,18 @@ class ClassVisitor extends VisitorChecker
                 'static' => $node->isStatic(),
                 'used' => false,
             ];
-        }
-    }
 
-    /**
-     * @return array<string, bool>
-     */
-    public function getIssues(): array
-    {
-        foreach ($this->properties as $propName => $propInfo) {
-            if ($propInfo['used']) {
-                continue;
-            }
-
-            $type = $propInfo['static'] ? 'static' : 'non-static';
-
-            if ($propInfo['visibility'] === 'private') {
-                $issue = sprintf(
-                    'Private %s property %s is not used within the class.',
-                    $type,
-                    $propName
+            // Check for PHP 4 style constructors.
+            if (strcasecmp($methodName, (string) $this->className) === 0) {
+                $this->addIssue(
+                    sprintf(
+                        'Use __construct instead of PHP 4 style constructors like %s() in class %s',
+                        $methodName,
+                        $this->className,
+                    ),
                 );
-                $this->issues[$issue] = true;
-            } elseif ($propInfo['visibility'] === 'public') {
-                $issue = sprintf('Avoid using public properties like %s', $propName);
-                $this->issues[$issue] = true;
             }
         }
-
-        return $this->issues;
     }
 
     /**

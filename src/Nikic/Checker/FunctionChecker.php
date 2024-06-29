@@ -11,6 +11,9 @@ use PhpParser\Node\Param;
 use PhpParser\Node\Stmt\ClassMethod;
 use PhpParser\Node\Stmt\Function_;
 
+/**
+ * @todo Check that getters return a value and setters set a value and return void.
+ */
 class FunctionChecker extends NodeChecker
 {
     /**
@@ -48,6 +51,11 @@ class FunctionChecker extends NodeChecker
     ];
 
     /**
+     * @var array<string, array{type: ?string, promoted: bool}>
+     */
+    protected array $params = [];
+
+    /**
      * @return array<string, bool>
      */
     public function check(): array
@@ -62,8 +70,7 @@ class FunctionChecker extends NodeChecker
 
         $funcName = $this->node->name->toString();
         $params = $this->node->params;
-        $this->checkBool($params, $funcName, $funcType);
-        $this->checkCount($params, $funcName, $funcType);
+        $this->checkParams($params, $funcName, $funcType);
 
         if ($this->node->returnType instanceof Identifier) {
             $returnType = $this->node->returnType->name;
@@ -74,10 +81,25 @@ class FunctionChecker extends NodeChecker
     }
 
     /**
+     * @return array<string, array{type: ?string, promoted: bool}>
+     */
+    public function getParams(): array
+    {
+        return $this->params;
+    }
+
+    /**
      * @param list<Param> $params
      */
-    protected function checkBool(array $params, string $funcName, string $funcType): void
+    protected function checkParams(array $params, string $funcName, string $funcType): void
     {
+        $paramCount = count($params);
+        if ($paramCount > 9) {
+            $this->addIssue(
+                sprintf('%s %s() has too many parameters: %d', $funcType, $funcName, $paramCount),
+            );
+        }
+
         foreach ($params as $param) {
             if (! $param->var instanceof Variable) {
                 continue;
@@ -88,30 +110,27 @@ class FunctionChecker extends NodeChecker
                 continue;
             }
 
-            $paramType = $param->type;
-            if ($paramType instanceof Identifier && $paramType->name === 'bool') {
-                $this->addIssue(
-                    sprintf(
-                        '%s %s() has a boolean parameter $%s; replace with integer flag values',
-                        $funcType,
-                        $funcName,
-                        $paramName,
-                    ),
-                );
+            $paramType = null;
+            if ($param->type instanceof Identifier) {
+                $paramType = $param->type->name;
+                if ($paramType === 'bool') {
+                    $this->addIssue(
+                        sprintf(
+                            '%s %s() has a boolean parameter $%s; replace with integer flag values',
+                            $funcType,
+                            $funcName,
+                            $paramName,
+                        ),
+                    );
+                }
             }
-        }
-    }
 
-    /**
-     * @param list<Param> $params
-     */
-    protected function checkCount(array $params, string $funcName, string $funcType): void
-    {
-        $paramCount = count($params);
-        if ($paramCount > 9) {
-            $this->addIssue(
-                sprintf('%s %s() has too many parameters: %d', $funcType, $funcName, $paramCount),
-            );
+            // @todo Replace with $param->isPromoted() when that function is released.
+            $isPromoted = $param->flags !== 0;
+            $this->params[$paramName] = [
+                'type' => $paramType,
+                'promoted' => $isPromoted,
+            ];
         }
     }
 

@@ -14,6 +14,7 @@ use DouglasGreen\PhpLinter\Nikic\Checker\NameChecker;
 use DouglasGreen\PhpLinter\Nikic\Checker\OperatorChecker;
 use DouglasGreen\PhpLinter\Nikic\Checker\TryCatchChecker;
 use DouglasGreen\PhpLinter\Nikic\Visitor\ClassVisitor;
+use DouglasGreen\PhpLinter\Nikic\Visitor\FunctionVisitor;
 use PhpParser\Node;
 use PhpParser\Node\Expr\Array_;
 use PhpParser\Node\Expr\Closure;
@@ -33,6 +34,8 @@ class ElementVisitor extends NodeVisitorAbstract
 
     protected ClassVisitor $classVisitor;
 
+    protected FunctionVisitor $functionVisitor;
+
     /**
      * @var array<string, bool>
      */
@@ -44,8 +47,6 @@ class ElementVisitor extends NodeVisitorAbstract
 
     protected ?string $currentFunctionName = null;
 
-    protected ?string $currentMethodName = null;
-
     protected ?string $currentTraitName = null;
 
     /**
@@ -55,25 +56,68 @@ class ElementVisitor extends NodeVisitorAbstract
 
     public function enterNode(Node $node): null
     {
-        if ($node instanceof Class_ && $node->name !== null) {
-            $this->classVisitor = new ClassVisitor();
-            $this->currentClassName = $node->name->toString();
+        // @todo Remove words like Manager, Handler, etc. if no conflict
+        if ($node instanceof Class_) {
+            $this->currentClassName = $node->name === null ? null : $node->name->name;
+            // Run checks on class node.
+            $classChecker = new ClassChecker($node);
+            $this->addIssues($classChecker->check());
+            $attribs = [
+                'abstract' => $node->isAbstract(),
+                'final' => $node->isFinal(),
+                'readonly' => $node->isReadonly(),
+                'anonymous' => $node->isAnonymous(),
+            ];
+            // Start class visitor to examine nodes within class.
+            $this->classVisitor = new ClassVisitor($this->currentClassName, $attribs);
             $this->isLocalScope = true;
         }
 
+        // Continue examining nodes within class.
+        if ($this->currentClassName !== null) {
+            $this->classVisitor->checkNode($node);
+        }
+
+        // @todo Make sure trait names don't end in Trait and Interface names don't end in Interface.
         if ($node instanceof Trait_ && $node->name !== null) {
             $this->currentTraitName = $node->name->toString();
             $this->isLocalScope = true;
         }
 
-        if ($node instanceof ClassMethod && $node->name !== null) {
-            $this->currentMethodName = $node->name->toString();
+        if ($node instanceof Function_ || $node instanceof ClassMethod) {
+            $this->currentFunctionName = $node->name->name;
+
+            // Run checks on function node.
+            $funcChecker = new FunctionChecker($node);
+            $this->addIssues($funcChecker->check());
+
+            if ($node instanceof ClassMethod) {
+                $attribs = [
+                    'public' => $node->isPublic(),
+                    'protected' => $node->isProtected(),
+                    'private' => $node->isPrivate(),
+                    'abstract' => $node->isAbstract(),
+                    'final' => $node->isFinal(),
+                    'static' => $node->isStatic(),
+                    'magic' => $node->isMagic(),
+                ];
+            } else {
+                $attribs = [];
+            }
+
+            $params = $funcChecker->getParams();
+
+            $this->functionVisitor = new FunctionVisitor(
+                (string) $this->currentFunctionName,
+                $attribs,
+                $params
+            );
             $this->isLocalScope = true;
         }
 
-        if ($node instanceof Function_ && $node->name !== null) {
-            $this->currentFunctionName = $node->name->toString();
-            $this->isLocalScope = true;
+        // Continue examining nodes within function.
+        if ($this->currentFunctionName !== null) {
+            $this->functionVisitor->checkNode($node);
         }
 
         if ($node instanceof Closure) {
@@ -83,17 +127,6 @@ class ElementVisitor extends NodeVisitorAbstract
         if ($this->isLocalScope) {
             $localScopeChecker = new LocalScopeChecker($node);
             $this->addIssues($localScopeChecker->check());
-        }
-
-        if ($this->currentClassName !== null) {
-            $this->classVisitor->checkNode($node);
-            $classChecker = new ClassChecker($node);
-            $this->addIssues($classChecker->check($this->currentClassName));
-        }
-
-        if ($node instanceof Function_ || $node instanceof ClassMethod) {
-            $funcChecker = new FunctionChecker($node);
-            $this->addIssues($funcChecker->check());
         }
 
         if (($node instanceof MethodCall || $node instanceof StaticCall) && $node->name instanceof Identifier) {
@@ -139,21 +172,8 @@ class ElementVisitor extends NodeVisitorAbstract
     public function leaveNode(Node $node): null
     {
         if ($node instanceof Class_) {
+            $this->classVisitor->checkClass();
             $this->addIssues($this->classVisitor->getIssues());
-
-            $methods = $this->classVisitor->getMethods();
-            foreach ($methods as $methodName => $methodInfo) {
-                if ($methodInfo['visibility'] === 'private' && ! $methodInfo['used']) {
-                    $type = $methodInfo['static'] ? 'static' : 'non-static';
-                    $issue = sprintf(
-                        'Private %s method %s::%s() is not used within the class.',
-                        $type,
-                        $this->currentClassName,
-                        $methodName
-                    );
-                    $this->issues[$issue] = true;
-                }
-            }
 
             $this->currentClassName = null;
             $this->isLocalScope = false;
@@ -164,13 +184,11 @@ class ElementVisitor extends NodeVisitorAbstract
             $this->isLocalScope = false;
         }
 
-        if ($node instanceof Function_) {
-            $this->currentFunctionName = null;
-            $this->isLocalScope = false;
-        }
+        if ($node instanceof Function_ || $node instanceof ClassMethod) {
+            $this->functionVisitor->checkFunction();
+            $this->addIssues($this->functionVisitor->getIssues());
 
-        if ($node instanceof ClassMethod) {
-            $this->currentMethodName = null;
+            $this->currentFunctionName = null;
             $this->isLocalScope = false;
         }
 
