@@ -7,6 +7,7 @@ namespace DouglasGreen\PhpLinter\Nikic;
 use DouglasGreen\PhpLinter\Nikic\Checker\ArrayChecker;
 use DouglasGreen\PhpLinter\Nikic\Checker\ClassChecker;
 use DouglasGreen\PhpLinter\Nikic\Checker\ExpressionChecker;
+use DouglasGreen\PhpLinter\Nikic\Checker\FunctionCallChecker;
 use DouglasGreen\PhpLinter\Nikic\Checker\FunctionChecker;
 use DouglasGreen\PhpLinter\Nikic\Checker\LocalScopeChecker;
 use DouglasGreen\PhpLinter\Nikic\Checker\NameChecker;
@@ -96,6 +97,9 @@ class ElementVisitor extends NodeVisitorAbstract
             $arrayChecker = new ArrayChecker($node);
             $this->addIssues($arrayChecker->check());
         }
+
+        $funcCallChecker = new FunctionCallChecker($node);
+        $this->addIssues($funcCallChecker->check());
 
         $exprChecker = new ExpressionChecker($node);
         $this->addIssues($exprChecker->check());

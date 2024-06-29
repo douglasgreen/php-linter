@@ -23,16 +23,6 @@ use PhpParser\Node\Stmt\If_;
 class ExpressionChecker extends NodeChecker
 {
     /**
-     * @var list<string>
-     */
-    protected const DEBUG_FUNCTIONS = [
-        'debug_print_backtrace',
-        'debug_zval_dump',
-        'print_r',
-        'var_dump',
-    ];
-
-    /**
      * @var array<string, true>
      */
     protected array $qualifiedNames = [];
@@ -42,18 +32,6 @@ class ExpressionChecker extends NodeChecker
      */
     public function check(): array
     {
-        if ($this->node instanceof FuncCall) {
-            $functionName =
-                $this->node->name instanceof Name ? $this->node->name->toString() : null;
-            if ($functionName === null) {
-                return [];
-            }
-
-            if (in_array(strtolower($functionName), self::DEBUG_FUNCTIONS, true)) {
-                $this->addIssue('Debug function found: ' . $functionName);
-            }
-        }
-
         if ($this->node instanceof If_) {
             $this->checkCondition($this->node->cond, 'if');
 
