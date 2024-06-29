@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace DouglasGreen\PhpLinter\Nikic;
+namespace DouglasGreen\PhpLinter\Nikic\Checker;
 
 use PhpParser\Node\Expr\New_;
 use PhpParser\Node\Expr\Instanceof_;
@@ -20,7 +20,7 @@ use PhpParser\Node\Name;
 use PhpParser\Node\Stmt\Goto_;
 use PhpParser\Node\Stmt\If_;
 
-class ExpressionChecker extends BaseChecker
+class ExpressionChecker extends NodeChecker
 {
     /**
      * @var list<string>

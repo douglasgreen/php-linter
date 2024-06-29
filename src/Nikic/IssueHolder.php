@@ -4,24 +4,23 @@ declare(strict_types=1);
 
 namespace DouglasGreen\PhpLinter\Nikic;
 
-use PhpParser\Node;
-
-abstract class BaseChecker
+/**
+ * Hold an array of issues.
+ */
+trait IssueHolder
 {
     /**
      * @var array<string, bool>
      */
     protected array $issues = [];
 
-    public function __construct(
-        protected readonly Node $node
-    ) {}
-
     /**
-     * Do the check and return a list of issues.
      * @return array<string, bool>
      */
-    abstract public function check(): array;
+    public function getIssues(): array
+    {
+        return $this->issues;
+    }
 
     protected function addIssue(string $issue): void
     {
@@ -29,10 +28,10 @@ abstract class BaseChecker
     }
 
     /**
-     * @return array<string, bool>
+     * @param array<string, bool> $issues
      */
-    protected function getIssues(): array
+    protected function addIssues(array $issues): void
     {
-        return $this->issues;
+        $this->issues = array_merge($this->issues, $issues);
     }
 }

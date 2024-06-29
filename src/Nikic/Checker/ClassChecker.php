@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace DouglasGreen\PhpLinter\Nikic;
+namespace DouglasGreen\PhpLinter\Nikic\Checker;
 
 use PhpParser\Node\Stmt\ClassMethod;
 
-class ClassChecker extends BaseChecker
+class ClassChecker extends NodeChecker
 {
     /**
      * @return array<string, bool>

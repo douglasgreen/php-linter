@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace DouglasGreen\PhpLinter\Nikic;
+namespace DouglasGreen\PhpLinter\Nikic\Checker;
 
 use DouglasGreen\Utility\Regex\Regex;
 use PhpParser\Node;
@@ -19,7 +19,7 @@ use PhpParser\Node\Stmt\Interface_;
 use PhpParser\Node\Stmt\Namespace_;
 use PhpParser\Node\Stmt\Trait_;
 
-class NameChecker extends BaseChecker
+class NameChecker extends NodeChecker
 {
     /**
      * @var list<string>

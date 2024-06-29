@@ -4,6 +4,15 @@ declare(strict_types=1);
 
 namespace DouglasGreen\PhpLinter\Nikic;
 
+use DouglasGreen\PhpLinter\Nikic\Checker\ArrayChecker;
+use DouglasGreen\PhpLinter\Nikic\Checker\ClassChecker;
+use DouglasGreen\PhpLinter\Nikic\Checker\ExpressionChecker;
+use DouglasGreen\PhpLinter\Nikic\Checker\FunctionChecker;
+use DouglasGreen\PhpLinter\Nikic\Checker\LocalScopeChecker;
+use DouglasGreen\PhpLinter\Nikic\Checker\NameChecker;
+use DouglasGreen\PhpLinter\Nikic\Checker\OperatorChecker;
+use DouglasGreen\PhpLinter\Nikic\Checker\TryCatchChecker;
+use DouglasGreen\PhpLinter\Nikic\Visitor\ClassVisitor;
 use PhpParser\Node;
 use PhpParser\Node\Expr\Array_;
 use PhpParser\Node\Expr\Closure;
@@ -16,12 +25,9 @@ use PhpParser\NodeVisitorAbstract;
 
 class ElementVisitor extends NodeVisitorAbstract
 {
-    protected ClassVisitor $classVisitor;
+    use IssueHolder;
 
-    /**
-     * @var array<string, bool>
-     */
-    protected array $issues = [];
+    protected ClassVisitor $classVisitor;
 
     protected ?string $currentClassName = null;
 
@@ -157,13 +163,5 @@ class ElementVisitor extends NodeVisitorAbstract
         foreach (array_keys($this->issues) as $issue) {
             echo $issue . PHP_EOL;
         }
-    }
-
-    /**
-     * @param array<string, bool> $issues
-     */
-    protected function addIssues(array $issues): void
-    {
-        $this->issues = array_merge($this->issues, $issues);
     }
 }

@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace DouglasGreen\PhpLinter\Nikic;
+namespace DouglasGreen\PhpLinter\Nikic\Checker;
 
 use PhpParser\Node\Stmt\Nop;
 use PhpParser\Node\Stmt\TryCatch;
 
-class TryCatchChecker extends BaseChecker
+class TryCatchChecker extends NodeChecker
 {
     /**
      * @return array<string, bool>

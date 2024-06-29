@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace DouglasGreen\PhpLinter\Nikic;
+namespace DouglasGreen\PhpLinter\Nikic\Visitor;
 
 use PhpParser\Node;
 use PhpParser\Node\Expr\PropertyFetch;
@@ -11,13 +11,8 @@ use PhpParser\Node\Expr\Variable;
 use PhpParser\Node\Identifier;
 use PhpParser\Node\Stmt\Property;
 
-class ClassVisitor
+class ClassVisitor extends VisitorChecker
 {
-    /**
-     * @var array<string, bool>
-     */
-    protected array $issues = [];
-
     /**
      * @var array<string, array<string, bool>>
      */

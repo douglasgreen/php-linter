@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace DouglasGreen\PhpLinter\Nikic;
+namespace DouglasGreen\PhpLinter\Nikic\Checker;
 
 use DouglasGreen\Utility\Regex\Regex;
 use PhpParser\Node\Expr\Variable;
@@ -11,7 +11,7 @@ use PhpParser\Node\Param;
 use PhpParser\Node\Stmt\ClassMethod;
 use PhpParser\Node\Stmt\Function_;
 
-class FunctionChecker extends BaseChecker
+class FunctionChecker extends NodeChecker
 {
     /**
      * @return array<string, bool>

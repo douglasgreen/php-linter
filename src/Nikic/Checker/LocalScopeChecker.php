@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-namespace DouglasGreen\PhpLinter\Nikic;
+namespace DouglasGreen\PhpLinter\Nikic\Checker;
 
 use PhpParser\Node\Expr\Exit_;
 
 /**
  * Check rules that only apply in local scope.
  */
-class LocalScopeChecker extends BaseChecker
+class LocalScopeChecker extends NodeChecker
 {
     /**
      * @return array<string, bool>

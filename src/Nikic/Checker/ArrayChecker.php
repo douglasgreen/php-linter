@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace DouglasGreen\PhpLinter\Nikic;
+namespace DouglasGreen\PhpLinter\Nikic\Checker;
 
 use PhpParser\Node\Expr\Array_;
 use PhpParser\Node\Scalar\String_;
 use PhpParser\Node\Scalar\LNumber;
 
-class ArrayChecker extends BaseChecker
+class ArrayChecker extends NodeChecker
 {
     /**
      * @var array<string|int, bool>
