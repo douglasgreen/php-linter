@@ -248,10 +248,12 @@ class MetricChecker
     {
         if ($isError) {
             $level = self::STATUS_ERROR;
-            $desc = 'error';
+
+            // Code rank is a signal to test classes so it's medium/high rather than warn/error.
+            $desc = str_contains($issue, 'Code rank') ? 'high' : 'error';
         } else {
             $level = self::STATUS_WARN;
-            $desc = 'warning';
+            $desc = str_contains($issue, 'Code rank') ? 'medium' : 'warning';
         }
 
         if ($this->className !== null) {
