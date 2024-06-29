@@ -135,9 +135,10 @@ class FunctionChecker extends NodeChecker
 
         $this->addIssue(
             sprintf(
-                '%s %s() returns a boolean; consider naming it isX(), hasX(), etc.',
+                '%s %s() returns a boolean; consider naming it %s',
                 $funcType,
                 $funcName,
+                $suggest
             ),
         );
     }

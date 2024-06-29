@@ -81,28 +81,28 @@ class NameChecker extends NodeChecker
             if ($this->node instanceof Namespace_) {
                 $parts = explode('\\', $name);
                 foreach ($parts as $part) {
-                    if (! $this->checkUpperName($part)) {
+                    if (! $this->isValidUpperName($part)) {
                         break;
                     }
                 }
             } elseif ($this->node instanceof Class_) {
-                $this->checkUpperName($name);
-                $this->checkGlobalNameLength($name, 'Class');
+                $this->isValidUpperName($name);
+                $this->isValidGlobalNameLength($name, 'Class');
             } elseif ($this->node instanceof Interface_) {
-                $this->checkUpperName($name);
-                $this->checkGlobalNameLength($name, 'Interface');
+                $this->isValidUpperName($name);
+                $this->isValidGlobalNameLength($name, 'Interface');
             } elseif ($this->node instanceof Trait_) {
-                $this->checkUpperName($name);
-                $this->checkGlobalNameLength($name, 'Trait');
+                $this->isValidUpperName($name);
+                $this->isValidGlobalNameLength($name, 'Trait');
             } elseif ($this->node instanceof ClassMethod) {
-                $this->checkLowerName($name);
-                $this->checkGlobalNameLength($name, 'Method');
+                $this->isValidLowerName($name);
+                $this->isValidGlobalNameLength($name, 'Method');
             } elseif ($this->node instanceof Function_) {
-                $this->checkLowerName($name);
-                $this->checkGlobalNameLength($name, 'Function');
+                $this->isValidLowerName($name);
+                $this->isValidGlobalNameLength($name, 'Function');
             } elseif ($this->node instanceof Variable) {
-                $this->checkLowerName($name);
-                $this->checkLocalNameLength($name, 'Variable');
+                $this->isValidLowerName($name);
+                $this->isValidLocalNameLength($name, 'Variable');
             } elseif ($name !== '') {
                 //var_dump(get_class($this->node), $name);
             }
@@ -110,14 +110,14 @@ class NameChecker extends NodeChecker
             if ($this->node instanceof Const_) {
                 foreach ($this->node->consts as $const) {
                     $constName = (string) $const->name;
-                    $this->checkAllCapName($constName);
-                    $this->checkGlobalNameLength($constName, 'Constant');
+                    $this->isValidAllCapName($constName);
+                    $this->isValidGlobalNameLength($constName, 'Constant');
                 }
             } elseif ($this->node instanceof ClassConst) {
                 foreach ($this->node->consts as $const) {
                     $constName = (string) $const->name;
-                    $this->checkAllCapName($constName);
-                    $this->checkGlobalNameLength($constName, 'Constant');
+                    $this->isValidAllCapName($constName);
+                    $this->isValidGlobalNameLength($constName, 'Constant');
                 }
             }
         }
@@ -162,7 +162,7 @@ class NameChecker extends NodeChecker
         return ! Regex::hasMatch('/[A-Z]{2}|_/', $name);
     }
 
-    protected function checkAllCapName(string $name): bool
+    protected function isValidAllCapName(string $name): bool
     {
         if (! Regex::hasMatch('/^[A-Z]+(_[A-Z]+)*$/', $name)) {
             $issue = 'Not all caps: ' . $name;
@@ -176,7 +176,7 @@ class NameChecker extends NodeChecker
     /**
      * Global names are names of classes, methods, functions. etc. that are globally visible.
      */
-    protected function checkGlobalNameLength(string $name, string $type): bool
+    protected function isValidGlobalNameLength(string $name, string $type): bool
     {
         if (strlen($name) > 32) {
             $issue = $type . ' name too long: ' . $name;
@@ -196,7 +196,7 @@ class NameChecker extends NodeChecker
     /**
      * Local names are names of variables that are only locally visible and can be shorter.
      */
-    protected function checkLocalNameLength(string $name, string $type): bool
+    protected function isValidLocalNameLength(string $name, string $type): bool
     {
         if (strlen($name) > 24) {
             $issue = $type . ' name too long: ' . $name;
@@ -213,7 +213,7 @@ class NameChecker extends NodeChecker
         return true;
     }
 
-    protected function checkLowerName(string $name): bool
+    protected function isValidLowerName(string $name): bool
     {
         if (! self::isLowerCamelCase($name)) {
             $issue = 'Not camel case: ' . $name;
@@ -224,7 +224,7 @@ class NameChecker extends NodeChecker
         return true;
     }
 
-    protected function checkUpperName(string $name): bool
+    protected function isValidUpperName(string $name): bool
     {
         if (! self::isUpperCamelCase($name)) {
             $issue = 'Not camel case: ' . $name;
