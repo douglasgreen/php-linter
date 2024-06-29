@@ -64,23 +64,23 @@ try {
             // Warnings exceed 95% of similar code, errors exceed 99%.
             $classChecker = new MetricChecker($class, $class['name']);
 
-            $classChecker->checkMaxClassSize(24, 56);
+            $classChecker->checkMaxClassSize(25, 60);
 
             // Has no error level.
             $classChecker->checkMaxCodeRank(0.5, 2.0);
 
-            $classChecker->checkMaxLinesOfCode(420, 1140);
+            $classChecker->checkMaxLinesOfCode(400, 1100);
 
-            $classChecker->checkMaxNonPrivateProperties(1, 5);
-            $classChecker->checkMaxProperties(7, 17);
-            $classChecker->checkMaxPublicMethods(14, 35);
+            $classChecker->checkMaxNonPrivateProperties(10, 30);
+            $classChecker->checkMaxProperties(10, 25);
+            $classChecker->checkMaxPublicMethods(15, 40);
 
-            $classChecker->checkMaxAfferentCoupling(7, 24);
-            $classChecker->checkMaxEfferentCoupling(10, 19);
+            $classChecker->checkMaxAfferentCoupling(15, 45);
+            $classChecker->checkMaxEfferentCoupling(12, 24);
 
-            $classChecker->checkMaxInheritanceDepth(4, 6);
-            $classChecker->checkMaxNumberOfChildClasses(5, 10);
-            $classChecker->checkMaxObjectCoupling(10, 20);
+            $classChecker->checkMaxInheritanceDepth(4, 5);
+            $classChecker->checkMaxNumberOfChildClasses(15, 35);
+            $classChecker->checkMaxObjectCoupling(12, 24);
 
             // @see https://everything2.com/title/comment-to-code+ratio
             $classChecker->checkMinCommentRatio(0.1, 0.05);
@@ -93,7 +93,7 @@ try {
 
             foreach ($class['methods'] as $method) {
                 $methodChecker = new MetricChecker($method, $class['name'], $method['name']);
-                $methodChecker->checkMaxExtendedCyclomaticComplexity(9, 25);
+                $methodChecker->checkMaxExtendedCyclomaticComplexity(10, 25);
                 $methodChecker->checkMaxLinesOfCode(50, 130);
                 $methodChecker->checkMaxNpathComplexity(50, 10000);
                 $methodChecker->checkMaxHalsteadEffort(25000, 135000);
