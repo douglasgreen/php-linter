@@ -17,6 +17,9 @@ use DouglasGreen\PhpLinter\Nikic\Visitor\ClassVisitor;
 use PhpParser\Node;
 use PhpParser\Node\Expr\Array_;
 use PhpParser\Node\Expr\Closure;
+use PhpParser\Node\Expr\MethodCall;
+use PhpParser\Node\Expr\StaticCall;
+use PhpParser\Node\Identifier;
 use PhpParser\Node\Stmt\Class_;
 use PhpParser\Node\Stmt\ClassMethod;
 use PhpParser\Node\Stmt\Function_;
@@ -29,6 +32,11 @@ class ElementVisitor extends NodeVisitorAbstract
     use IssueHolder;
 
     protected ClassVisitor $classVisitor;
+
+    /**
+     * @var array<string, bool>
+     */
+    protected array $methodCalls = [];
 
     protected ?string $currentClassName = null;
 
@@ -88,6 +96,11 @@ class ElementVisitor extends NodeVisitorAbstract
             $this->addIssues($funcChecker->check());
         }
 
+        if (($node instanceof MethodCall || $node instanceof StaticCall) && $node->name instanceof Identifier) {
+            $methodName = $node->name->toString();
+            $this->methodCalls[$methodName] = true;
+        }
+
         if ($node instanceof TryCatch) {
             $tryCatchChecker = new TryCatchChecker($node);
             $this->addIssues($tryCatchChecker->check());
@@ -127,6 +140,21 @@ class ElementVisitor extends NodeVisitorAbstract
     {
         if ($node instanceof Class_) {
             $this->addIssues($this->classVisitor->getIssues());
+
+            $methods = $this->classVisitor->getMethods();
+            foreach ($methods as $methodName => $methodInfo) {
+                if ($methodInfo['visibility'] === 'private' && ! $methodInfo['used']) {
+                    $type = $methodInfo['static'] ? 'static' : 'non-static';
+                    $issue = sprintf(
+                        'Private %s method %s::%s() is not used within the class.',
+                        $type,
+                        $this->currentClassName,
+                        $methodName
+                    );
+                    $this->issues[$issue] = true;
+                }
+            }
+
             $this->currentClassName = null;
             $this->isLocalScope = false;
         }

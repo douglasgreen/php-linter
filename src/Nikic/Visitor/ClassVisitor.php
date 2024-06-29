@@ -9,20 +9,29 @@ use PhpParser\Node\Expr\PropertyFetch;
 use PhpParser\Node\Expr\StaticPropertyFetch;
 use PhpParser\Node\Expr\Variable;
 use PhpParser\Node\Identifier;
+use PhpParser\Node\Stmt\ClassMethod;
 use PhpParser\Node\Stmt\Property;
 
 class ClassVisitor extends VisitorChecker
 {
     /**
-     * @var array<string, array<string, bool>>
+     * @var array<string, array{visibility: string, static: bool, used: bool}>
      */
-    protected array $privateProperties = [];
+    protected array $methods = [];
+
+    /**
+     * @var array<string, array{visibility: string, static: bool, used: bool}>
+     */
+    protected array $properties = [];
 
     public function checkNode(Node $node): void
     {
-        if ($node instanceof Property && $node->isPrivate()) {
+        if ($node instanceof Property) {
             foreach ($node->props as $prop) {
-                $this->privateProperties[$prop->name->toString()] = [
+                $propName = $prop->name->toString();
+                $visibility = $this->getVisibility($node);
+                $this->properties[$propName] = [
+                    'visibility' => $visibility,
                     'static' => $node->isStatic(),
                     'used' => false,
                 ];
@@ -35,6 +44,52 @@ class ClassVisitor extends VisitorChecker
                 $this->trackPropertyUsage($propName);
             }
         }
+
+        if ($node instanceof ClassMethod) {
+            $methodName = $node->name->toString();
+            $visibility = $this->getVisibility($node);
+            $this->methods[$methodName] = [
+                'visibility' => $visibility,
+                'static' => $node->isStatic(),
+                'used' => false,
+            ];
+        }
+    }
+
+    /**
+     * @return array<string, bool>
+     */
+    public function getIssues(): array
+    {
+        foreach ($this->properties as $propName => $propInfo) {
+            if ($propInfo['used']) {
+                continue;
+            }
+
+            $type = $propInfo['static'] ? 'static' : 'non-static';
+
+            if ($propInfo['visibility'] === 'private') {
+                $issue = sprintf(
+                    'Private %s property %s is not used within the class.',
+                    $type,
+                    $propName
+                );
+                $this->issues[$issue] = true;
+            } elseif ($propInfo['visibility'] === 'public') {
+                $issue = sprintf('Avoid using public properties like %s', $propName);
+                $this->issues[$issue] = true;
+            }
+        }
+
+        return $this->issues;
+    }
+
+    /**
+     * @return array<string, array{visibility: string, static: bool, used: bool}>
+     */
+    public function getMethods(): array
+    {
+        return $this->methods;
     }
 
     protected function getPropertyName(Node $node): ?string
@@ -57,32 +112,28 @@ class ClassVisitor extends VisitorChecker
         return null;
     }
 
-    protected function trackPropertyUsage(string $propName): void
+    protected function getVisibility(ClassMethod|Property $node): string
     {
-        if (isset($this->privateProperties[$propName])) {
-            $this->privateProperties[$propName]['used'] = true;
+        if ($node->isPublic()) {
+            return 'public';
         }
+
+        if ($node->isProtected()) {
+            return 'protected';
+        }
+
+        if ($node->isPrivate()) {
+            return 'private';
+        }
+
+        // Default visibility
+        return 'public';
     }
 
-    /**
-     * @return array<string, bool>
-     */
-    public function getIssues(): array
+    protected function trackPropertyUsage(string $propName): void
     {
-        foreach ($this->privateProperties as $propName => $propInfo) {
-            if ($propInfo['used']) {
-                continue;
-            }
-
-            $type = $propInfo['static'] ? 'static' : 'non-static';
-            $issue = sprintf(
-                'Private %s property %s is not used within the class.',
-                $type,
-                $propName
-            );
-            $this->issues[$issue] = true;
+        if (isset($this->properties[$propName])) {
+            $this->properties[$propName]['used'] = true;
         }
-
-        return $this->issues;
     }
 }
