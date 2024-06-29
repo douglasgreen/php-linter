@@ -14,6 +14,40 @@ use PhpParser\Node\Stmt\Function_;
 class FunctionChecker extends NodeChecker
 {
     /**
+     * @var list<string>
+     */
+    protected const BOOL_FUNC_NAMES = [
+        'accepts',
+        'allows',
+        'are',
+        'can',
+        'complies',
+        'exists',
+        'has',
+        'have',
+        'is',
+        'matches',
+        'requires',
+        'should',
+        'uses',
+        'was',
+    ];
+
+    /**
+     * @var array<string, string>
+     */
+    protected const BOOL_FUNC_RENAMES = [
+        'check' => 'isValid',
+        'validate' => 'isValid',
+        'stop' => 'canStop',
+        'fail' => 'shouldFail',
+        'accept' => 'shouldAccept',
+        'use' => 'shouldUse',
+        'be' => 'shouldBe',
+        'invoke' => 'canInvoke',
+    ];
+
+    /**
      * @return array<string, bool>
      */
     public function check(): array
@@ -87,13 +121,21 @@ class FunctionChecker extends NodeChecker
             return;
         }
 
-        if (Regex::hasMatch('/^(has|is|should)[A-Z]/', $funcName)) {
+        $prefix = Regex::replace('/([a-z])[A-Z_].*/', '\1', $funcName);
+
+        if (in_array($prefix, self::BOOL_FUNC_NAMES, true)) {
             return;
+        }
+
+        if (array_key_exists($prefix, self::BOOL_FUNC_RENAMES)) {
+            $suggest = self::BOOL_FUNC_RENAMES[$prefix] . '()';
+        } else {
+            $suggest = 'sX(), hasX(), etc.';
         }
 
         $this->addIssue(
             sprintf(
-                '%s %s() returns a boolean; consider naming it hasX(), isX() or shouldX()',
+                '%s %s() returns a boolean; consider naming it isX(), hasX(), etc.',
                 $funcType,
                 $funcName,
             ),

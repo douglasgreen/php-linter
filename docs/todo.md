@@ -66,3 +66,14 @@ Give `check-style` its own cache file and update `php-linter`.
 ## Variable metric
 
 Complexity is in the state manipulation, not the structures. Check the local variable count.
+
+## Explanations
+
+### Boolean function names
+
+Booleans should all be named with a declarative verb as if they're answering a yes or no question.
+So you shouldn't using imperative verb like check or validate. Instead:
+
+-   Use a quality like isValid()
+-   Check for success like canStop()
+-   Express a goal like shouldAccept() or shouldUse().
