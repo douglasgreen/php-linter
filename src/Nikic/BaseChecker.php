@@ -9,11 +9,9 @@ use PhpParser\Node;
 abstract class BaseChecker
 {
     /**
-     * Private because you should use the functions below to access it.
-     *
      * @var array<string, bool>
      */
-    private array $issues = [];
+    protected array $issues = [];
 
     public function __construct(
         protected readonly Node $node

@@ -16,6 +16,8 @@ use PhpParser\NodeVisitorAbstract;
 
 class ElementVisitor extends NodeVisitorAbstract
 {
+    protected ClassVisitor $classVisitor;
+
     /**
      * @var array<string, bool>
      */
@@ -39,6 +41,7 @@ class ElementVisitor extends NodeVisitorAbstract
     public function enterNode(Node $node): null
     {
         if ($node instanceof Class_ && $node->name !== null) {
+            $this->classVisitor = new ClassVisitor();
             $this->currentClassName = $node->name->toString();
             $this->isLocalScope = true;
         }
@@ -68,6 +71,7 @@ class ElementVisitor extends NodeVisitorAbstract
         }
 
         if ($this->currentClassName !== null) {
+            $this->classVisitor->checkNode($node);
             $classChecker = new ClassChecker($node);
             $this->addIssues($classChecker->check($this->currentClassName));
         }
@@ -112,6 +116,7 @@ class ElementVisitor extends NodeVisitorAbstract
     public function leaveNode(Node $node): null
     {
         if ($node instanceof Class_) {
+            $this->addIssues($this->classVisitor->getIssues());
             $this->currentClassName = null;
             $this->isLocalScope = false;
         }
