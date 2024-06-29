@@ -56,11 +56,11 @@ class MetricChecker
         return $this->checkMax($message, $csz, $maxWarn, $maxError);
     }
 
-    public function checkMaxCodeRank(float $maxWarn): int
+    public function checkMaxCodeRank(float $maxWarn, float $maxError): int
     {
         $codeRank = (float) $this->data['cr'];
         $message = 'Code rank = %0.2f > %0.2f';
-        return $this->checkMax($message, $codeRank, $maxWarn);
+        return $this->checkMax($message, $codeRank, $maxWarn, $maxError);
     }
 
     public function checkMaxEfferentCoupling(int $maxWarn, int $maxError): int
@@ -205,9 +205,9 @@ class MetricChecker
         string $message,
         float|int $value,
         float|int $maxWarn,
-        float|int|null $maxError = null,
+        float|int|null $maxError,
     ): int {
-        if ($maxError !== null && $value > $maxError) {
+        if ($value > $maxError) {
             $this->report(sprintf($message, $value, $maxError), true);
             $this->errorCount++;
             return self::STATUS_ERROR;

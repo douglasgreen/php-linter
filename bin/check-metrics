@@ -67,7 +67,7 @@ try {
             $classChecker->checkMaxClassSize(24, 56);
 
             // Has no error level.
-            $classChecker->checkMaxCodeRank(0.55);
+            $classChecker->checkMaxCodeRank(0.5, 2.0);
 
             $classChecker->checkMaxLinesOfCode(420, 1140);
 
