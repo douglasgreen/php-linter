@@ -63,18 +63,18 @@ class MetricChecker
         return $this->checkMax($message, $codeRank, $maxWarn, $maxError);
     }
 
+    public function checkMaxCyclomaticComplexity(int $maxWarn, int $maxError): int
+    {
+        $ecc = (int) $this->data['ccn2'];
+        $message = 'Extended cyclomatic complexity = %d > %d';
+        return $this->checkMax($message, $ecc, $maxWarn, $maxError);
+    }
+
     public function checkMaxEfferentCoupling(int $maxWarn, int $maxError): int
     {
         $efferentCoupling = (int) $this->data['ce'];
         $message = 'Efferent coupling = %d > %d';
         return $this->checkMax($message, $efferentCoupling, $maxWarn, $maxError);
-    }
-
-    public function checkMaxExtendedCyclomaticComplexity(int $maxWarn, int $maxError): int
-    {
-        $ecc = (int) $this->data['ccn2'];
-        $message = 'Extended cyclomatic complexity = %d > %d';
-        return $this->checkMax($message, $ecc, $maxWarn, $maxError);
     }
 
     public function checkMaxHalsteadEffort(int $maxWarn, int $maxError): int

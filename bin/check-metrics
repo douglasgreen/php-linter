@@ -93,7 +93,7 @@ try {
 
             foreach ($class['methods'] as $method) {
                 $methodChecker = new MetricChecker($method, $class['name'], $method['name']);
-                $methodChecker->checkMaxExtendedCyclomaticComplexity(10, 25);
+                $methodChecker->checkMaxCyclomaticComplexity(10, 25);
                 $methodChecker->checkMaxLinesOfCode(50, 130);
                 $methodChecker->checkMaxNpathComplexity(50, 10000);
                 $methodChecker->checkMaxHalsteadEffort(25000, 135000);
@@ -111,7 +111,7 @@ try {
                 continue;
             }
             $functionChecker = new MetricChecker($function, null, $function['name']);
-            $functionChecker->checkMaxExtendedCyclomaticComplexity(9, 25);
+            $functionChecker->checkMaxCyclomaticComplexity(9, 25);
             $functionChecker->checkMaxLinesOfCode(50, 130);
             $functionChecker->checkMaxNpathComplexity(50, 10000);
             $functionChecker->checkMaxHalsteadEffort(25000, 135000);
