@@ -12,6 +12,9 @@ use PhpParser\Node\Identifier;
 use PhpParser\Node\Stmt\ClassMethod;
 use PhpParser\Node\Stmt\Property;
 
+/**
+ * Visit classes and traits, but traits don't have $attribs.
+ */
 class ClassVisitor extends VisitorChecker
 {
     /**
@@ -28,8 +31,8 @@ class ClassVisitor extends VisitorChecker
      * @param array<string, bool> $attribs
      */
     public function __construct(
-        protected ?string $className,
-        protected array $attribs
+        protected readonly ?string $className,
+        protected readonly array $attribs = []
     ) {}
 
     /**

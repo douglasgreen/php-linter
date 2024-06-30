@@ -51,8 +51,6 @@ class ElementVisitor extends NodeVisitorAbstract
 
     protected ?string $currentFunctionName = null;
 
-    protected ?string $currentTraitName = null;
-
     /**
      * Are we inside a class, trait, method, function, or closure?
      */
@@ -69,19 +67,25 @@ class ElementVisitor extends NodeVisitorAbstract
             $this->currentNamespace = implode('\\', $node->name->parts);
         }
 
+        // Classes and traits share some of the same code.
         // @todo Remove words like Manager, Handler, etc. if no conflict
-        if ($node instanceof Class_) {
+        if ($node instanceof Class_ || $node instanceof Trait_) {
             $this->currentClassName = $node->name === null ? null : $node->name->name;
 
             // Run checks on class node.
             $classChecker = new ClassChecker($node);
             $this->addIssues($classChecker->check());
-            $attribs = [
-                'abstract' => $node->isAbstract(),
-                'final' => $node->isFinal(),
-                'readonly' => $node->isReadonly(),
-                'anonymous' => $node->isAnonymous(),
-            ];
+
+            if ($node instanceof Class_) {
+                $attribs = [
+                    'abstract' => $node->isAbstract(),
+                    'final' => $node->isFinal(),
+                    'readonly' => $node->isReadonly(),
+                    'anonymous' => $node->isAnonymous(),
+                ];
+            } else {
+                $attribs = [];
+            }
 
             // Start class visitor to examine nodes within class.
             $this->classVisitor = new ClassVisitor($this->currentClassName, $attribs);
@@ -107,12 +111,6 @@ class ElementVisitor extends NodeVisitorAbstract
         // Continue examining nodes within class.
         if ($this->currentClassName !== null) {
             $this->classVisitor->checkNode($node);
-        }
-
-        // @todo Make sure trait names don't end in Trait and Interface names don't end in Interface.
-        if ($node instanceof Trait_ && $node->name !== null) {
-            $this->currentTraitName = $node->name->toString();
-            $this->isLocalScope = true;
         }
 
         if ($node instanceof Function_ || $node instanceof ClassMethod) {
@@ -207,16 +205,11 @@ class ElementVisitor extends NodeVisitorAbstract
             $this->currentNamespace = null;
         }
 
-        if ($node instanceof Class_) {
+        if ($node instanceof Class_ || $node instanceof Trait_) {
             $this->classVisitor->checkClass();
             $this->addIssues($this->classVisitor->getIssues());
 
             $this->currentClassName = null;
-            $this->isLocalScope = false;
-        }
-
-        if ($node instanceof Trait_) {
-            $this->currentTraitName = null;
             $this->isLocalScope = false;
         }
 

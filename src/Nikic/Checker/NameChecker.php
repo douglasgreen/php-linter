@@ -24,6 +24,25 @@ class NameChecker extends NodeChecker
     /**
      * @var list<string>
      */
+    protected const BAD_SUFFIXES = [
+        'Class',
+        'Data',
+        'Function',
+        'Impl',
+        'Implementation',
+        'Info',
+        'Information',
+        'Interface',
+        'Method',
+        'Object',
+        'Stuff',
+        'Trait',
+        'Variable',
+    ];
+
+    /**
+     * @var list<string>
+     */
     protected const MAGIC_METHODS = [
         '__construct',
         '__destruct',
@@ -81,28 +100,34 @@ class NameChecker extends NodeChecker
             if ($this->node instanceof Namespace_) {
                 $parts = explode('\\', $name);
                 foreach ($parts as $part) {
-                    if (! $this->isValidUpperName($part)) {
-                        break;
-                    }
+                    $this->checkUpperName($part);
                 }
+
+                $this->checkSuffix($name, 'Namespace');
             } elseif ($this->node instanceof Class_) {
-                $this->isValidUpperName($name);
-                $this->isValidGlobalNameLength($name, 'Class');
+                $this->checkUpperName($name);
+                $this->checkGlobalNameLength($name, 'Class');
+                $this->checkSuffix($name, 'Class');
             } elseif ($this->node instanceof Interface_) {
-                $this->isValidUpperName($name);
-                $this->isValidGlobalNameLength($name, 'Interface');
+                $this->checkUpperName($name);
+                $this->checkGlobalNameLength($name, 'Interface');
+                $this->checkSuffix($name, 'Interface');
             } elseif ($this->node instanceof Trait_) {
-                $this->isValidUpperName($name);
-                $this->isValidGlobalNameLength($name, 'Trait');
+                $this->checkUpperName($name);
+                $this->checkGlobalNameLength($name, 'Trait');
+                $this->checkSuffix($name, 'Trait');
             } elseif ($this->node instanceof ClassMethod) {
-                $this->isValidLowerName($name);
-                $this->isValidGlobalNameLength($name, 'Method');
+                $this->checkLowerName($name);
+                $this->checkGlobalNameLength($name, 'Method');
+                $this->checkSuffix($name, 'Method');
             } elseif ($this->node instanceof Function_) {
-                $this->isValidLowerName($name);
-                $this->isValidGlobalNameLength($name, 'Function');
+                $this->checkLowerName($name);
+                $this->checkGlobalNameLength($name, 'Function');
+                $this->checkSuffix($name, 'Function');
             } elseif ($this->node instanceof Variable) {
-                $this->isValidLowerName($name);
-                $this->isValidLocalNameLength($name, 'Variable');
+                $this->checkLowerName($name);
+                $this->checkLocalNameLength($name, 'Variable');
+                $this->checkSuffix($name, 'Variable');
             } elseif ($name !== '') {
                 //var_dump(get_class($this->node), $name);
             }
@@ -110,14 +135,14 @@ class NameChecker extends NodeChecker
             if ($this->node instanceof Const_) {
                 foreach ($this->node->consts as $const) {
                     $constName = (string) $const->name;
-                    $this->isValidAllCapName($constName);
-                    $this->isValidGlobalNameLength($constName, 'Constant');
+                    $this->checkAllCapName($constName);
+                    $this->checkGlobalNameLength($constName, 'Constant');
                 }
             } elseif ($this->node instanceof ClassConst) {
                 foreach ($this->node->consts as $const) {
                     $constName = (string) $const->name;
-                    $this->isValidAllCapName($constName);
-                    $this->isValidGlobalNameLength($constName, 'Constant');
+                    $this->checkAllCapName($constName);
+                    $this->checkGlobalNameLength($constName, 'Constant');
                 }
             }
         }
@@ -162,77 +187,72 @@ class NameChecker extends NodeChecker
         return ! Regex::hasMatch('/[A-Z]{2}|_/', $name);
     }
 
-    protected function isValidAllCapName(string $name): bool
+    protected function checkAllCapName(string $name): void
     {
         if (! Regex::hasMatch('/^[A-Z]+(_[A-Z]+)*$/', $name)) {
             $issue = 'Not all caps: ' . $name;
             $this->addIssue($issue);
-            return false;
         }
-
-        return true;
     }
 
     /**
      * Global names are names of classes, methods, functions. etc. that are globally visible.
      */
-    protected function isValidGlobalNameLength(string $name, string $type): bool
+    protected function checkGlobalNameLength(string $name, string $type): void
     {
         if (strlen($name) > 32) {
             $issue = $type . ' name too long: ' . $name;
             $this->addIssue($issue);
-            return false;
         }
 
         if (strlen($name) < 3 && ! in_array($name, self::VALID_SHORT_NAMES, true)) {
             $issue = $type . ' name too short: ' . $name;
             $this->addIssue($issue);
-            return false;
         }
-
-        return true;
     }
 
     /**
      * Local names are names of variables that are only locally visible and can be shorter.
      */
-    protected function isValidLocalNameLength(string $name, string $type): bool
+    protected function checkLocalNameLength(string $name, string $type): void
     {
         if (strlen($name) > 24) {
             $issue = $type . ' name too long: ' . $name;
             $this->addIssue($issue);
-            return false;
         }
 
         if (strlen($name) < 3 && ! in_array($name, self::VALID_SHORT_NAMES, true)) {
             $issue = $type . ' name too short: ' . $name;
             $this->addIssue($issue);
-            return false;
         }
-
-        return true;
     }
 
-    protected function isValidLowerName(string $name): bool
+    protected function checkLowerName(string $name): void
     {
         if (! self::isLowerCamelCase($name)) {
             $issue = 'Not camel case: ' . $name;
             $this->addIssue($issue);
-            return false;
         }
-
-        return true;
     }
 
-    protected function isValidUpperName(string $name): bool
+    protected function checkSuffix(string $name, string $type): void
+    {
+        foreach (self::BAD_SUFFIXES as $badSuffix) {
+            if (Regex::hasMatch('/' . $badSuffix . '$/i', $name)) {
+                $this->addIssue(
+                    sprintf('%s names should not end in %s: %s', $type, $badSuffix, $name)
+                );
+                break;
+            }
+        }
+    }
+
+    protected function checkUpperName(string $name): void
     {
         if (! self::isUpperCamelCase($name)) {
             $issue = 'Not camel case: ' . $name;
             $this->addIssue($issue);
-            return false;
         }
-
-        return true;
     }
 
     protected function getName(Node $node): ?string
