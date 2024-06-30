@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace DouglasGreen\PhpLinter\Nikic;
 
+use DouglasGreen\PhpLinter\ComposerFile;
 use DouglasGreen\PhpLinter\Nikic\Checker\ArrayChecker;
 use DouglasGreen\PhpLinter\Nikic\Checker\ClassChecker;
 use DouglasGreen\PhpLinter\Nikic\Checker\ExpressionChecker;
@@ -24,6 +25,7 @@ use PhpParser\Node\Identifier;
 use PhpParser\Node\Stmt\Class_;
 use PhpParser\Node\Stmt\ClassMethod;
 use PhpParser\Node\Stmt\Function_;
+use PhpParser\Node\Stmt\Namespace_;
 use PhpParser\Node\Stmt\Trait_;
 use PhpParser\Node\Stmt\TryCatch;
 use PhpParser\NodeVisitorAbstract;
@@ -41,6 +43,8 @@ class ElementVisitor extends NodeVisitorAbstract
      */
     protected array $methodCalls = [];
 
+    protected ?string $currentNamespace = null;
+
     protected ?string $currentClassName = null;
 
     protected ?string $currentFile = null;
@@ -54,11 +58,21 @@ class ElementVisitor extends NodeVisitorAbstract
      */
     protected bool $isLocalScope = false;
 
+    public function __construct(
+        protected readonly ComposerFile $composerFile,
+        protected readonly string $phpFile
+    ) {}
+
     public function enterNode(Node $node): null
     {
+        if ($node instanceof Namespace_ && $node->name !== null) {
+            $this->currentNamespace = implode('\\', $node->name->parts);
+        }
+
         // @todo Remove words like Manager, Handler, etc. if no conflict
         if ($node instanceof Class_) {
             $this->currentClassName = $node->name === null ? null : $node->name->name;
+
             // Run checks on class node.
             $classChecker = new ClassChecker($node);
             $this->addIssues($classChecker->check());
@@ -68,9 +82,26 @@ class ElementVisitor extends NodeVisitorAbstract
                 'readonly' => $node->isReadonly(),
                 'anonymous' => $node->isAnonymous(),
             ];
+
             // Start class visitor to examine nodes within class.
             $this->classVisitor = new ClassVisitor($this->currentClassName, $attribs);
             $this->isLocalScope = true;
+
+            // Check namespace name, class name, and file path.
+            if ($this->currentNamespace !== null) {
+                $expectedFile = $this->composerFile->convertClassNameToFileName(
+                    $this->currentNamespace . '\\' . $this->currentClassName
+                );
+                if ($expectedFile !== $this->phpFile) {
+                    $this->addIssue(
+                        sprintf(
+                            'File name %s does not match expected file name %s.',
+                            $this->phpFile,
+                            $expectedFile
+                        )
+                    );
+                }
+            }
         }
 
         // Continue examining nodes within class.
@@ -107,6 +138,7 @@ class ElementVisitor extends NodeVisitorAbstract
 
             $params = $funcChecker->getParams();
 
+            // Start function visitor to examine nodes within function.
             $this->functionVisitor = new FunctionVisitor(
                 (string) $this->currentFunctionName,
                 $attribs,
@@ -171,6 +203,10 @@ class ElementVisitor extends NodeVisitorAbstract
 
     public function leaveNode(Node $node): null
     {
+        if ($node instanceof Namespace_) {
+            $this->currentNamespace = null;
+        }
+
         if ($node instanceof Class_) {
             $this->classVisitor->checkClass();
             $this->addIssues($this->classVisitor->getIssues());
