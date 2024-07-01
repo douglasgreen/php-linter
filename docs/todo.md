@@ -86,3 +86,7 @@ cache, update the cache with just those files. Use it instead of summary.xml for
 ### Caching for check-style
 
 Save errors/code info in a cache file for check-style.
+
+### Docblocks
+
+Look for Docblock-type tags that are not in doc-block style comments.
