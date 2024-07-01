@@ -241,9 +241,6 @@ class MetricChecker
         return self::STATUS_OK;
     }
 
-    /**
-     * @SuppressWarnings(PHPMD.BooleanArgumentFlag)
-     */
     protected function report(string $issue, bool $isError = false): void
     {
         if ($isError) {
