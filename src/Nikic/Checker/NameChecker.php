@@ -22,22 +22,36 @@ use PhpParser\Node\Stmt\Trait_;
 class NameChecker extends NodeChecker
 {
     /**
-     * @var list<string>
+     * @var array<string, string>
      */
-    protected const BAD_SUFFIXES = [
-        'Class',
-        'Data',
-        'Function',
-        'Impl',
-        'Implementation',
-        'Info',
-        'Information',
-        'Interface',
-        'Method',
-        'Object',
-        'Stuff',
-        'Trait',
-        'Variable',
+    protected const BAD_CLASS_SUFFIXES = [
+        'Abstract' => 'is redundant',
+        'Array' => 'leaks implementation details',
+        'Collection' => 'leaks implementation details',
+        'Component' => 'is architectural, not class-related',
+        'Container' => 'leaks implementation details',
+        'Helper' => 'can be dropped',
+        'Impl' => 'is redundant',
+        'Implementation' => 'is redundant',
+        'Instance' => 'is redundant',
+        'List' => 'leaks implementation details',
+        'Manager' => 'can be dropped',
+        'Map' => 'leaks implementation details',
+        'Module' => 'is architectural, not class-related',
+        'Object' => 'is redundant',
+        'Processor' => 'can be dropped',
+        'Set' => 'leaks implementation details',
+        'Type' => 'is redundant',
+    ];
+
+    /**
+     * @var array<string, string>
+     */
+    protected const BAD_GENERIC_SUFFIXES = [
+        'Data' => 'is generic',
+        'Info' => 'is generic',
+        'Information' => 'is generic',
+        'Stuff' => 'is generic',
     ];
 
     /**
@@ -237,15 +251,28 @@ class NameChecker extends NodeChecker
 
     protected function checkSuffix(string $name, string $type): void
     {
-        foreach (self::BAD_SUFFIXES as $badSuffix) {
-            if (Regex::hasMatch('/' . $badSuffix . '$/i', $name)) {
+        $badSuffixes = self::BAD_GENERIC_SUFFIXES;
+        if (in_array($type, ['Namespace', 'Class', 'Interface', 'Trait'], true)) {
+            $badSuffixes = array_merge($badSuffixes, self::BAD_CLASS_SUFFIXES);
+        }
+
+        foreach ($badSuffixes as $badSuffix => $reason) {
+            if (Regex::hasMatch('/' . $badSuffix . '$/i', $name) || str_ends_with($name, $type)) {
                 $this->addIssue(
-                    sprintf('%s names should not end in %s: %s', $type, $badSuffix, $name)
+                    sprintf(
+                        '%s names like %s should not end in %s because it %s.',
+                        $type,
+                        $name,
+                        $badSuffix,
+                        $reason
+                    )
                 );
                 break;
             }
         }
     }
+
+    public function badFunction(): void {}
 
     protected function checkUpperName(string $name): void
     {
