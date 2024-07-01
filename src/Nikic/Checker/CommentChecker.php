@@ -8,6 +8,9 @@ use DouglasGreen\Utility\Regex\Regex;
 use PhpParser\Comment;
 use PhpParser\Comment\Doc;
 
+/**
+ * @todo Rework this so it doesn't match emails.
+ */
 class CommentChecker extends NodeChecker
 {
     /**
@@ -76,6 +79,63 @@ class CommentChecker extends NodeChecker
             && (! str_contains($comment->getText(), "\n"));
     }
 
+    /**
+     * @return array{description: string, tags: array<string, list<string>>}
+     */
+    protected static function parseDocblock(string $docblock): array
+    {
+        // Remove leading and trailing whitespace
+        $docblock = trim($docblock);
+
+        // Remove the opening and closing comment delimiters
+        $docblock = preg_replace('/^\/\*\*?|\*\/$/', '', $docblock);
+
+        // Split the docblock into lines
+        $lines = explode("\n", (string) $docblock);
+
+        // Strip asterisks and slashes from the beginning of each line
+        $lines = array_map(
+            fn($line): string => Regex::replace('/^\s*\*\s?/', '', $line),
+            $lines
+        );
+
+        $tags = [];
+        $currentTag = null;
+        $description = '';
+
+        foreach ($lines as $line) {
+            $line = trim((string) $line);
+
+            if (preg_match('/^(@\w+)\s*(.*)/', $line, $matches)) {
+                // Start of a new tag
+                if ($currentTag !== null) {
+                    $tags[$currentTag['name']][] = trim($currentTag['text']);
+                }
+
+                $currentTag = [
+                    'name' => $matches[1],
+                    'text' => $matches[2],
+                ];
+            } elseif ($currentTag !== null) {
+                // Continuation of the current tag
+                $currentTag['text'] .= ' ' . $line;
+            } elseif ($line !== '') {
+                // Part of the description
+                $description .= $line . ' ';
+            }
+        }
+
+        // Add the last tag if there is one
+        if ($currentTag !== null) {
+            $tags[$currentTag['name']][] = trim($currentTag['text']);
+        }
+
+        return [
+            'description' => trim($description),
+            'tags' => $tags,
+        ];
+    }
+
     protected function checkComment(Comment $comment): void
     {
         if ($comment instanceof Doc) {
@@ -97,8 +157,17 @@ class CommentChecker extends NodeChecker
         $text = $doc->getText();
         $tags = self::getPhpdocTags($text);
         foreach ($tags as $tag) {
-            if (! in_array(strtolower($tag), self::PHPDOC_TAGS, true)) {
+            $lowTag = strtolower($tag);
+            if (! in_array($lowTag, self::PHPDOC_TAGS, true)) {
                 $this->addIssue('Invalid PHPDoc tag found in docblock: ' . $tag);
+            }
+
+            $data = self::parseDocblock($text);
+
+            if (isset($data['tags']['@todo'])) {
+                foreach ($data['tags']['@todo'] as $todo) {
+                    $this->addIssue('Note: @todo ' . $todo);
+                }
             }
         }
     }
@@ -110,10 +179,19 @@ class CommentChecker extends NodeChecker
         $text = $comment->getText();
         $tags = self::getPhpdocTags($text);
         foreach ($tags as $tag) {
-            if (in_array(strtolower($tag), self::PHPDOC_TAGS, true)) {
+            $lowTag = strtolower($tag);
+            if (in_array($lowTag, self::PHPDOC_TAGS, true)) {
                 $this->addIssue(
                     'PHPDoc tag found in multi-line comment instead of dockblock: ' . $tag
                 );
+            }
+
+            $data = self::parseDocblock($text);
+
+            if (isset($data['tags']['@todo'])) {
+                foreach ($data['tags']['@todo'] as $todo) {
+                    $this->addIssue('Note: @todo ' . $todo);
+                }
             }
         }
     }
@@ -125,10 +203,15 @@ class CommentChecker extends NodeChecker
         $text = $comment->getText();
         $tags = self::getPhpdocTags($text);
         foreach ($tags as $tag) {
-            if (in_array(strtolower($tag), self::PHPDOC_TAGS, true)) {
+            $lowTag = strtolower($tag);
+            if (in_array($lowTag, self::PHPDOC_TAGS, true)) {
                 $this->addIssue(
                     'PHPDoc tag found in single-line comment instead of dockblock: ' . $tag
                 );
+            }
+
+            if ($lowTag === '@todo') {
+                $this->addIssue('Note: ' . Regex::replace('#^//\s*#', '', trim($text)));
             }
         }
     }
