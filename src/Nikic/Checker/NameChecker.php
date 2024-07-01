@@ -257,18 +257,24 @@ class NameChecker extends NodeChecker
         }
 
         foreach ($badSuffixes as $badSuffix => $reason) {
-            if (Regex::hasMatch('/' . $badSuffix . '$/i', $name) || str_ends_with($name, $type)) {
-                $this->addIssue(
-                    sprintf(
-                        '%s names like %s should not end in %s because it %s.',
-                        $type,
-                        $name,
-                        $badSuffix,
-                        $reason
-                    )
-                );
-                break;
+            if (Regex::hasMatch('/' . $badSuffix . '$/i', $name)) {
+                $match = $badSuffix;
+            } elseif (str_ends_with($name, $type)) {
+                $match = $type;
+            } else {
+                continue;
             }
+
+            $this->addIssue(
+                sprintf(
+                    '%s names like %s should not end in %s because it %s.',
+                    $type,
+                    $name,
+                    $match,
+                    $reason
+                )
+            );
+            break;
         }
     }
 
