@@ -167,7 +167,7 @@ class NameChecker extends NodeChecker
     protected static function getVariableName(Variable $variable): ?string
     {
         if (is_string($variable->name)) {
-            return '$' . $variable->name;
+            return $variable->name;
         }
 
         // For complex variable names like ${$expr}, $variable->name is an instance of Expr, so
