@@ -16,32 +16,59 @@ use DouglasGreen\PhpLinter\Nikic\Checker\OperatorChecker;
 use DouglasGreen\PhpLinter\Nikic\Checker\TryCatchChecker;
 use DouglasGreen\PhpLinter\Nikic\Visitor\ClassVisitor;
 use DouglasGreen\PhpLinter\Nikic\Visitor\FunctionVisitor;
+use DouglasGreen\PhpLinter\Nikic\Visitor\NameVisitor;
 use PhpParser\Node;
 use PhpParser\Node\Expr\Array_;
 use PhpParser\Node\Expr\Closure;
+use PhpParser\Node\Expr\ConstFetch;
+use PhpParser\Node\Expr\FuncCall;
 use PhpParser\Node\Expr\MethodCall;
 use PhpParser\Node\Expr\StaticCall;
 use PhpParser\Node\Identifier;
+use PhpParser\Node\Name;
 use PhpParser\Node\Stmt\Class_;
 use PhpParser\Node\Stmt\ClassMethod;
 use PhpParser\Node\Stmt\Function_;
 use PhpParser\Node\Stmt\Namespace_;
 use PhpParser\Node\Stmt\Trait_;
 use PhpParser\Node\Stmt\TryCatch;
+use PhpParser\Node\Stmt\Use_;
 use PhpParser\NodeVisitorAbstract;
 
 class ElementVisitor extends NodeVisitorAbstract
 {
     use IssueHolder;
 
+    /**
+     * @var bool[]
+     */
+    public $qualifiedNames;
+
     protected ClassVisitor $classVisitor;
 
     protected FunctionVisitor $functionVisitor;
+
+    protected NameVisitor $nameVisitor;
+
+    /**
+     * @var array<string, bool>
+     */
+    protected array $constFetches = [];
+
+    /**
+     * @var array<string, bool>
+     */
+    protected array $funcCalls = [];
 
     /**
      * @var array<string, bool>
      */
     protected array $methodCalls = [];
+
+    /**
+     * @var array<string, bool>
+     */
+    protected array $useStatements = [];
 
     protected ?string $currentNamespace = null;
 
@@ -61,10 +88,43 @@ class ElementVisitor extends NodeVisitorAbstract
         protected readonly string $phpFile
     ) {}
 
+    public function afterTraverse(array $nodes): null
+    {
+        // We have to wait until after traverse until both qualified names and use statements are
+        // available.
+        if (isset($this->nameVisitor)) {
+            $qualifiedNames = $this->nameVisitor->getQualifiedNames();
+            foreach (array_keys($qualifiedNames) as $qualifiedName) {
+                if (isset($this->useStatements[$qualifiedName])) {
+                    continue;
+                }
+
+                if (isset($this->funcCalls[$qualifiedName])) {
+                    continue;
+                }
+
+                if (isset($this->constFetches[$qualifiedName])) {
+                    continue;
+                }
+
+                $this->addIssue('Import external classes with use statement: ' . $qualifiedName);
+            }
+        }
+
+        return null;
+    }
+
     public function enterNode(Node $node): null
     {
         if ($node instanceof Namespace_ && $node->name !== null) {
-            $this->currentNamespace = implode('\\', $node->name->parts);
+            $this->currentNamespace = implode('\\', $node->name->getParts());
+        }
+
+        if ($node instanceof Use_) {
+            foreach ($node->uses as $use) {
+                $name = (string) $use->name;
+                $this->useStatements[$name] = true;
+            }
         }
 
         // Classes and traits share some of the same code.
@@ -182,6 +242,27 @@ class ElementVisitor extends NodeVisitorAbstract
 
         $nameChecker = new NameChecker($node);
         $this->addIssues($nameChecker->check());
+
+        if ($node instanceof FuncCall && $node->name instanceof Name) {
+            $name = $node->name->toString();
+            $this->funcCalls[$name] = true;
+        }
+
+        if ($node instanceof ConstFetch && $node->name instanceof Name) {
+            $name = $node->name->toString();
+            $this->constFetches[$name] = true;
+        }
+
+        if (! isset($this->nameVisitor)) {
+            $this->nameVisitor = new NameVisitor();
+        }
+
+        $this->nameVisitor->checkNode($node);
+
+        if ($node instanceof Name && $node->isFullyQualified()) {
+            $name = $node->toString();
+            $this->qualifiedNames[$name] = true;
+        }
 
         $opChecker = new OperatorChecker($node);
         $this->addIssues($opChecker->check());

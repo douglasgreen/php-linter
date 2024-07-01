@@ -30,8 +30,6 @@ $filesChecked = [];
 $repository = new Repository();
 $phpFiles = $repository->getPhpFiles();
 
-var_dump($phpFiles);
-
 $summaryFile = $cache->getSummaryFile();
 $xmlPath = new Path($summaryFile);
 if (! $xmlPath->exists()) {

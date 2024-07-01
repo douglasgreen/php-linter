@@ -10,6 +10,7 @@ use DouglasGreen\PhpLinter\Repository;
 use DouglasGreen\Utility\FileSystem\PathUtil;
 use PhpParser\Error;
 use PhpParser\NodeTraverser;
+use PhpParser\NodeVisitor\NameResolver;
 use PhpParser\ParserFactory;
 
 // Must be run in repository root directory.
@@ -45,6 +46,8 @@ foreach ($phpFiles as $phpFile) {
         }
 
         $traverser = new NodeTraverser();
+        // @todo Add this later and figure out how to get original name.
+        //$traverser->addVisitor(new NameResolver());
         $visitor = new ElementVisitor($composerFile, $phpFile);
         $traverser->addVisitor($visitor);
         $traverser->traverse($stmts);

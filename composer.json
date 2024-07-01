@@ -50,7 +50,7 @@
         "php": ">=8.1",
         "douglasgreen/optparser": "dev-main",
         "douglasgreen/utility": "dev-main",
-        "nikic/php-parser": "^4.19"
+        "nikic/php-parser": "^5.0"
     },
     "require-dev": {
         "douglasgreen/config-setup": "dev-main",
