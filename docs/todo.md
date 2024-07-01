@@ -81,3 +81,12 @@ So you shouldn't using imperative verb like check or validate. Instead:
 ### Name printer
 
 Write a name printer for $var and func(), etc.
+
+### Automatic update of staged/changed files
+
+When check-metrics is run, make a list of staged/changed files. If any are newer than the staged.xml cache, update the
+cache with just those files. Use it instead of summary.xml for those files.
+
+### Caching for check-style
+
+Save errors/code info in a cache file for check-style.
