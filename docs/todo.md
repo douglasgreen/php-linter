@@ -90,3 +90,7 @@ Save errors/code info in a cache file for check-style.
 ### Docblocks
 
 Look for Docblock-type tags that are not in doc-block style comments.
+
+### Functions
+
+Give warning to move functions and constants into classes.
