@@ -84,8 +84,8 @@ Write a name printer for $var and func(), etc.
 
 ### Automatic update of staged/changed files
 
-When check-metrics is run, make a list of staged/changed files. If any are newer than the staged.xml cache, update the
-cache with just those files. Use it instead of summary.xml for those files.
+When check-metrics is run, make a list of staged/changed files. If any are newer than the staged.xml
+cache, update the cache with just those files. Use it instead of summary.xml for those files.
 
 ### Caching for check-style
 
