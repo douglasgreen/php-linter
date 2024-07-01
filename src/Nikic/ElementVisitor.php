@@ -53,6 +53,11 @@ class ElementVisitor extends NodeVisitorAbstract
     /**
      * @var array<string, bool>
      */
+    protected array $classNames = [];
+
+    /**
+     * @var array<string, bool>
+     */
     protected array $constFetches = [];
 
     /**
@@ -99,6 +104,10 @@ class ElementVisitor extends NodeVisitorAbstract
                     continue;
                 }
 
+                if (isset($this->classNames[$qualifiedName])) {
+                    continue;
+                }
+
                 if (isset($this->funcCalls[$qualifiedName])) {
                     continue;
                 }
@@ -131,6 +140,9 @@ class ElementVisitor extends NodeVisitorAbstract
         // @todo Remove words like Manager, Handler, etc. if no conflict
         if ($node instanceof Class_ || $node instanceof Trait_) {
             $this->currentClassName = $node->name === null ? null : $node->name->name;
+            if ($this->currentClassName !== null) {
+                $this->classNames[$this->currentClassName] = true;
+            }
 
             // Run checks on class node.
             $classChecker = new ClassChecker($node);
