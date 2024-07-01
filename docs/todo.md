@@ -79,4 +79,5 @@ So you shouldn't using imperative verb like check or validate. Instead:
 -   Express a goal like shouldAccept() or shouldUse().
 
 ### Name printer
+
 Write a name printer for $var and func(), etc.

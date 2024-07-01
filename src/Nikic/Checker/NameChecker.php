@@ -272,8 +272,6 @@ class NameChecker extends NodeChecker
         }
     }
 
-    public function badFunction(): void {}
-
     protected function checkUpperName(string $name): void
     {
         if (! self::isUpperCamelCase($name)) {

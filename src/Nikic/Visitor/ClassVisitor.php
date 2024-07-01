@@ -42,9 +42,34 @@ class ClassVisitor extends VisitorChecker
      */
     public function checkClass(): void
     {
-        foreach ($this->methods as $methodName => $methodInfo) {
-            if ($methodInfo['visibility'] === 'private' && ! $methodInfo['used']) {
-                $type = $methodInfo['static'] ? 'static' : 'non-static';
+        $visibilities = [];
+        foreach ($this->properties as $propName => $prop) {
+            $visibilities[$propName] = $prop['visibility'];
+            if ($prop['used']) {
+                continue;
+            }
+
+            $type = $prop['static'] ? 'static' : 'non-static';
+
+            if ($prop['visibility'] === 'private') {
+                $issue = sprintf(
+                    'Private %s property %s is not used within the class.',
+                    $type,
+                    $propName
+                );
+                $this->issues[$issue] = true;
+            } elseif ($prop['visibility'] === 'public') {
+                $issue = sprintf('Avoid using public properties like %s', $propName);
+                $this->issues[$issue] = true;
+            }
+        }
+
+        $this->checkVisibilityOrder($visibilities, 'Property');
+        $visibilities = [];
+        foreach ($this->methods as $methodName => $method) {
+            $visibilities[$methodName] = $method['visibility'];
+            if ($method['visibility'] === 'private' && ! $method['used']) {
+                $type = $method['static'] ? 'static' : 'non-static';
                 $className = $this->className ?? '<anonymous>';
                 $issue = sprintf(
                     'Private %s method %s::%s() is not used within the class.',
@@ -56,25 +81,7 @@ class ClassVisitor extends VisitorChecker
             }
         }
 
-        foreach ($this->properties as $propName => $propInfo) {
-            if ($propInfo['used']) {
-                continue;
-            }
-
-            $type = $propInfo['static'] ? 'static' : 'non-static';
-
-            if ($propInfo['visibility'] === 'private') {
-                $issue = sprintf(
-                    'Private %s property %s is not used within the class.',
-                    $type,
-                    $propName
-                );
-                $this->issues[$issue] = true;
-            } elseif ($propInfo['visibility'] === 'public') {
-                $issue = sprintf('Avoid using public properties like %s', $propName);
-                $this->issues[$issue] = true;
-            }
-        }
+        $this->checkVisibilityOrder($visibilities, 'Method');
     }
 
     public function checkNode(Node $node): void
@@ -88,6 +95,10 @@ class ClassVisitor extends VisitorChecker
                     'static' => $node->isStatic(),
                     'used' => false,
                 ];
+            }
+
+            if ($this->methods !== []) {
+                $this->addIssue('Properties should come before methods');
             }
         }
 
@@ -117,6 +128,50 @@ class ClassVisitor extends VisitorChecker
                     ),
                 );
             }
+        }
+    }
+
+    /**
+     * Check if visibility order is public, then protected, then private.
+     *
+     * @param array<string, string> $visibilities
+     */
+    public function checkVisibilityOrder(array $visibilities, string $type): void
+    {
+        $hasPublic = false;
+        $hasProtected = false;
+        $hasPrivate = false;
+        $badOrder = null;
+        foreach ($visibilities as $name => $visibility) {
+            if ($visibility === 'public') {
+                $hasPublic = true;
+                if ($hasProtected || $hasPrivate) {
+                    $badOrder = $name;
+                    break;
+                }
+            }
+
+            if ($visibility === 'protected') {
+                $hasProtected = true;
+                if ($hasPrivate) {
+                    $badOrder = $name;
+                    break;
+                }
+            }
+
+            if ($visibility === 'private') {
+                $hasPrivate = true;
+            }
+        }
+
+        if ($badOrder !== null) {
+            $this->addIssue(
+                sprintf(
+                    '%s visibility order should be public, then protected, then private: %s',
+                    $type,
+                    $badOrder
+                )
+            );
         }
     }
 
