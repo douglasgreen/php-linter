@@ -1,0 +1,60 @@
+#!/usr/bin/env php
+<?php
+
+declare(strict_types=1);
+
+use DouglasGreen\PhpLinter\ComposerFile;
+use DouglasGreen\PhpLinter\IgnoreList;
+use DouglasGreen\PhpLinter\Nikic\ElementVisitor;
+use DouglasGreen\PhpLinter\Repository;
+use DouglasGreen\Utility\FileSystem\PathUtil;
+use PhpParser\Error;
+use PhpParser\NodeTraverser;
+use PhpParser\NodeVisitor\NameResolver;
+use PhpParser\ParserFactory;
+
+// Must be run in repository root directory.
+$currentDir = getcwd();
+if ($currentDir === false) {
+    throw new Exception('Unable to get working dir');
+}
+
+require_once $currentDir . '/vendor/autoload.php';
+
+$composerFile = new ComposerFile($currentDir . '/composer.json');
+
+$ignoreList = new IgnoreList($currentDir);
+
+$filesChecked = [];
+
+$repository = new Repository();
+$phpFiles = $repository->getPhpFiles();
+$repository->check();
+$repository->printIssues();
+
+$parser = (new ParserFactory())->createForNewestSupportedVersion();
+
+foreach ($phpFiles as $phpFile) {
+    if ($ignoreList->shouldIgnore($phpFile)) {
+        continue;
+    }
+
+    try {
+        $code = PathUtil::loadString($phpFile);
+        $stmts = $parser->parse($code);
+        if ($stmts === null) {
+            echo 'No statements found in file.' . PHP_EOL;
+            continue;
+        }
+
+        $traverser = new NodeTraverser();
+        // @todo Add this later and figure out how to get original name.
+        //$traverser->addVisitor(new NameResolver());
+        $visitor = new ElementVisitor($composerFile, $phpFile);
+        $traverser->addVisitor($visitor);
+        $traverser->traverse($stmts);
+        $visitor->printIssues($phpFile);
+    } catch (Error $error) {
+        echo 'Parse Error: ', $error->getMessage();
+    }
+}
