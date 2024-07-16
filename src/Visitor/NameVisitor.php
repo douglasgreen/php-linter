@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace DouglasGreen\PhpLinter\Nikic\Visitor;
+namespace DouglasGreen\PhpLinter\Visitor;
 
 use PhpParser\Node\Expr\New_;
 use PhpParser\Node\Expr\Instanceof_;

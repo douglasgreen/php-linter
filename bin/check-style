@@ -4,8 +4,8 @@
 declare(strict_types=1);
 
 use DouglasGreen\PhpLinter\ComposerFile;
+use DouglasGreen\PhpLinter\ElementVisitor;
 use DouglasGreen\PhpLinter\IgnoreList;
-use DouglasGreen\PhpLinter\Nikic\ElementVisitor;
 use DouglasGreen\PhpLinter\Repository;
 use PhpParser\Error;
 use PhpParser\NodeTraverser;

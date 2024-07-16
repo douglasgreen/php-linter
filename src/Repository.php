@@ -114,18 +114,19 @@ class Repository
      * Example: file -b bin/task.php
      * a /usr/bin/env php script, ASCII text executable
      */
-    protected function getFileType(
-        string $path
-    ): ?string {
+    protected function getFileType(string $path): ?string
+    {
         if (! str_contains($path, '.')) {
             $fileHandle = fopen($path, 'r');
             if ($fileHandle === false) {
                 throw new Exception('Unable to open file for reading');
             }
+
             $line = fgets($fileHandle);
             if ($line === false) {
                 return null;
             }
+
             if (preg_match('/^#!.*\b(\w+)$/', rtrim($line), $match)) {
                 return $this->getExtensionType($match[1]);
             }

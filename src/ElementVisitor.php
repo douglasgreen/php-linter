@@ -2,23 +2,21 @@
 
 declare(strict_types=1);
 
-namespace DouglasGreen\PhpLinter\Nikic;
+namespace DouglasGreen\PhpLinter;
 
-use DouglasGreen\PhpLinter\ComposerFile;
-use DouglasGreen\PhpLinter\IssueHolder;
-use DouglasGreen\PhpLinter\Nikic\Checker\ArrayChecker;
-use DouglasGreen\PhpLinter\Nikic\Checker\ClassChecker;
-use DouglasGreen\PhpLinter\Nikic\Checker\CommentChecker;
-use DouglasGreen\PhpLinter\Nikic\Checker\ExpressionChecker;
-use DouglasGreen\PhpLinter\Nikic\Checker\FunctionCallChecker;
-use DouglasGreen\PhpLinter\Nikic\Checker\FunctionChecker;
-use DouglasGreen\PhpLinter\Nikic\Checker\LocalScopeChecker;
-use DouglasGreen\PhpLinter\Nikic\Checker\NameChecker;
-use DouglasGreen\PhpLinter\Nikic\Checker\OperatorChecker;
-use DouglasGreen\PhpLinter\Nikic\Checker\TryCatchChecker;
-use DouglasGreen\PhpLinter\Nikic\Visitor\ClassVisitor;
-use DouglasGreen\PhpLinter\Nikic\Visitor\FunctionVisitor;
-use DouglasGreen\PhpLinter\Nikic\Visitor\NameVisitor;
+use DouglasGreen\PhpLinter\Checker\ArrayChecker;
+use DouglasGreen\PhpLinter\Checker\ClassChecker;
+use DouglasGreen\PhpLinter\Checker\CommentChecker;
+use DouglasGreen\PhpLinter\Checker\ExpressionChecker;
+use DouglasGreen\PhpLinter\Checker\FunctionCallChecker;
+use DouglasGreen\PhpLinter\Checker\FunctionChecker;
+use DouglasGreen\PhpLinter\Checker\LocalScopeChecker;
+use DouglasGreen\PhpLinter\Checker\NameChecker;
+use DouglasGreen\PhpLinter\Checker\OperatorChecker;
+use DouglasGreen\PhpLinter\Checker\TryCatchChecker;
+use DouglasGreen\PhpLinter\Visitor\ClassVisitor;
+use DouglasGreen\PhpLinter\Visitor\FunctionVisitor;
+use DouglasGreen\PhpLinter\Visitor\NameVisitor;
 use PhpParser\Node;
 use PhpParser\Node\Expr\Array_;
 use PhpParser\Node\Expr\Closure;

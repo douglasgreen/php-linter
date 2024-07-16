@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace DouglasGreen\PhpLinter\Nikic\Checker;
+namespace DouglasGreen\PhpLinter\Checker;
 
 use PhpParser\Node\Stmt\Nop;
 use PhpParser\Node\Stmt\TryCatch;
