@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace DouglasGreen\PhpLinter\Nikic\Checker;
 
-use DouglasGreen\Utility\Regex\Regex;
 use PhpParser\Node;
 use PhpParser\Node\Expr\PropertyFetch;
 use PhpParser\Node\Expr\Variable;
@@ -185,7 +184,7 @@ class NameChecker extends NodeChecker
             return true;
         }
 
-        return ! Regex::hasMatch('/\$[A-Z]|^[A-Z]|[A-Z]{2}|_/', $name);
+        return preg_match('/\$[A-Z]|^[A-Z]|[A-Z]{2}|_/', $name) === 0;
     }
 
     protected static function isUpperCamelCase(string $name): bool
@@ -198,12 +197,12 @@ class NameChecker extends NodeChecker
             return true;
         }
 
-        return ! Regex::hasMatch('/[A-Z]{2}|_/', $name);
+        return preg_match('/[A-Z]{2}|_/', $name) === 0;
     }
 
     protected function checkAllCapName(string $name): void
     {
-        if (! Regex::hasMatch('/^[A-Z]+(_[A-Z]+)*$/', $name)) {
+        if (preg_match('/^[A-Z]+(_[A-Z]+)*$/', $name) === 0) {
             $issue = 'Not all caps: ' . $name;
             $this->addIssue($issue);
         }
@@ -257,7 +256,7 @@ class NameChecker extends NodeChecker
         }
 
         foreach ($badSuffixes as $badSuffix => $reason) {
-            if (Regex::hasMatch('/' . $badSuffix . '$/i', $name)) {
+            if (preg_match('/' . $badSuffix . '$/i', $name)) {
                 $match = $badSuffix;
             } elseif (str_ends_with($name, $type)) {
                 $match = $type;

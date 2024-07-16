@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace DouglasGreen\PhpLinter\Nikic\Checker;
 
-use DouglasGreen\Utility\Regex\Regex;
 use PhpParser\Comment;
 use PhpParser\Comment\Doc;
 
@@ -64,8 +63,7 @@ class CommentChecker extends NodeChecker
      */
     protected static function getPhpdocTags(string $text): array
     {
-        $matches = Regex::matchAll('/@\w+(-\w+)*/', $text);
-        if ($matches !== []) {
+        if (preg_match_all('/@\w+(-\w+)*/', $text, $matches)) {
             return $matches[0];
         }
 
@@ -95,7 +93,7 @@ class CommentChecker extends NodeChecker
 
         // Strip asterisks and slashes from the beginning of each line
         $lines = array_map(
-            fn($line): string => Regex::replace('/^\s*\*\s?/', '', $line),
+            fn($line): string => (string) preg_replace('/^\s*\*\s?/', '', $line),
             $lines
         );
 
@@ -216,7 +214,7 @@ class CommentChecker extends NodeChecker
             }
 
             if ($lowTag === '@todo') {
-                $this->addIssue('Note: ' . Regex::replace('#^//\s*#', '', trim($text)));
+                $this->addIssue('Note: ' . preg_replace('#^//\s*#', '', trim($text)));
             }
         }
     }

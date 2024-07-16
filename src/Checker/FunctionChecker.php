@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace DouglasGreen\PhpLinter\Nikic\Checker;
 
-use DouglasGreen\Utility\Regex\Regex;
 use PhpParser\Node\Expr\Variable;
 use PhpParser\Node\Identifier;
 use PhpParser\Node\Param;
@@ -475,7 +474,7 @@ class FunctionChecker extends NodeChecker
 
     protected function checkReturnType(string $funcName, string $funcType, string $returnType): void
     {
-        $prefix = Regex::replace('/([a-z])[A-Z_].*/', '\1', $funcName);
+        $prefix = (string) preg_replace('/([a-z])[A-Z_].*/', '\1', $funcName);
 
         if ($returnType === 'bool') {
             if (in_array($prefix, self::BOOL_FUNC_NAMES, true)) {

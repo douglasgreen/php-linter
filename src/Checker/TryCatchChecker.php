@@ -19,7 +19,7 @@ class TryCatchChecker extends NodeChecker
         }
 
         foreach ($this->node->catches as $catch) {
-            if (empty($catch->stmts) || $catch->stmts[0] instanceof Nop) {
+            if ($catch->stmts === [] || $catch->stmts[0] instanceof Nop) {
                 $this->addIssue('Empty catch block found suppressing errors');
             }
         }

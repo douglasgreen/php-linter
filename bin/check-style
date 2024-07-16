@@ -7,7 +7,6 @@ use DouglasGreen\PhpLinter\ComposerFile;
 use DouglasGreen\PhpLinter\IgnoreList;
 use DouglasGreen\PhpLinter\Nikic\ElementVisitor;
 use DouglasGreen\PhpLinter\Repository;
-use DouglasGreen\Utility\FileSystem\PathUtil;
 use PhpParser\Error;
 use PhpParser\NodeTraverser;
 use PhpParser\NodeVisitor\NameResolver;
@@ -40,7 +39,11 @@ foreach ($phpFiles as $phpFile) {
     }
 
     try {
-        $code = PathUtil::loadString($phpFile);
+        $code = file_get_contents($phpFile);
+        if ($code === false) {
+            throw new Exception('Unable to load file to string');
+        }
+
         $stmts = $parser->parse($code);
         if ($stmts === null) {
             echo 'No statements found in file.' . PHP_EOL;

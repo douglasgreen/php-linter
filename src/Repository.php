@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace DouglasGreen\PhpLinter;
 
-use DouglasGreen\Utility\FileSystem\PathUtil;
-use DouglasGreen\Utility\Program\Command;
 use Exception;
 
 class Repository
@@ -24,24 +22,29 @@ class Repository
 
     protected readonly string $defaultBranch;
 
+    /**
+     * @throws Exception
+     */
     public function __construct()
     {
-        $command = new Command('git ls-files');
-        $this->files = $command->run();
+        $gitMessage = "Failed to execute Git command. Make sure Git is installed and you're in a Git repository.";
+
+        exec('git ls-files', $files, $returnCode);
+        if ($returnCode !== 0) {
+            throw new Exception($gitMessage);
+        }
+
+        $this->files = $files;
 
         // Command to get the default branch
         $command = "git remote show origin | sed -n '/HEAD branch/s/.*: //p'";
 
         // Execute the command
-        $output = [];
-        $returnVar = 0;
-        exec($command, $output, $returnVar);
+        exec($command, $output, $returnCode);
 
         // Check if the command was successful
-        if ($returnVar !== 0) {
-            throw new Exception(
-                "Failed to execute Git command. Make sure Git is installed and you're in a Git repository."
-            );
+        if ($returnCode !== 0) {
+            throw new Exception($gitMessage);
         }
 
         // Get the branch name from the output
@@ -65,7 +68,7 @@ class Repository
     {
         $matches = [];
         foreach ($this->files as $file) {
-            if (PathUtil::getFileType($file) === 'php') {
+            if ($this->getFileType($file) === 'php') {
                 $matches[] = $file;
             }
         }
@@ -84,5 +87,52 @@ class Repository
         foreach (array_keys($this->issues) as $issue) {
             echo $issue . PHP_EOL;
         }
+    }
+
+    protected function getExtensionType(string $extension): ?string
+    {
+        return match ($extension) {
+            'bash', 'sh' => 'bash',
+            'css' => 'css',
+            'csv', 'pdv', 'tsv', 'txt' => 'data',
+            'jpg', 'jpeg', 'png', 'gif', 'bmp', 'tiff', 'svg', 'webp' => 'images',
+            'js', 'ts' => 'js',
+            'json' => 'json',
+            'md' => 'md',
+            'php' => 'php',
+            'sql' => 'sql',
+            'xml', 'xsd', 'xsl', 'xslt', 'xhtml' => 'xml',
+            'yaml', 'yml' => 'yaml',
+            default => null,
+        };
+    }
+
+    /**
+     * Get the type of a file based on its extension or other info.
+     *
+     * @todo Use the return type of "file" command if available.
+     * Example: file -b bin/task.php
+     * a /usr/bin/env php script, ASCII text executable
+     */
+    protected function getFileType(
+        string $path
+    ): ?string {
+        if (! str_contains($path, '.')) {
+            $fileHandle = fopen($path, 'r');
+            if ($fileHandle === false) {
+                throw new Exception('Unable to open file for reading');
+            }
+            $line = fgets($fileHandle);
+            if ($line === false) {
+                return null;
+            }
+            if (preg_match('/^#!.*\b(\w+)$/', rtrim($line), $match)) {
+                return $this->getExtensionType($match[1]);
+            }
+        } elseif (preg_match('/\.(\w+)$/', $path, $match)) {
+            return $this->getExtensionType($match[1]);
+        }
+
+        return null;
     }
 }

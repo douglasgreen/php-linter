@@ -4,8 +4,7 @@ declare(strict_types=1);
 
 namespace DouglasGreen\PhpLinter;
 
-use DouglasGreen\Utility\FileSystem\PathUtil;
-use DouglasGreen\Utility\Regex\Regex;
+use Exception;
 
 class IgnoreList
 {
@@ -18,14 +17,14 @@ class IgnoreList
 
     public function __construct(string $currentDir)
     {
-        $ignoreFile = PathUtil::addSubpath($currentDir, self::IGNORE_FILE);
+        $ignoreFile = $this->addSubpath($currentDir, self::IGNORE_FILE);
         $this->ignorePatterns = $this->loadIgnoreFile($ignoreFile);
     }
 
     public function shouldIgnore(string $filePath): bool
     {
         foreach ($this->ignorePatterns as $ignorePattern) {
-            if (Regex::hasMatch($ignorePattern, $filePath)) {
+            if (preg_match($ignorePattern, $filePath)) {
                 return true;
             }
         }
@@ -43,7 +42,26 @@ class IgnoreList
     }
 
     /**
+     * Add a subpath.
+     */
+    public function addSubpath(string $path, string $subpath): string
+    {
+        // Ensure the current filename ends with a directory separator
+        if (substr($path, -1) !== DIRECTORY_SEPARATOR) {
+            $path .= DIRECTORY_SEPARATOR;
+        }
+
+        // Ensure the subpath does not start with a directory separator
+        if (substr($subpath, 0, 1) === DIRECTORY_SEPARATOR) {
+            $subpath = ltrim($subpath, DIRECTORY_SEPARATOR);
+        }
+
+        return $path . $subpath;
+    }
+
+    /**
      * @return list<string>
+     * @throws Exception
      */
     protected function loadIgnoreFile(string $ignoreFile): array
     {
@@ -51,7 +69,11 @@ class IgnoreList
             return [];
         }
 
-        $lines = PathUtil::loadLines($ignoreFile);
+        $lines = file($ignoreFile);
+        if ($lines === false) {
+            throw new Exception('Unable to load file to array');
+        }
+
         $patterns = [];
         foreach ($lines as $line) {
             $line = trim($line);

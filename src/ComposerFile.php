@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace DouglasGreen\PhpLinter;
 
-use DouglasGreen\Utility\FileSystem\PathUtil;
+use Exception;
 
 class ComposerFile
 {
@@ -58,10 +58,15 @@ class ComposerFile
      * Load the composer.json file and extract PSR-4 autoload mappings.
      *
      * @return array<string, string|list<string>>
+     * @throws Exception
      */
     protected function loadComposerJson(string $composerJsonPath): array
     {
-        $composerJson = PathUtil::loadString($composerJsonPath);
+        $composerJson = file_get_contents($composerJsonPath);
+        if ($composerJson === false) {
+            throw new Exception('Unable to load file to string');
+        }
+
         $composerData = json_decode($composerJson, true, 16, JSON_THROW_ON_ERROR);
 
         return $composerData['autoload']['psr-4'] ?? [];
