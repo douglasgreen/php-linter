@@ -72,12 +72,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/douglasgreen/config-setup.git",
-                "reference": "bb1bc4294d1900a7c583480dca79217d4c9f1744"
+                "reference": "25de946ebf402548a4972d8aa28c15da81ca66f6"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/douglasgreen/config-setup/zipball/bb1bc4294d1900a7c583480dca79217d4c9f1744",
-                "reference": "bb1bc4294d1900a7c583480dca79217d4c9f1744",
+                "url": "https://api.github.com/repos/douglasgreen/config-setup/zipball/25de946ebf402548a4972d8aa28c15da81ca66f6",
+                "reference": "25de946ebf402548a4972d8aa28c15da81ca66f6",
                 "shasum": ""
             },
             "require": {
@@ -121,40 +121,25 @@
                     "role": "Developer"
                 }
             ],
-            "description": "Preconfigured setup files for linting, fixing, and testing PHP and JavaScript project",
+            "description": "Preconfigured setup files for linting, fixing, and testing PHP and JavaScript projects",
             "homepage": "https://github.com/douglasgreen/config-setup",
             "keywords": [
                 "automation",
-                "cli",
-                "cli library",
-                "cli tool",
                 "code quality",
                 "code standards",
                 "code validation",
-                "coding standards",
-                "command-line interface",
                 "config",
-                "console",
                 "fixing",
                 "linter",
                 "linting",
                 "php",
-                "php automation",
-                "php cli",
-                "php command line",
-                "php console application",
-                "php fig",
-                "php scripting",
-                "phpunit",
-                "psr",
-                "syntax check",
-                "terminal"
+                "phpunit"
             ],
             "support": {
                 "source": "https://github.com/douglasgreen/config-setup/tree/main",
                 "issues": "https://github.com/douglasgreen/config-setup/issues"
             },
-            "time": "2024-07-14T23:12:09+00:00"
+            "time": "2024-07-16T22:09:14+00:00"
         },
         {
             "name": "nette/neon",
@@ -284,16 +269,16 @@
         },
         {
             "name": "rector/rector",
-            "version": "1.2.0",
+            "version": "1.2.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/rectorphp/rector.git",
-                "reference": "2fa387553db22b6f9bcccf5ff16f2c2c18a52a65"
+                "reference": "b38a3eed3ce2046f40c001255e2fec9d2746bacf"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/rectorphp/rector/zipball/2fa387553db22b6f9bcccf5ff16f2c2c18a52a65",
-                "reference": "2fa387553db22b6f9bcccf5ff16f2c2c18a52a65",
+                "url": "https://api.github.com/repos/rectorphp/rector/zipball/b38a3eed3ce2046f40c001255e2fec9d2746bacf",
+                "reference": "b38a3eed3ce2046f40c001255e2fec9d2746bacf",
                 "shasum": ""
             },
             "require": {
@@ -331,7 +316,7 @@
             ],
             "support": {
                 "issues": "https://github.com/rectorphp/rector/issues",
-                "source": "https://github.com/rectorphp/rector/tree/1.2.0"
+                "source": "https://github.com/rectorphp/rector/tree/1.2.1"
             },
             "funding": [
                 {
@@ -339,7 +324,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2024-07-01T14:24:45+00:00"
+            "time": "2024-07-16T00:22:54+00:00"
         },
         {
             "name": "symplify/easy-coding-standard",
