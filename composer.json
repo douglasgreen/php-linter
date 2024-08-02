@@ -1,17 +1,7 @@
 {
     "name": "douglasgreen/code-linter",
     "description": "Code linter for PHP based on Nikic parser",
-    "license": "MIT",
     "type": "library",
-    "homepage": "https://github.com/douglasgreen/code-linter",
-    "authors": [
-        {
-            "name": "Douglas Green",
-            "email": "douglas@nurd.site",
-            "homepage": "https://nurd.site/",
-            "role": "Developer"
-        }
-    ],
     "keywords": [
         "ast",
         "automation",
@@ -24,16 +14,30 @@
         "php parser",
         "static analysis"
     ],
+    "homepage": "https://github.com/douglasgreen/code-linter",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Douglas Green",
+            "email": "douglas@nurd.site",
+            "homepage": "https://nurd.site/",
+            "role": "Developer"
+        }
+    ],
+    "require": {
+        "php": ">=8.1",
+        "nikic/php-parser": "^5.1"
+    },
+    "require-dev": {
+        "douglasgreen/config-setup": "dev-main",
+        "phpstan/phpstan": "^1.11.9",
+        "rector/rector": "^1.2.2",
+        "symplify/easy-coding-standard": "^12.3.4"
+    },
     "autoload": {
         "psr-4": {
             "DouglasGreen\\PhpLinter\\": "src/"
         }
-    },
-    "bin": [
-        "bin/check-style"
-    ],
-    "config": {
-        "sort-packages": true
     },
     "minimum-stability": "dev",
     "prefer-stable": true,
@@ -43,15 +47,8 @@
             "url": "https://github.com/douglasgreen/config-setup"
         }
     ],
-    "require": {
-        "php": ">=8.1",
-        "nikic/php-parser": "^5.1"
-    },
-    "require-dev": {
-        "douglasgreen/config-setup": "dev-main",
-        "phpstan/phpstan": "^1.11",
-        "rector/rector": "^1.2",
-        "symplify/easy-coding-standard": "^12.3"
+    "config": {
+        "sort-packages": true
     },
     "scripts": {
         "lint": [
@@ -64,7 +61,10 @@
             "ecs --fix",
             "rector"
         ],
-        "post-install-cmd": "config-setup --pre-commit",
-        "post-update-cmd": "config-setup --pre-commit"
-    }
+        "post-install-cmd": "config-setup",
+        "post-update-cmd": "config-setup"
+    },
+    "bin": [
+        "bin/check-style"
+    ]
 }
