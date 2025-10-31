@@ -52,7 +52,7 @@
     },
     "scripts": {
         "lint": [
-            "code-linter",
+            "code_linter.php",
             "ecs",
             "phpstan analyse",
             "rector --dry-run"
@@ -65,6 +65,6 @@
         "post-update-cmd": "config-setup"
     },
     "bin": [
-        "bin/code-linter"
+        "bin/code_linter.php"
     ]
 }
