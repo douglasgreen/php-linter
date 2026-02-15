@@ -29,7 +29,6 @@
         "nikic/php-parser": "^5.1"
     },
     "require-dev": {
-        "douglasgreen/config-setup": "dev-main",
         "phpstan/phpstan": "^1.11",
         "rector/rector": "^1.2",
         "symplify/easy-coding-standard": "^12.3"
@@ -39,14 +38,6 @@
             "DouglasGreen\\PhpLinter\\": "src/"
         }
     },
-    "minimum-stability": "dev",
-    "prefer-stable": true,
-    "repositories": [
-        {
-            "type": "vcs",
-            "url": "https://github.com/douglasgreen/config-setup"
-        }
-    ],
     "config": {
         "sort-packages": true
     },
@@ -60,9 +51,7 @@
         "lint:fix": [
             "ecs --fix",
             "rector"
-        ],
-        "post-install-cmd": "config-setup",
-        "post-update-cmd": "config-setup"
+        ]
     },
     "bin": [
         "bin/code_linter.php"
