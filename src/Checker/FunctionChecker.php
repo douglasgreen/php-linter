@@ -423,7 +423,7 @@ class FunctionChecker extends NodeChecker
     }
 
     /**
-     * @param list<Param> $params
+     * @param array<Param> $params
      */
     protected function checkParams(array $params, string $funcName, string $funcType): void
     {

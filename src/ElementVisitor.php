@@ -251,7 +251,7 @@ class ElementVisitor extends NodeVisitorAbstract
             $this->funcCalls[$name] = true;
         }
 
-        if ($node instanceof ConstFetch && $node->name instanceof Name) {
+        if ($node instanceof ConstFetch) {
             $name = $node->name->toString();
             $this->constFetches[$name] = true;
         }
