@@ -9,7 +9,6 @@ use DouglasGreen\PhpLinter\IgnoreList;
 use DouglasGreen\PhpLinter\Repository;
 use PhpParser\Error;
 use PhpParser\NodeTraverser;
-use PhpParser\NodeVisitor\NameResolver;
 use PhpParser\ParserFactory;
 
 // Must be run in repository root directory.

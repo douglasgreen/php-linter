@@ -4,21 +4,20 @@ declare(strict_types=1);
 
 namespace DouglasGreen\PhpLinter\Visitor;
 
-use PhpParser\Node\Expr\New_;
+use PhpParser\Node\Identifier;
+use PhpParser\Node;
+use PhpParser\Node\Expr\ClassConstFetch;
 use PhpParser\Node\Expr\Instanceof_;
+use PhpParser\Node\Expr\New_;
 use PhpParser\Node\Expr\StaticCall;
 use PhpParser\Node\Expr\StaticPropertyFetch;
-use PhpParser\Node\Stmt\ClassLike;
-use PhpParser\Node\Expr\ClassConstFetch;
-use PhpParser\Node\Scalar\String_;
-use PhpParser\Node;
 use PhpParser\Node\Name;
+use PhpParser\Node\Scalar\String_;
+use PhpParser\Node\Stmt\ClassLike;
 
 class NameVisitor extends VisitorChecker
 {
-    /**
-     * @var array<string, true>
-     */
+    /** @var array<string, true> */
     protected array $qualifiedNames = [];
 
     public function checkNode(Node $node): void
@@ -71,7 +70,7 @@ class NameVisitor extends VisitorChecker
 
     protected function handleClassLike(ClassLike $classLike): void
     {
-        if ($classLike->name === null) {
+        if (!$classLike->name instanceof Identifier) {
             return;
         }
 

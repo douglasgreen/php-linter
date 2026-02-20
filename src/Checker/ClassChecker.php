@@ -11,6 +11,7 @@ class ClassChecker extends NodeChecker
 {
     /**
      * @return array<string, bool>
+     *
      * @todo Check something here.
      */
     public function check(): array

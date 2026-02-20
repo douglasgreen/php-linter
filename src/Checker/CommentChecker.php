@@ -14,6 +14,7 @@ class CommentChecker extends NodeChecker
 {
     /**
      * @see https://github.com/php-fig/fig-standards/blob/master/proposed/phpdoc-tags.md
+     *
      * @var list<string>
      */
     protected const PHPDOC_TAGS = [
@@ -51,7 +52,7 @@ class CommentChecker extends NodeChecker
 
         // Check for doc comment
         $docComment = $this->node->getDocComment();
-        if ($docComment !== null) {
+        if ($docComment instanceof Doc) {
             $this->checkDocComment($docComment);
         }
 
@@ -93,8 +94,8 @@ class CommentChecker extends NodeChecker
 
         // Strip asterisks and slashes from the beginning of each line
         $lines = array_map(
-            fn($line): string => (string) preg_replace('/^\s*\*\s?/', '', $line),
-            $lines
+            fn ($line): string => (string) preg_replace('/^\s*\*\s?/', '', $line),
+            $lines,
         );
 
         $tags = [];
@@ -185,7 +186,7 @@ class CommentChecker extends NodeChecker
             $lowTag = strtolower($tag);
             if (in_array($lowTag, self::PHPDOC_TAGS, true)) {
                 $this->addIssue(
-                    'PHPDoc tag found in multi-line comment instead of dockblock: ' . $tag
+                    'PHPDoc tag found in multi-line comment instead of dockblock: ' . $tag,
                 );
             }
 
@@ -209,7 +210,7 @@ class CommentChecker extends NodeChecker
             $lowTag = strtolower($tag);
             if (in_array($lowTag, self::PHPDOC_TAGS, true)) {
                 $this->addIssue(
-                    'PHPDoc tag found in single-line comment instead of dockblock: ' . $tag
+                    'PHPDoc tag found in single-line comment instead of dockblock: ' . $tag,
                 );
             }
 

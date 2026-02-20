@@ -45,9 +45,7 @@ class FunctionChecker extends NodeChecker
         'was',
     ];
 
-    /**
-     * @var array<string, string>
-     */
+    /** @var array<string, string> */
     protected const BOOL_FUNC_RENAMES = [
         'check' => 'isValid',
         'validate' => 'isValid',
@@ -388,9 +386,7 @@ class FunctionChecker extends NodeChecker
         'write',
     ];
 
-    /**
-     * @var array<string, array{type: ?string, promoted: bool}>
-     */
+    /** @var array<string, array{type: ?string, promoted: bool}> */
     protected array $params = [];
 
     /**
@@ -492,7 +488,7 @@ class FunctionChecker extends NodeChecker
                     '%s %s() returns a boolean; consider naming it %s',
                     $funcType,
                     $funcName,
-                    $suggest
+                    $suggest,
                 ),
             );
         } else {

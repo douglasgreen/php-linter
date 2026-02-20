@@ -10,9 +10,7 @@ use PhpParser\Node\Expr\Variable;
 
 class FunctionVisitor extends VisitorChecker
 {
-    /**
-     * @var array<string, int>
-     */
+    /** @var array<string, int> */
     protected array $variableCounts = [];
 
     /**
@@ -22,7 +20,7 @@ class FunctionVisitor extends VisitorChecker
     public function __construct(
         protected string $functionName,
         protected array $attribs,
-        protected array $params
+        protected array $params,
     ) {}
 
     /**
@@ -52,7 +50,7 @@ class FunctionVisitor extends VisitorChecker
             $issue = sprintf(
                 'Parameter %s is not used within function %s().',
                 $paramName,
-                $this->functionName
+                $this->functionName,
             );
             $this->issues[$issue] = true;
         }
@@ -63,7 +61,7 @@ class FunctionVisitor extends VisitorChecker
                 $issue = sprintf(
                     'Variable %s is used only once within function %s().',
                     $variable,
-                    $this->functionName
+                    $this->functionName,
                 );
                 $this->issues[$issue] = true;
             }

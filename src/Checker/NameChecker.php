@@ -20,9 +20,7 @@ use PhpParser\Node\Stmt\Trait_;
 
 class NameChecker extends NodeChecker
 {
-    /**
-     * @var array<string, string>
-     */
+    /** @var array<string, string> */
     protected const BAD_CLASS_SUFFIXES = [
         'Abstract' => 'is redundant',
         'Array' => 'leaks implementation details',
@@ -43,9 +41,7 @@ class NameChecker extends NodeChecker
         'Type' => 'is redundant',
     ];
 
-    /**
-     * @var array<string, string>
-     */
+    /** @var array<string, string> */
     protected const BAD_GENERIC_SUFFIXES = [
         'Data' => 'is generic',
         'Info' => 'is generic',
@@ -53,9 +49,7 @@ class NameChecker extends NodeChecker
         'Stuff' => 'is generic',
     ];
 
-    /**
-     * @var list<string>
-     */
+    /** @var list<string> */
     protected const MAGIC_METHODS = [
         '__construct',
         '__destruct',
@@ -76,9 +70,7 @@ class NameChecker extends NodeChecker
         '__debugInfo',
     ];
 
-    /**
-     * @var list<string>
-     */
+    /** @var list<string> */
     protected const SUPERGLOBALS = [
         'GLOBALS',
         '_SERVER',
@@ -94,9 +86,7 @@ class NameChecker extends NodeChecker
         'argv',
     ];
 
-    /**
-     * @var list<string>
-     */
+    /** @var list<string> */
     protected const VALID_SHORT_NAMES = ['db', 'id'];
 
     /**
@@ -270,8 +260,8 @@ class NameChecker extends NodeChecker
                     $type,
                     $name,
                     $match,
-                    $reason
-                )
+                    $reason,
+                ),
             );
             break;
         }

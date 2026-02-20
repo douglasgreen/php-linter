@@ -24,6 +24,7 @@ class ComposerFile
      * Convert a fully-qualified class name to a file name.
      *
      * @param string $className Fully-qualified class name.
+     *
      * @return string|null Corresponding file name or null if no matching PSR-4 namespace is found.
      */
     public function convertClassNameToFileName(string $className): ?string
@@ -37,14 +38,14 @@ class ComposerFile
                     foreach ($paths as $path) {
                         $fullPath = rtrim(
                             $path,
-                            DIRECTORY_SEPARATOR
+                            DIRECTORY_SEPARATOR,
                         ) . DIRECTORY_SEPARATOR . $relativePath;
                         return ltrim($fullPath, DIRECTORY_SEPARATOR);
                     }
                 } else {
                     $fullPath = rtrim(
                         $paths,
-                        DIRECTORY_SEPARATOR
+                        DIRECTORY_SEPARATOR,
                     ) . DIRECTORY_SEPARATOR . $relativePath;
                     return ltrim($fullPath, DIRECTORY_SEPARATOR);
                 }
@@ -58,6 +59,7 @@ class ComposerFile
      * Load the composer.json file and extract PSR-4 autoload mappings.
      *
      * @return array<string, string|list<string>>
+     *
      * @throws Exception
      */
     protected function loadComposerJson(string $composerJsonPath): array

@@ -10,9 +10,7 @@ class IgnoreList
 {
     public const IGNORE_FILE = '.phplintignore';
 
-    /**
-     * @var list<string>
-     */
+    /** @var list<string> */
     protected readonly array $ignorePatterns;
 
     public function __construct(string $currentDir)
@@ -30,15 +28,6 @@ class IgnoreList
         }
 
         return false;
-    }
-
-    protected static function preparePattern(string $pattern): string
-    {
-        // Convert the ignore pattern to a regex pattern
-        $pattern = preg_quote($pattern, '#');
-        $pattern = str_replace('\*', '.*', $pattern);
-        $pattern = str_replace('\?', '.', $pattern);
-        return sprintf('#^%s#', $pattern);
     }
 
     /**
@@ -59,8 +48,18 @@ class IgnoreList
         return $path . $subpath;
     }
 
+    protected static function preparePattern(string $pattern): string
+    {
+        // Convert the ignore pattern to a regex pattern
+        $pattern = preg_quote($pattern, '#');
+        $pattern = str_replace('\*', '.*', $pattern);
+        $pattern = str_replace('\?', '.', $pattern);
+        return sprintf('#^%s#', $pattern);
+    }
+
     /**
      * @return list<string>
+     *
      * @throws Exception
      */
     protected function loadIgnoreFile(string $ignoreFile): array

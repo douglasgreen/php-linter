@@ -19,11 +19,12 @@ abstract class NodeChecker
     use IssueHolder;
 
     public function __construct(
-        protected readonly Node $node
+        protected readonly Node $node,
     ) {}
 
     /**
      * Do the check and return a list of issues.
+     *
      * @return array<string, bool>
      */
     abstract public function check(): array;

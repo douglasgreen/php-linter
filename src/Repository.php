@@ -10,14 +10,10 @@ class Repository
 {
     use IssueHolder;
 
-    /**
-     * @var array<string, bool>
-     */
+    /** @var array<string, bool> */
     protected array $issues = [];
 
-    /**
-     * @var list<string>
-     */
+    /** @var list<string> */
     protected readonly array $files;
 
     protected readonly string $defaultBranch;
@@ -56,7 +52,7 @@ class Repository
         // Check if the default branch is 'main'
         if ($this->defaultBranch !== 'main') {
             $this->addIssue(
-                sprintf('The default branch is "%s" but should be "main"', $this->defaultBranch)
+                sprintf('The default branch is "%s" but should be "main"', $this->defaultBranch),
             );
         }
     }

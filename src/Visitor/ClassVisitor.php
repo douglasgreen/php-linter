@@ -17,14 +17,10 @@ use PhpParser\Node\Stmt\Property;
  */
 class ClassVisitor extends VisitorChecker
 {
-    /**
-     * @var array<string, array{visibility: string, static: bool, used: bool}>
-     */
+    /** @var array<string, array{visibility: string, static: bool, used: bool}> */
     protected array $methods = [];
 
-    /**
-     * @var array<string, array{visibility: string, static: bool, used: bool}>
-     */
+    /** @var array<string, array{visibility: string, static: bool, used: bool}> */
     protected array $properties = [];
 
     /**
@@ -32,7 +28,7 @@ class ClassVisitor extends VisitorChecker
      */
     public function __construct(
         protected readonly ?string $className,
-        protected readonly array $attribs = []
+        protected readonly array $attribs = [],
     ) {}
 
     /**
@@ -55,7 +51,7 @@ class ClassVisitor extends VisitorChecker
                 $issue = sprintf(
                     'Private %s property %s is not used within the class.',
                     $type,
-                    $propName
+                    $propName,
                 );
                 $this->issues[$issue] = true;
             } elseif ($prop['visibility'] === 'public') {
@@ -75,7 +71,7 @@ class ClassVisitor extends VisitorChecker
                     'Private %s method %s::%s() is not used within the class.',
                     $type,
                     $className,
-                    $methodName
+                    $methodName,
                 );
                 $this->issues[$issue] = true;
             }
@@ -169,8 +165,8 @@ class ClassVisitor extends VisitorChecker
                 sprintf(
                     '%s visibility order should be public, then protected, then private: %s',
                     $type,
-                    $badOrder
-                )
+                    $badOrder,
+                ),
             );
         }
     }

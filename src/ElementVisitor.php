@@ -39,9 +39,7 @@ class ElementVisitor extends NodeVisitorAbstract
 {
     use IssueHolder;
 
-    /**
-     * @var bool[]
-     */
+    /** @var bool[] */
     public $qualifiedNames;
 
     protected ClassVisitor $classVisitor;
@@ -50,29 +48,19 @@ class ElementVisitor extends NodeVisitorAbstract
 
     protected NameVisitor $nameVisitor;
 
-    /**
-     * @var array<string, bool>
-     */
+    /** @var array<string, bool> */
     protected array $classNames = [];
 
-    /**
-     * @var array<string, bool>
-     */
+    /** @var array<string, bool> */
     protected array $constFetches = [];
 
-    /**
-     * @var array<string, bool>
-     */
+    /** @var array<string, bool> */
     protected array $funcCalls = [];
 
-    /**
-     * @var array<string, bool>
-     */
+    /** @var array<string, bool> */
     protected array $methodCalls = [];
 
-    /**
-     * @var array<string, bool>
-     */
+    /** @var array<string, bool> */
     protected array $useStatements = [];
 
     protected ?string $currentNamespace = null;
@@ -83,14 +71,12 @@ class ElementVisitor extends NodeVisitorAbstract
 
     protected ?string $currentFunctionName = null;
 
-    /**
-     * Are we inside a class, trait, method, function, or closure?
-     */
+    /** Are we inside a class, trait, method, function, or closure? */
     protected bool $isLocalScope = false;
 
     public function __construct(
         protected readonly ComposerFile $composerFile,
-        protected readonly string $phpFile
+        protected readonly string $phpFile,
     ) {}
 
     public function beforeTraverse(array $nodes): null
@@ -130,7 +116,7 @@ class ElementVisitor extends NodeVisitorAbstract
 
     public function enterNode(Node $node): null
     {
-        if ($node instanceof Namespace_ && $node->name !== null) {
+        if ($node instanceof Namespace_ && $node->name instanceof Name) {
             $this->currentNamespace = implode('\\', $node->name->getParts());
         }
 
@@ -144,7 +130,7 @@ class ElementVisitor extends NodeVisitorAbstract
         // Classes and traits share some of the same code.
         // @todo Remove words like Manager, Handler, etc. if no conflict
         if ($node instanceof Class_ || $node instanceof Trait_) {
-            $this->currentClassName = $node->name === null ? null : $node->name->name;
+            $this->currentClassName = $node->name instanceof Identifier ? $node->name->name : null;
             if ($this->currentClassName !== null) {
                 $this->classNames[$this->currentClassName] = true;
             }
@@ -171,15 +157,15 @@ class ElementVisitor extends NodeVisitorAbstract
             // Check namespace name, class name, and file path.
             if ($this->currentNamespace !== null) {
                 $expectedFile = $this->composerFile->convertClassNameToFileName(
-                    $this->currentNamespace . '\\' . $this->currentClassName
+                    $this->currentNamespace . '\\' . $this->currentClassName,
                 );
                 if ($expectedFile !== $this->phpFile) {
                     $this->addIssue(
                         sprintf(
                             'File name %s does not match expected file name %s.',
                             $this->phpFile,
-                            $expectedFile
-                        )
+                            $expectedFile,
+                        ),
                     );
                 }
             }
@@ -217,7 +203,7 @@ class ElementVisitor extends NodeVisitorAbstract
             $this->functionVisitor = new FunctionVisitor(
                 (string) $this->currentFunctionName,
                 $attribs,
-                $params
+                $params,
             );
             $this->isLocalScope = true;
         }

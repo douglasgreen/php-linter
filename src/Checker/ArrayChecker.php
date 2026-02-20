@@ -8,9 +8,7 @@ use PhpParser\Node\Expr\Array_;
 
 class ArrayChecker extends NodeChecker
 {
-    /**
-     * @var array<string|int, bool>
-     */
+    /** @var array<string|int, bool> */
     protected $duplicateKeys = [];
 
     /**

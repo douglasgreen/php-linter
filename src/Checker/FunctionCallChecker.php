@@ -9,9 +9,7 @@ use PhpParser\Node\Name;
 
 class FunctionCallChecker extends NodeChecker
 {
-    /**
-     * @var list<string>
-     */
+    /** @var list<string> */
     protected const DEBUG_FUNCTIONS = [
         'debug_print_backtrace',
         'debug_zval_dump',
