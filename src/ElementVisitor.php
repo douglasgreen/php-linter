@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace DouglasGreen\PhpLinter;
 
 use DouglasGreen\PhpLinter\Checker\ClassChecker;
-use DouglasGreen\PhpLinter\Checker\CommentChecker;
 use DouglasGreen\PhpLinter\Checker\ExpressionChecker;
 use DouglasGreen\PhpLinter\Checker\FunctionCallChecker;
 use DouglasGreen\PhpLinter\Checker\FunctionChecker;
@@ -259,9 +258,6 @@ class ElementVisitor extends NodeVisitorAbstract
 
         $opChecker = new OperatorChecker($node);
         $this->addIssues($opChecker->check());
-
-        $commentChecker = new CommentChecker($node);
-        $this->addIssues($commentChecker->check());
 
         return null;
     }

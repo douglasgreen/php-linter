@@ -91,7 +91,6 @@ The following features, fixes, and enhancements guide the future development of 
 ### Code quality rules (from codebase comments)
 
 - Implement structural validation checks for classes and traits (`src/Checker/ClassChecker.php`).
-- Update comment parsing logic so it does not falsely identify email addresses as PHPDoc tags (`src/Checker/CommentChecker.php`).
 - Verify that getter methods return a value and setter methods return `void` (`src/Checker/FunctionChecker.php`).
 - Validate contextual removal of redundant class suffixes like "Manager" or "Handler" without triggering false positives (`src/ElementVisitor.php`).
 
