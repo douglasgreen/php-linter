@@ -15,6 +15,7 @@ use DouglasGreen\PhpLinter\Visitor\ClassVisitor;
 use DouglasGreen\PhpLinter\Visitor\FunctionVisitor;
 use DouglasGreen\PhpLinter\Visitor\MagicNumberVisitor;
 use DouglasGreen\PhpLinter\Visitor\NameVisitor;
+use DouglasGreen\PhpLinter\Visitor\SuperglobalUsageVisitor;
 use PhpParser\Node;
 use PhpParser\Node\Expr\Array_;
 use PhpParser\Node\Expr\Closure;
@@ -47,6 +48,8 @@ class ElementVisitor extends NodeVisitorAbstract
     protected MagicNumberVisitor $magicNumberVisitor;
 
     protected NameVisitor $nameVisitor;
+
+    protected SuperglobalUsageVisitor $superglobalUsageVisitor;
 
     /** @var array<string, bool> */
     protected array $classNames = [];
@@ -83,6 +86,7 @@ class ElementVisitor extends NodeVisitorAbstract
     {
         $this->nameVisitor = new NameVisitor();
         $this->magicNumberVisitor = new MagicNumberVisitor();
+        $this->superglobalUsageVisitor = new SuperglobalUsageVisitor();
 
         return null;
     }
@@ -114,6 +118,8 @@ class ElementVisitor extends NodeVisitorAbstract
 
         $this->magicNumberVisitor->checkDuplicates();
         $this->addIssues($this->magicNumberVisitor->getIssues());
+
+        $this->addIssues($this->superglobalUsageVisitor->getIssues());
 
         return null;
     }
@@ -252,6 +258,7 @@ class ElementVisitor extends NodeVisitorAbstract
 
         $this->nameVisitor->checkNode($node);
         $this->magicNumberVisitor->checkNode($node);
+        $this->superglobalUsageVisitor->enterNode($node);
 
         if ($node instanceof Name && $node->isFullyQualified()) {
             $name = $node->toString();
@@ -294,6 +301,8 @@ class ElementVisitor extends NodeVisitorAbstract
         if ($node instanceof Closure) {
             $this->isLocalScope = false;
         }
+
+        $this->superglobalUsageVisitor->leaveNode($node);
 
         return null;
     }
