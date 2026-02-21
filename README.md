@@ -88,12 +88,6 @@ The following features, fixes, and enhancements guide the future development of 
 - Implement a result caching mechanism to skip unmodified files during consecutive runs.
 - Add an update flag to process only Git staged or modified files.
 
-### Code quality rules (from codebase comments)
-
-- Implement structural validation checks for classes and traits (`src/Checker/ClassChecker.php`).
-- Verify that getter methods return a value and setter methods return `void` (`src/Checker/FunctionChecker.php`).
-- Validate contextual removal of redundant class suffixes like "Manager" or "Handler" without triggering false positives (`src/ElementVisitor.php`).
-
 ### Advanced static analysis
 
 - Analyze `switch` statements for missing `break` statements or `// fallthru` comments.
@@ -102,8 +96,6 @@ The following features, fixes, and enhancements guide the future development of 
 - Suggest Dependency Injection (DI) instead of using the `new` keyword inside methods.
 - Detect magic numbers (numeric literals other than 0, 1, or repeated digits).
 - Recommend converting associative array parameters and return types into dedicated Data Transfer Objects (DTOs).
-- Enforce logical code ordering: alphabetical, call order, or standard visibility order (constants, properties, constructor, public methods, private methods).
-- Calculate Lack of Cohesion of Methods (LCOM4) to identify classes that require splitting.
 - Recommend Dependency Injection annotations (`@di`) for classes managing external resources.
 - Warn when developers should move standalone functions or constants into classes.
 

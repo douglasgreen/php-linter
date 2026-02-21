@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace DouglasGreen\PhpLinter;
 
-use DouglasGreen\PhpLinter\Checker\ClassChecker;
 use DouglasGreen\PhpLinter\Checker\ExpressionChecker;
 use DouglasGreen\PhpLinter\Checker\FunctionCallChecker;
 use DouglasGreen\PhpLinter\Checker\FunctionChecker;
@@ -126,16 +125,11 @@ class ElementVisitor extends NodeVisitorAbstract
         }
 
         // Classes and traits share some of the same code.
-        // @todo Remove words like Manager, Handler, etc. if no conflict
         if ($node instanceof Class_ || $node instanceof Trait_) {
             $this->currentClassName = $node->name instanceof Identifier ? $node->name->name : null;
             if ($this->currentClassName !== null) {
                 $this->classNames[$this->currentClassName] = true;
             }
-
-            // Run checks on class node.
-            $classChecker = new ClassChecker($node);
-            $this->addIssues($classChecker->check());
 
             if ($node instanceof Class_) {
                 $attribs = [

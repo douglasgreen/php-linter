@@ -10,9 +10,6 @@ use PhpParser\Node\Param;
 use PhpParser\Node\Stmt\ClassMethod;
 use PhpParser\Node\Stmt\Function_;
 
-/**
- * @todo Check that getters return a value and setters set a value and return void.
- */
 class FunctionChecker extends NodeChecker
 {
     /**
