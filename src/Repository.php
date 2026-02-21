@@ -104,30 +104,71 @@ class Repository
     }
 
     /**
-     * Get the type of a file based on its extension or other info.
-     *
-     * @todo Use the return type of "file" command if available.
-     * Example: file -b bin/task.php
-     * a /usr/bin/env php script, ASCII text executable
+     * Get the type of a file based on its extension, shebang, or file command.
      */
     protected function getFileType(string $path): ?string
     {
-        if (! str_contains($path, '.')) {
-            $fileHandle = fopen($path, 'r');
-            if ($fileHandle === false) {
-                throw new Exception('Unable to open file for reading');
+        // 1. Check extension
+        if (preg_match('/\.(\w+)$/', $path, $match)) {
+            $type = $this->getExtensionType($match[1]);
+            if ($type !== null) {
+                return $type;
             }
+        }
 
+        // 2. Check shebang
+        $fileHandle = @fopen($path, 'r');
+        if ($fileHandle !== false) {
             $line = fgets($fileHandle);
-            if ($line === false) {
-                return null;
-            }
+            fclose($fileHandle);
 
-            if (preg_match('/^#!.*\b(\w+)$/', rtrim($line), $match)) {
-                return $this->getExtensionType($match[1]);
+            if ($line !== false && preg_match('/^#!.*\b(\w+)$/', rtrim($line), $match)) {
+                $type = $this->getExtensionType($match[1]);
+                if ($type !== null) {
+                    return $type;
+                }
             }
-        } elseif (preg_match('/\.(\w+)$/', $path, $match)) {
-            return $this->getExtensionType($match[1]);
+        }
+
+        // 3. Fallback to file command
+        return $this->getTypeFromFileCommand($path);
+    }
+
+    protected function getTypeFromFileCommand(string $path): ?string
+    {
+        $command = sprintf('file -b %s', escapeshellarg($path));
+        exec($command, $output, $returnCode);
+
+        if ($returnCode !== 0 || ! isset($output[0])) {
+            return null;
+        }
+
+        $fileInfo = $output[0];
+
+        // Map file output to internal types
+        if (stripos($fileInfo, 'PHP') !== false) {
+            return 'php';
+        }
+
+        if (stripos($fileInfo, 'XML') !== false) {
+            return 'xml';
+        }
+
+        if (stripos($fileInfo, 'JSON') !== false) {
+            return 'json';
+        }
+
+        if (stripos($fileInfo, 'shell script') !== false) {
+            return 'bash';
+        }
+
+        if (stripos($fileInfo, 'Python') !== false) {
+            return 'python';
+        }
+
+        // Check for images
+        if (stripos($fileInfo, 'image') !== false) {
+            return 'images';
         }
 
         return null;
