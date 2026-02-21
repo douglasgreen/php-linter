@@ -5,10 +5,12 @@ declare(strict_types=1);
 namespace DouglasGreen\PhpLinter\Checker;
 
 use PhpParser\Node;
+use PhpParser\Node\Expr\ArrayDimFetch;
 use PhpParser\Node\Expr\Variable;
 use PhpParser\NodeFinder;
 use PhpParser\Node\Identifier;
 use PhpParser\Node\Param;
+use PhpParser\Node\Scalar\String_;
 use PhpParser\Node\Stmt\ClassMethod;
 use PhpParser\Node\Stmt\Function_;
 
@@ -462,6 +464,10 @@ class FunctionChecker extends NodeChecker
                 }
             }
 
+            if ($paramType === 'array') {
+                $this->checkArrayDto($paramName);
+            }
+
             $this->params[$paramName] = [
                 'type' => $paramType,
                 'promoted' => $param->isPromoted(),
@@ -533,6 +539,38 @@ class FunctionChecker extends NodeChecker
         if (! $usesThis) {
             $this->addIssue(
                 sprintf('Method %s() does not use $this; consider making it static', $methodName)
+            );
+        }
+    }
+
+    protected function checkArrayDto(string $paramName): void
+    {
+        if ($this->node->stmts === null) {
+            return;
+        }
+
+        $nodeFinder = new NodeFinder();
+        $keys = [];
+
+        /** @var array<ArrayDimFetch> $dimFetches */
+        $dimFetches = $nodeFinder->findInstanceOf($this->node->stmts, ArrayDimFetch::class);
+
+        foreach ($dimFetches as $dimFetch) {
+            if ($dimFetch->var instanceof Variable && $dimFetch->var->name === $paramName) {
+                if ($dimFetch->dim instanceof String_) {
+                    $keys[] = $dimFetch->dim->value;
+                }
+            }
+        }
+
+        if ($keys !== []) {
+            $uniqueKeys = array_unique($keys);
+            $this->addIssue(
+                sprintf(
+                    'Parameter $%s is an array accessed with string keys; consider using a DTO. Suggested properties: %s',
+                    $paramName,
+                    implode(', ', $uniqueKeys)
+                )
             );
         }
     }
