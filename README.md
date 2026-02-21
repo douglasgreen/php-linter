@@ -82,6 +82,7 @@ The linter analyzes your code for the following issues:
 - **Static vs Instance:** Suggests making methods `static` if they do not use `$this`.
 - **PHP 4 Constructors:** Flags old-style constructors (methods named after the class).
 - **Strict Loading:** Suggests `require_once` over `include` or `require`.
+- **Superglobals:** Flags use of superglobal variables outside of allowed classes.
 
 ### Potential bugs & Cleanup
 - **Unused code:** Detects unused private properties, unused private methods, and unused function parameters.
