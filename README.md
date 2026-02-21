@@ -101,5 +101,4 @@ The following features, fixes, and enhancements guide the future development of 
 
 ### Ecosystem integration
 
-- Provide custom linter rules for `composer.json` and `package.json` file structures.
 - Analyze namespaces to guarantee non-overlapping structures that strictly match the directory tree.
