@@ -5,7 +5,9 @@ declare(strict_types=1);
 namespace DouglasGreen\PhpLinter\Visitor;
 
 use PhpParser\Node;
+use PhpParser\Node\Expr\MethodCall;
 use PhpParser\Node\Expr\PropertyFetch;
+use PhpParser\Node\Expr\StaticCall;
 use PhpParser\Node\Expr\StaticPropertyFetch;
 use PhpParser\Node\Expr\Variable;
 use PhpParser\Node\Identifier;
@@ -105,6 +107,13 @@ class ClassVisitor extends VisitorChecker
             }
         }
 
+        if ($node instanceof MethodCall || $node instanceof StaticCall) {
+            $methodName = $this->getMethodName($node);
+            if ($methodName !== null) {
+                $this->trackMethodUsage($methodName);
+            }
+        }
+
         if ($node instanceof ClassMethod) {
             $methodName = $node->name->toString();
             $visibility = $this->getVisibility($node);
@@ -179,6 +188,16 @@ class ClassVisitor extends VisitorChecker
         return $this->methods;
     }
 
+    protected function getMethodName(MethodCall|StaticCall $node): ?string
+    {
+        if ($node->name instanceof Identifier) {
+            return $node->name->toString();
+        }
+
+        // Dynamic method name, can't track
+        return null;
+    }
+
     protected function getPropertyName(Node $node): ?string
     {
         if ($node instanceof PropertyFetch) {
@@ -215,6 +234,13 @@ class ClassVisitor extends VisitorChecker
 
         // Default visibility
         return 'public';
+    }
+
+    protected function trackMethodUsage(string $methodName): void
+    {
+        if (isset($this->methods[$methodName])) {
+            $this->methods[$methodName]['used'] = true;
+        }
     }
 
     protected function trackPropertyUsage(string $propName): void
