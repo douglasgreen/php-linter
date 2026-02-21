@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace DouglasGreen\PhpLinter\Checker;
 
+use PhpParser\Node;
 use PhpParser\Node\Expr\Variable;
+use PhpParser\NodeFinder;
 use PhpParser\Node\Identifier;
 use PhpParser\Node\Param;
 use PhpParser\Node\Stmt\ClassMethod;
@@ -408,6 +410,10 @@ class FunctionChecker extends NodeChecker
             $this->checkReturnType($funcName, $funcType, $returnType);
         }
 
+        if ($this->node instanceof ClassMethod) {
+            $this->checkStaticRecommendation($funcName);
+        }
+
         return $this->getIssues();
     }
 
@@ -493,6 +499,40 @@ class FunctionChecker extends NodeChecker
 
             $this->addIssue(
                 sprintf('%s %s() should start with a verb', $funcType, $funcName),
+            );
+        }
+    }
+
+    protected function checkStaticRecommendation(string $methodName): void
+    {
+        // Skip if already static
+        if ($this->node->isStatic()) {
+            return;
+        }
+
+        // Skip if abstract (no body)
+        if ($this->node->isAbstract()) {
+            return;
+        }
+
+        // Skip magic methods
+        if (str_starts_with($methodName, '__')) {
+            return;
+        }
+
+        // Check for $this usage
+        if ($this->node->stmts === null) {
+            return;
+        }
+
+        $nodeFinder = new NodeFinder();
+        $usesThis = $nodeFinder->findFirst($this->node->stmts, function (Node $node): bool {
+            return $node instanceof Variable && $node->name === 'this';
+        });
+
+        if (! $usesThis) {
+            $this->addIssue(
+                sprintf('Method %s() does not use $this; consider making it static', $methodName)
             );
         }
     }
