@@ -1,215 +1,117 @@
-# code-linter
+---
+title: Code linter
+description: A static analysis tool for PHP based on the Nikic PHP parser
+tags: [php, linter, static-analysis, ast, code-quality]
+audience: Developers
+last_updated: 2026-02-21
+reading_time: 4 min
+---
 
-Code linter for PHP based on Nikic parser
+# Code linter
 
-## Setup
+Code linter is a static analysis tool for PHP codebases. It uses the `nikic/php-parser` library to generate an Abstract Syntax Tree (AST) of your project and performs deep analysis on code structure, naming conventions, and stylistic rules.
 
-Add the project with Composer.
+Unlike partial parsers, Code linter processes all PHP files in your repository, including standalone scripts. This approach ensures consistent code quality and verifies that your codebase adheres to PSR-4 autoloading standards.
 
-```
-composer require douglasgreen/code-linter
-```
+## Prerequisites
 
-Linter for PHP
+- PHP 8.3 or later
+- Composer
+- Git repository (the linter requires a Git context to verify the main branch and file index)
 
-This project is being developed as a replacement for
-[PHP Mess Detector](https://phpmd.org/) (PHPMD).That project is also a wrapper for PDepend. Compared
-to PHPMD, this project:
+## Install the linter
 
--   Offers more metrics from PDepend, including Code Rank, Afferent Coupling, Efferent Coupling,
-    Comment to Code Ratio, Halstead Effort, Maintainability Index, and Lines of Code per File.
--   Provides predefined settings for each metric defined mostly by a study of PHP code. The settings
-    are split into warning level, at which your code exceeds 95% of the metrics of similar code, and
-    error level, at which your code exceeds 99% of the metrics of similar code.
--   Has a different workflow. PHPMD has a workflow that you trigger the error, then suppress it and
-    ignore it forever after. PHP Linter instead just triggers a report that is split into error and
-    warning levels. It's just an advisory report but it always presents the same report without
-    suppressing errors. The problem with PHPMD is that once you suppress the error you never see it
-    again and your code can grow without limits without getting further warnings.
--   Processes more code. PHPMD depends on the parse tree provided by PDepend for all of its
-    warnings. The problem is that PDepend only parses the code inside classes and functions. It
-    completely ignores the rest of your code in standalone files so you're only doing a partial
-    check. PHP Linter solves that problem by providing a PDepend check and a separate style check
-    using Nikic PHP Parser that checks the whole code base.
+Add the package to your project as a development dependency using Composer:
 
-## Usage
-
-This project features two scripts to run project checks:
-
--   `bin/code_linter.php` - Runs style checks using
-    [Nikic PHP Parser](https://github.com/nikic/PHP-Parser).
-
-You can add the individual scripts or the combined linter script to your lint section in
-composer.json:
-
-```
-   "scripts": {
-        "lint": [
-            "php-linter"
-        ]
-    }
+```bash
+composer require --dev douglasgreen/code-linter
 ```
 
-I leave the `--generate` argument off here so the scripts don't run in Continuous Integration. I
-just run them manually during development.
+## Run the linter
 
-## Ignore list
+Execute the linter script from the root directory of your repository. 
 
-### Overview
+```bash
+vendor/bin/code_linter.php
+```
 
-The ignore list allows you to specify patterns of files and directories to ignore, similar to a
-`.gitignore` file. You only have to ignore PHP files that are contained in directories that are in
-version control. You don't have to ignore the `vendor/` directory, for example, because it isn't in
-version control.
+> **IMPORTANT:**
+> You must run the script from the repository root. The linter relies on `git ls-files` and parses the `composer.json` file to validate PSR-4 namespace mappings against your directory structure.
 
-### How It Works
+### Add to Composer scripts
 
-1. **Loading the Ignore File**: The class reads the `.phplintignore` file, ignoring any lines that
-   are comments or empty.
-2. **Storing Patterns**: Valid ignore patterns are converted into regular expressions and stored
-   internally.
-3. **Checking Paths**: The class provides a method to check if a given file path should be ignored
-   based on the stored patterns.
+To integrate the linter into your continuous integration (CI) pipeline or daily workflow, add it to the scripts section of your `composer.json` file:
 
-### Syntax
+```json
+{
+  "scripts": {
+    "lint": [
+      "vendor/bin/code_linter.php"
+    ]
+  }
+}
+```
 
-The `.phplintignore` file supports a simple syntax for specifying ignore patterns:
+Run the configured script with:
 
--   **Comments**: Lines starting with `#` are considered comments and are ignored.
--   **Wildcards**:
-    -   `*` matches any number of characters (including none).
-    -   `?` matches any single character.
--   **Examples**:
-    -   `*.log` ignores all files with the `.log` extension.
-    -   `build/*.tmp` ignores all `.tmp` files in the `build` directory.
-    -   `config/*.php` ignores all `.php` files in the `config` directory.
+```bash
+composer lint
+```
 
+## Configure the ignore list
 
-# To-do List
+The linter supports an ignore list similar to `.gitignore`. Create a `.phplintignore` file in the root of your repository to exclude specific paths or files from analysis.
 
-This project is a replacement for PHP Mess Detected (PHPMD).
+### Syntax rules
 
-## Structure
+- Lines starting with `#` act as comments.
+- `*` matches any number of characters.
+- `?` matches a single character.
 
-PHPMD uses the AST from PDepend to apply metrics. Unfortunately this is a bad design. PDepend only
-measures the complexity inside code units like classes and methods. It doesn't measure anything in
-standalone files that is not in a class or method. PHP isn't like Java and that it allows unlimited
-amounts of standalone code that is not in classes. Because PHPMD depends on PDepend, it has the same
-limitations.
+### Example configuration
 
-PHPMD also offers limited access to the metrics of PDepend.
+```text
+# Ignore third-party and configuration files
+config/*.php
 
-A better design is to use PDepend only for its measurements and then use Nikic Parser to parse the
-rest of the code and look for lint issues. This also enables the PDepend measurements to be cached.
+# Ignore build artifacts
+build/*.tmp.php
+```
 
-## PDepend
+## To-do list
 
-Use PDepend to generate and cache metrics.
+The following features, fixes, and enhancements guide the future development of this project.
 
-1. Make a list of each PHP directory.
-2. Run PDepend on each directory one at a time and cache the results.
-3. Generate summary statics of normal metrics.
-4. Use it to reject above 95% for each value.
+### Architecture and performance
 
-## Warning vs. Error
+- Add a configuration file format (e.g., `linter.xml` or `linter.json`) to customize rule thresholds and toggle specific checks.
+- Implement a result caching mechanism to skip unmodified files during consecutive runs.
+- Add an update flag to process only Git staged or modified files.
 
-PHPMD gives warnings too frequently and then they are disabled. Once you exceed the threshold, your
-code can grow without limit and not have any further warnings.
+### Code quality rules (from codebase comments)
 
-There should be a warning level (> 95%) and an error level (> 99.5%).
+- Refine the array duplicate key check or delegate it entirely to external tools like PHPStan (`src/Checker/ArrayChecker.php`).
+- Implement structural validation checks for classes and traits (`src/Checker/ClassChecker.php`).
+- Update comment parsing logic so it does not falsely identify email addresses as PHPDoc tags (`src/Checker/CommentChecker.php`).
+- Verify that getter methods return a value and setter methods return `void` (`src/Checker/FunctionChecker.php`).
+- Utilize `$param->isPromoted()` for constructor property promotion checks when the feature stabilizes (`src/Checker/FunctionChecker.php`).
+- Validate contextual removal of redundant class suffixes like "Manager" or "Handler" without triggering false positives (`src/ElementVisitor.php`).
+- Utilize the return type of the Unix `file` command for accurate file type detection instead of relying solely on extensions (`src/Repository.php`).
 
-## Values
+### Advanced static analysis
 
-Update the values with vendor files (vendor.xml).
+- Analyze `switch` statements for missing `break` statements or `// fallthru` comments.
+- Recommend the `static` keyword for methods that do not reference `$this`.
+- Enforce the `readonly` keyword on properties assigned only once.
+- Suggest Dependency Injection (DI) instead of using the `new` keyword inside methods.
+- Detect magic numbers (numeric literals other than 0, 1, or repeated digits).
+- Recommend converting associative array parameters and return types into dedicated Data Transfer Objects (DTOs).
+- Enforce logical code ordering: alphabetical, call order, or standard visibility order (constants, properties, constructor, public methods, private methods).
+- Calculate Lack of Cohesion of Methods (LCOM4) to identify classes that require splitting.
+- Recommend Dependency Injection annotations (`@di`) for classes managing external resources.
+- Warn when developers should move standalone functions or constants into classes.
 
-## Config File
+### Ecosystem integration
 
-Transfer the values to a config file and install with config-setup.
-
-## Docs
-
-Write documentation
-
-## Update
-
-Add an update flag(?) to update the cache.
-
-## Linter
-
-Remove extra lines from linter and finish.
-
-## Cache
-
-Give `check-style` its own cache file and update `php-linter`.
-
-## Variable metric
-
-Complexity is in the state manipulation, not the structures. Check the local variable count.
-
-## Explanations
-
-### Boolean function names
-
-Booleans should all be named with a declarative verb as if they're answering a yes or no question.
-So you shouldn't using imperative verb like check or validate. Instead:
-
--   Use a quality like isValid()
--   Check for success like canStop()
--   Express a goal like shouldAccept() or shouldUse().
-
-### Name printer
-
-Write a name printer for $var and func(), etc.
-
-### Automatic update of staged/changed files
-
-When check-metrics is run, make a list of staged/changed files. If any are newer than the staged.xml
-cache, update the cache with just those files. Use it instead of summary.xml for those files.
-
-### Caching for check-style
-
-Save errors/code info in a cache file for check-style.
-
-### Functions
-
-Give warning to move functions and constants into classes.
-
-### More checks
-
--   LCOM4
--   Switch - break or // fallthru
--   No known abbrev in func/class name
--   Recommend static for non-$this
--   No static mutation
--   Yes readonly when only one assign
--   Suggest DI when new used
--   Magic number is anything but 1 digit or 1 digit repeated
--   @param/@return of array with named key - change to object?
--   @order alphabetical, call, typical
--   File, class, trait, functions besides get/set/construct/destruct/test require comments
--   Intro order: file comment, declare, namespace, use, require
-
-### Composer/Package Linter
-
-Add linters for composer.json and package.json.
-
-### DI checker
-
-Mark every class that uses a resource as @di.
-
-Allow user to mark classes with @di meaning "this class should be injected".
-
-Check every usage of @di classes and resources in functions that are not in @di classes. Meaning a
-@di class can contain resources.
-
-### Namespaces
-
-Namespaces should be non-overlapping. This agrees with directory structure.
-
-Src: <owner>\<project>
-
-Src dir: src/ for simple project, src/<project> for multi-project
-
-Tests: <owner>\Tests\<project>
-
-Test dir: tests/ for simple project, tests/<project> for multi-project.
+- Provide custom linter rules for `composer.json` and `package.json` file structures.
+- Analyze namespaces to guarantee non-overlapping structures that strictly match the directory tree.
