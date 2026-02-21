@@ -50,8 +50,6 @@ foreach ($phpFiles as $phpFile) {
         }
 
         $traverser = new NodeTraverser();
-        // @todo Add this later and figure out how to get original name.
-        //$traverser->addVisitor(new NameResolver());
         $visitor = new ElementVisitor($composerFile, $phpFile);
         $traverser->addVisitor($visitor);
         $traverser->traverse($stmts);

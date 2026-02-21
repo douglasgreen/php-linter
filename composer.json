@@ -15,6 +15,7 @@
     "static analysis"
   ],
   "homepage": "https://github.com/douglasgreen/code-linter",
+  "prefer-stable": true,
   "license": "MIT",
   "authors": [
     {
