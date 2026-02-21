@@ -23,7 +23,7 @@ class MagicNumberVisitor extends VisitorChecker
             $valStr = (string) abs($value);
 
             // Ignore 0 and 1
-            if ($value === 0 || $value === 1 || $value === 0.0 || $value === 1.0) {
+            if (in_array($value, [0, 1, 0.0, 1.0], true)) {
                 return;
             }
 
@@ -49,8 +49,8 @@ class MagicNumberVisitor extends VisitorChecker
                         'Magic number %s detected (used %d times on lines: %s). Define it as a constant.',
                         $value,
                         $count,
-                        implode(', ', $lines)
-                    )
+                        implode(', ', $lines),
+                    ),
                 );
             }
         }

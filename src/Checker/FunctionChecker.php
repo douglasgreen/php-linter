@@ -10,13 +10,14 @@ use PhpParser\Node\Expr\ArrayDimFetch;
 use PhpParser\Node\Expr\ArrayItem;
 use PhpParser\Node\Expr\New_;
 use PhpParser\Node\Expr\Variable;
-use PhpParser\NodeFinder;
 use PhpParser\Node\Identifier;
+use PhpParser\Node\Name;
 use PhpParser\Node\Param;
 use PhpParser\Node\Scalar\String_;
 use PhpParser\Node\Stmt\ClassMethod;
 use PhpParser\Node\Stmt\Function_;
 use PhpParser\Node\Stmt\Return_;
+use PhpParser\NodeFinder;
 
 class FunctionChecker extends NodeChecker
 {
@@ -541,13 +542,11 @@ class FunctionChecker extends NodeChecker
         }
 
         $nodeFinder = new NodeFinder();
-        $usesThis = $nodeFinder->findFirst($this->node->stmts, function (Node $node): bool {
-            return $node instanceof Variable && $node->name === 'this';
-        });
+        $usesThis = $nodeFinder->findFirst($this->node->stmts, fn (Node $node): bool => $node instanceof Variable && $node->name === 'this');
 
-        if (! $usesThis) {
+        if (!$usesThis instanceof Node) {
             $this->addIssue(
-                sprintf('Method %s() does not use $this; consider making it static', $methodName)
+                sprintf('Method %s() does not use $this; consider making it static', $methodName),
             );
         }
     }
@@ -565,11 +564,19 @@ class FunctionChecker extends NodeChecker
         $dimFetches = $nodeFinder->findInstanceOf($this->node->stmts, ArrayDimFetch::class);
 
         foreach ($dimFetches as $dimFetch) {
-            if ($dimFetch->var instanceof Variable && $dimFetch->var->name === $paramName) {
-                if ($dimFetch->dim instanceof String_) {
-                    $keys[] = $dimFetch->dim->value;
-                }
+            if (!$dimFetch->var instanceof Variable) {
+                continue;
             }
+
+            if ($dimFetch->var->name !== $paramName) {
+                continue;
+            }
+
+            if (!$dimFetch->dim instanceof String_) {
+                continue;
+            }
+
+            $keys[] = $dimFetch->dim->value;
         }
 
         if ($keys !== []) {
@@ -578,8 +585,8 @@ class FunctionChecker extends NodeChecker
                 sprintf(
                     'Parameter $%s is an array accessed with string keys; consider using a DTO. Suggested properties: %s',
                     $paramName,
-                    implode(', ', $uniqueKeys)
-                )
+                    implode(', ', $uniqueKeys),
+                ),
             );
         }
     }
@@ -611,8 +618,8 @@ class FunctionChecker extends NodeChecker
             $this->addIssue(
                 sprintf(
                     'Function returns an array with string keys; consider using a DTO. Suggested properties: %s',
-                    implode(', ', $uniqueKeys)
-                )
+                    implode(', ', $uniqueKeys),
+                ),
             );
         }
     }
@@ -635,19 +642,20 @@ class FunctionChecker extends NodeChecker
             $className = $this->getNewClassName($newNode);
             $this->addIssue(
                 sprintf(
-                    "Method %s() instantiates %s; consider using Dependency Injection instead.",
+                    'Method %s() instantiates %s; consider using Dependency Injection instead.',
                     $funcName,
-                    $className
-                )
+                    $className,
+                ),
             );
         }
     }
 
     protected function getNewClassName(New_ $node): string
     {
-        if ($node->class instanceof Node\Name) {
+        if ($node->class instanceof Name) {
             return (string) $node->class;
         }
+
         return 'anonymous or dynamic class';
     }
 }
