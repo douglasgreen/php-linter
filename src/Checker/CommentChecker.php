@@ -147,11 +147,6 @@ class CommentChecker extends NodeChecker
             // This is a multi-line comment (/* */)
             $this->checkMultiLineComment($comment);
         }
-
-        // @todo See if I can improve this check
-        if ($comment->getStartLine() === $this->node->getEndLine()) {
-            $this->addIssue('Avoid putting comments at end of line');
-        }
     }
 
     protected function checkDocComment(Doc $doc): void

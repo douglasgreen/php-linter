@@ -40,3 +40,4 @@ __pycache__/
 /.env.local.php
 parameters.yml
 /var/
+.aider*
