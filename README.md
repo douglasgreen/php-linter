@@ -4,7 +4,7 @@ description: A static analysis tool for PHP based on the Nikic PHP parser
 tags: [php, linter, static-analysis, ast, code-quality]
 audience: Developers
 last_updated: 2026-02-21
-reading_time: 4 min
+reading_time: 6 min
 ---
 
 # Code linter
@@ -57,6 +57,48 @@ Run the configured script with:
 ```bash
 composer lint
 ```
+
+## Checked issues
+
+The linter analyzes your code for the following issues:
+
+### Naming conventions
+- **CamelCase usage:** Classes, interfaces, and traits must use `UpperCamelCase`. Methods, functions, and variables must use `lowerCamelCase`.
+- **Constants:** Must be in `ALL_CAPS`.
+- **Name length:** Global names (classes/methods) should be 3–32 characters. Local variables should be 3–24 characters.
+- **Redundant suffixes:** Identifies redundant or leaky suffixes like `Abstract`, `Impl`, `Manager`, `Helper`, `Collection`, or `Data`.
+- **Boolean naming:** Boolean return functions should start with declarative verbs (e.g., `is`, `has`, `can`).
+- **Verb-based naming:** Non-boolean functions should start with an imperative verb.
+
+### Code structure & PSR standards
+- **PSR-4 compliance:** Verifies that the file path matches the class namespace and name based on `composer.json`.
+- **Visibility order:** Properties and methods must be ordered by visibility: `public`, then `protected`, then `private`.
+- **Member ordering:** Properties must be defined before methods.
+- **Namespace imports:** External classes must be imported via `use` statements rather than using fully qualified names inline.
+
+### Best practices & Modernization
+- **Dependency Injection:** Identifies direct instantiation (`new`) inside methods, suggesting DI instead.
+- **DTO suggestions:** Identifies arrays accessed with string keys as parameters or return types and suggests using Data Transfer Objects (DTOs) instead.
+- **Static vs Instance:** Suggests making methods `static` if they do not use `$this`.
+- **PHP 4 Constructors:** Flags old-style constructors (methods named after the class).
+- **Strict Loading:** Suggests `require_once` over `include` or `require`.
+
+### Potential bugs & Cleanup
+- **Unused code:** Detects unused private properties, unused private methods, and unused function parameters.
+- **Redundant variables:** Flags variables that are assigned but only used once.
+- **Magic numbers:** Detects duplicate numeric literals used across the code and suggests defining them as constants.
+- **Empty blocks:** Flags empty `catch` blocks that suppress errors.
+
+### Security & Forbidden syntax
+- **Dangerous functions:** Flags the use of `eval()`.
+- **Global scope:** Flags the use of the `global` keyword.
+- **Unstructured code:** Flags the use of `goto` statements.
+- **Error suppression:** Flags the use of the `@` operator.
+- **Execution flow:** Flags `exit` or `die` inside functions/classes, suggesting exceptions instead.
+- **Debug leftovers:** Flags common debug calls like `var_dump()`, `print_r()`, or `debug_backtrace()`.
+
+### Repository health
+- **Git branch:** Verifies the default repository branch is named `main`.
 
 ## Configure the ignore list
 
