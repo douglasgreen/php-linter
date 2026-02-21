@@ -13,6 +13,7 @@ use DouglasGreen\PhpLinter\Checker\OperatorChecker;
 use DouglasGreen\PhpLinter\Checker\TryCatchChecker;
 use DouglasGreen\PhpLinter\Visitor\ClassVisitor;
 use DouglasGreen\PhpLinter\Visitor\FunctionVisitor;
+use DouglasGreen\PhpLinter\Visitor\MagicNumberVisitor;
 use DouglasGreen\PhpLinter\Visitor\NameVisitor;
 use PhpParser\Node;
 use PhpParser\Node\Expr\Array_;
@@ -42,6 +43,8 @@ class ElementVisitor extends NodeVisitorAbstract
     protected ClassVisitor $classVisitor;
 
     protected FunctionVisitor $functionVisitor;
+
+    protected MagicNumberVisitor $magicNumberVisitor;
 
     protected NameVisitor $nameVisitor;
 
@@ -79,6 +82,7 @@ class ElementVisitor extends NodeVisitorAbstract
     public function beforeTraverse(array $nodes): null
     {
         $this->nameVisitor = new NameVisitor();
+        $this->magicNumberVisitor = new MagicNumberVisitor();
 
         return null;
     }
@@ -107,6 +111,9 @@ class ElementVisitor extends NodeVisitorAbstract
 
             $this->addIssue('Import external classes with use statement: ' . $qualifiedName);
         }
+
+        $this->magicNumberVisitor->checkDuplicates();
+        $this->addIssues($this->magicNumberVisitor->getIssues());
 
         return null;
     }
@@ -244,6 +251,7 @@ class ElementVisitor extends NodeVisitorAbstract
         }
 
         $this->nameVisitor->checkNode($node);
+        $this->magicNumberVisitor->checkNode($node);
 
         if ($node instanceof Name && $node->isFullyQualified()) {
             $name = $node->toString();
