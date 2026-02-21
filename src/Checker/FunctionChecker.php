@@ -8,6 +8,7 @@ use PhpParser\Node;
 use PhpParser\Node\Expr\Array_;
 use PhpParser\Node\Expr\ArrayDimFetch;
 use PhpParser\Node\Expr\ArrayItem;
+use PhpParser\Node\Expr\New_;
 use PhpParser\Node\Expr\Variable;
 use PhpParser\NodeFinder;
 use PhpParser\Node\Identifier;
@@ -421,6 +422,7 @@ class FunctionChecker extends NodeChecker
 
         if ($this->node instanceof ClassMethod) {
             $this->checkStaticRecommendation($funcName);
+            $this->checkDiSuggestion($funcName);
         }
 
         return $this->getIssues();
@@ -613,5 +615,39 @@ class FunctionChecker extends NodeChecker
                 )
             );
         }
+    }
+
+    protected function checkDiSuggestion(string $funcName): void
+    {
+        // Skip methods with "Factory" in the name
+        if (stripos($funcName, 'Factory') !== false) {
+            return;
+        }
+
+        if ($this->node->stmts === null) {
+            return;
+        }
+
+        $nodeFinder = new NodeFinder();
+        $newNodes = $nodeFinder->findInstanceOf($this->node->stmts, New_::class);
+
+        foreach ($newNodes as $newNode) {
+            $className = $this->getNewClassName($newNode);
+            $this->addIssue(
+                sprintf(
+                    "Method %s() instantiates %s; consider using Dependency Injection instead.",
+                    $funcName,
+                    $className
+                )
+            );
+        }
+    }
+
+    protected function getNewClassName(New_ $node): string
+    {
+        if ($node->class instanceof Node\Name) {
+            return (string) $node->class;
+        }
+        return 'anonymous or dynamic class';
     }
 }
