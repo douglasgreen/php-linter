@@ -1,58 +1,58 @@
 {
-    "name": "douglasgreen/code-linter",
-    "description": "Code linter for PHP based on Nikic parser",
-    "type": "library",
-    "keywords": [
-        "ast",
-        "automation",
-        "cli",
-        "code quality",
-        "coding standards",
-        "linter",
-        "linting",
-        "php",
-        "php parser",
-        "static analysis"
-    ],
-    "homepage": "https://github.com/douglasgreen/code-linter",
-    "license": "MIT",
-    "authors": [
-        {
-            "name": "Douglas Green",
-            "email": "douglas@nurd.site",
-            "homepage": "https://nurd.site/",
-            "role": "Developer"
-        }
-    ],
-    "require": {
-        "php": ">=8.3",
-        "nikic/php-parser": "^5.7"
-    },
-    "require-dev": {
-        "friendsofphp/php-cs-fixer": "^3.94.2",
-        "phpstan/phpstan": "^2.1.39",
-        "rector/rector": "^2.3.7"
-    },
-    "autoload": {
-        "psr-4": {
-            "DouglasGreen\\PhpLinter\\": "src/"
-        }
-    },
-    "config": {
-        "sort-packages": true
-    },
-    "scripts": {
-        "lint": [
-            "php-cs-fixer fix --dry-run --verbose",
-            "phpstan analyse",
-            "rector process --dry-run"
-        ],
-        "lint:fix": [
-            "php-cs-fixer fix",
-            "rector process"
-        ],
-        "bin": [
-            "bin/code_linter.php"
-        ]
+  "name": "douglasgreen/code-linter",
+  "description": "Code linter for PHP based on Nikic parser",
+  "type": "library",
+  "keywords": [
+    "ast",
+    "automation",
+    "cli",
+    "code quality",
+    "coding standards",
+    "linter",
+    "linting",
+    "php",
+    "php parser",
+    "static analysis"
+  ],
+  "homepage": "https://github.com/douglasgreen/code-linter",
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "Douglas Green",
+      "email": "douglas@nurd.site",
+      "homepage": "https://nurd.site/",
+      "role": "Developer"
     }
+  ],
+  "require": {
+    "php": ">=8.3",
+    "nikic/php-parser": "^5.7"
+  },
+  "require-dev": {
+    "friendsofphp/php-cs-fixer": "^3.94.2",
+    "phpstan/phpstan": "^2.1.39",
+    "rector/rector": "^2.3.7"
+  },
+  "autoload": {
+    "psr-4": {
+      "DouglasGreen\\PhpLinter\\": "src/"
+    }
+  },
+  "config": {
+    "sort-packages": true
+  },
+  "scripts": {
+    "lint": [
+      "php-cs-fixer fix --dry-run --verbose",
+      "phpstan analyse",
+      "rector process --dry-run"
+    ],
+    "lint:fix": [
+      "php-cs-fixer fix",
+      "rector process"
+    ]
+  },
+  "bin": [
+    "bin/code_linter.php"
+  ]
 }
