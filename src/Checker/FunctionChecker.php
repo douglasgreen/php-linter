@@ -5,7 +5,9 @@ declare(strict_types=1);
 namespace DouglasGreen\PhpLinter\Checker;
 
 use PhpParser\Node;
+use PhpParser\Node\Expr\Array_;
 use PhpParser\Node\Expr\ArrayDimFetch;
+use PhpParser\Node\Expr\ArrayItem;
 use PhpParser\Node\Expr\Variable;
 use PhpParser\NodeFinder;
 use PhpParser\Node\Identifier;
@@ -13,6 +15,7 @@ use PhpParser\Node\Param;
 use PhpParser\Node\Scalar\String_;
 use PhpParser\Node\Stmt\ClassMethod;
 use PhpParser\Node\Stmt\Function_;
+use PhpParser\Node\Stmt\Return_;
 
 class FunctionChecker extends NodeChecker
 {
@@ -410,6 +413,10 @@ class FunctionChecker extends NodeChecker
         if ($this->node->returnType instanceof Identifier) {
             $returnType = $this->node->returnType->name;
             $this->checkReturnType($funcName, $funcType, $returnType);
+
+            if ($returnType === 'array') {
+                $this->checkReturnArrayDto();
+            }
         }
 
         if ($this->node instanceof ClassMethod) {
@@ -569,6 +576,39 @@ class FunctionChecker extends NodeChecker
                 sprintf(
                     'Parameter $%s is an array accessed with string keys; consider using a DTO. Suggested properties: %s',
                     $paramName,
+                    implode(', ', $uniqueKeys)
+                )
+            );
+        }
+    }
+
+    protected function checkReturnArrayDto(): void
+    {
+        if ($this->node->stmts === null) {
+            return;
+        }
+
+        $nodeFinder = new NodeFinder();
+        $keys = [];
+
+        /** @var array<Return_> $returnStmts */
+        $returnStmts = $nodeFinder->findInstanceOf($this->node->stmts, Return_::class);
+
+        foreach ($returnStmts as $returnStmt) {
+            if ($returnStmt->expr instanceof Array_) {
+                foreach ($returnStmt->expr->items as $item) {
+                    if ($item instanceof ArrayItem && $item->key instanceof String_) {
+                        $keys[] = $item->key->value;
+                    }
+                }
+            }
+        }
+
+        if ($keys !== []) {
+            $uniqueKeys = array_unique($keys);
+            $this->addIssue(
+                sprintf(
+                    'Function returns an array with string keys; consider using a DTO. Suggested properties: %s',
                     implode(', ', $uniqueKeys)
                 )
             );
