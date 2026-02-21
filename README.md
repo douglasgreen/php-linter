@@ -90,12 +90,10 @@ The following features, fixes, and enhancements guide the future development of 
 
 ### Code quality rules (from codebase comments)
 
-- Refine the array duplicate key check or delegate it entirely to external tools like PHPStan (`src/Checker/ArrayChecker.php`).
 - Implement structural validation checks for classes and traits (`src/Checker/ClassChecker.php`).
 - Update comment parsing logic so it does not falsely identify email addresses as PHPDoc tags (`src/Checker/CommentChecker.php`).
 - Verify that getter methods return a value and setter methods return `void` (`src/Checker/FunctionChecker.php`).
 - Validate contextual removal of redundant class suffixes like "Manager" or "Handler" without triggering false positives (`src/ElementVisitor.php`).
-- Utilize the return type of the Unix `file` command for accurate file type detection instead of relying solely on extensions (`src/Repository.php`).
 
 ### Advanced static analysis
 

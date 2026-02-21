@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace DouglasGreen\PhpLinter;
 
-use DouglasGreen\PhpLinter\Checker\ArrayChecker;
 use DouglasGreen\PhpLinter\Checker\ClassChecker;
 use DouglasGreen\PhpLinter\Checker\CommentChecker;
 use DouglasGreen\PhpLinter\Checker\ExpressionChecker;
@@ -230,11 +229,6 @@ class ElementVisitor extends NodeVisitorAbstract
         if ($node instanceof TryCatch) {
             $tryCatchChecker = new TryCatchChecker($node);
             $this->addIssues($tryCatchChecker->check());
-        }
-
-        if ($node instanceof Array_) {
-            $arrayChecker = new ArrayChecker($node);
-            $this->addIssues($arrayChecker->check());
         }
 
         $funcCallChecker = new FunctionCallChecker($node);
