@@ -94,7 +94,6 @@ The following features, fixes, and enhancements guide the future development of 
 - Implement structural validation checks for classes and traits (`src/Checker/ClassChecker.php`).
 - Update comment parsing logic so it does not falsely identify email addresses as PHPDoc tags (`src/Checker/CommentChecker.php`).
 - Verify that getter methods return a value and setter methods return `void` (`src/Checker/FunctionChecker.php`).
-- Utilize `$param->isPromoted()` for constructor property promotion checks when the feature stabilizes (`src/Checker/FunctionChecker.php`).
 - Validate contextual removal of redundant class suffixes like "Manager" or "Handler" without triggering false positives (`src/ElementVisitor.php`).
 - Utilize the return type of the Unix `file` command for accurate file type detection instead of relying solely on extensions (`src/Repository.php`).
 

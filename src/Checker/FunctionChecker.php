@@ -459,11 +459,9 @@ class FunctionChecker extends NodeChecker
                 }
             }
 
-            // @todo Replace with $param->isPromoted() when that function is released.
-            $isPromoted = $param->flags !== 0;
             $this->params[$paramName] = [
                 'type' => $paramType,
-                'promoted' => $isPromoted,
+                'promoted' => $param->isPromoted(),
             ];
         }
     }
