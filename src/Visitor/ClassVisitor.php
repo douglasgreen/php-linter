@@ -47,7 +47,7 @@ class ClassVisitor extends VisitorChecker
     public function checkClass(): void
     {
         // Reconcile the recorded usages with the definitions before performing checks.
-        foreach ($this->usedPropertyNames as $name => $bool) {
+        foreach (array_keys($this->usedPropertyNames) as $name) {
             if (isset($this->properties[$name])) {
                 $this->properties[$name]['used'] = true;
             }
