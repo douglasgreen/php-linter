@@ -33,6 +33,7 @@ class MagicNumberVisitor extends VisitorChecker
                 return;
             }
 
+            /** @var string $key */
             $key = (string) $value;
             $this->counts[$key] = ($this->counts[$key] ?? 0) + 1;
             $this->lines[$key][] = $node->getStartLine();
