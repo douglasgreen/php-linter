@@ -53,7 +53,7 @@ class ClassVisitor extends VisitorChecker
             }
         }
 
-        foreach ($this->usedMethodNames as $name => $bool) {
+        foreach (array_keys($this->usedMethodNames) as $name) {
             if (isset($this->methods[$name])) {
                 $this->methods[$name]['used'] = true;
             }
