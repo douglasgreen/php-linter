@@ -25,6 +25,12 @@ class ClassVisitor extends VisitorChecker
     /** @var array<string, array{visibility: string, static: bool, used: bool}> */
     protected array $properties = [];
 
+    /** @var array<string, bool> */
+    protected array $usedMethodNames = [];
+
+    /** @var array<string, bool> */
+    protected array $usedPropertyNames = [];
+
     /**
      * @param array<string, bool> $attribs
      */
@@ -40,6 +46,19 @@ class ClassVisitor extends VisitorChecker
      */
     public function checkClass(): void
     {
+        // Reconcile the recorded usages with the definitions before performing checks.
+        foreach ($this->usedPropertyNames as $name => $bool) {
+            if (isset($this->properties[$name])) {
+                $this->properties[$name]['used'] = true;
+            }
+        }
+
+        foreach ($this->usedMethodNames as $name => $bool) {
+            if (isset($this->methods[$name])) {
+                $this->methods[$name]['used'] = true;
+            }
+        }
+
         $visibilities = [];
         foreach ($this->properties as $propName => $prop) {
             $visibilities[$propName] = $prop['visibility'];
@@ -238,15 +257,13 @@ class ClassVisitor extends VisitorChecker
 
     protected function trackMethodUsage(string $methodName): void
     {
-        if (isset($this->methods[$methodName])) {
-            $this->methods[$methodName]['used'] = true;
-        }
+        // Store the name blindly - we don't care if it exists yet.
+        $this->usedMethodNames[$methodName] = true;
     }
 
     protected function trackPropertyUsage(string $propName): void
     {
-        if (isset($this->properties[$propName])) {
-            $this->properties[$propName]['used'] = true;
-        }
+        // Store the name blindly.
+        $this->usedPropertyNames[$propName] = true;
     }
 }
