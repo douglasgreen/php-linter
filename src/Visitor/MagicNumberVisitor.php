@@ -10,10 +10,10 @@ use PhpParser\Node\Scalar\Int_;
 
 class MagicNumberVisitor extends VisitorChecker
 {
-    /** @var array<string, int> */
+    /** @var array<string|int, int> */
     protected array $counts = [];
 
-    /** @var array<string, array<int>> */
+    /** @var array<string|int, array<int>> */
     protected array $lines = [];
 
     public function checkNode(Node $node): void
@@ -33,7 +33,6 @@ class MagicNumberVisitor extends VisitorChecker
                 return;
             }
 
-            /** @var string $key */
             $key = (string) $value;
             $this->counts[$key] = ($this->counts[$key] ?? 0) + 1;
             $this->lines[$key][] = $node->getStartLine();
