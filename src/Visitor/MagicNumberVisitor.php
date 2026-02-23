@@ -51,7 +51,7 @@ class MagicNumberVisitor extends VisitorChecker
                 $lines = $this->lines[$value];
                 $this->addIssue(
                     sprintf(
-                        'Magic number %s detected (used %d times on lines: %s). Define it as a constant.',
+                        'Replace the magic number %s with a named constant. It appears %d times on lines %s. Centralizing this value improves maintainability and readability.',
                         $value,
                         $count,
                         implode(', ', $lines),
