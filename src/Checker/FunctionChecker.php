@@ -146,7 +146,12 @@ class FunctionChecker extends NodeChecker
         $paramCount = count($params);
         if ($paramCount > 9) {
             $this->addIssue(
-                sprintf('%s %s() has too many parameters: %d', $funcType, $funcName, $paramCount),
+                sprintf(
+                    'Reduce the parameter count of %s %s() from %d to 9 or fewer. Long parameter lists reduce readability and increase the chance of errors.',
+                    $funcType,
+                    $funcName,
+                    $paramCount
+                ),
             );
         }
 
@@ -166,10 +171,10 @@ class FunctionChecker extends NodeChecker
                 if ($paramType === 'bool') {
                     $this->addIssue(
                         sprintf(
-                            '%s %s() has a boolean parameter $%s; replace with integer flag values',
-                            $funcType,
-                            $funcName,
+                            'Replace the boolean parameter $%s in %s %s() with an integer flag or enum. Boolean parameters often indicate a violation of the Single Responsibility Principle.',
                             $paramName,
+                            $funcType,
+                            $funcName
                         ),
                     );
                 }
@@ -203,10 +208,10 @@ class FunctionChecker extends NodeChecker
 
             $this->addIssue(
                 sprintf(
-                    '%s %s() returns a boolean; consider naming it %s',
+                    'Rename %s %s() to %s or a similar boolean prefix (is, has, can). Methods returning bool should indicate their result via their name.',
                     $funcType,
                     $funcName,
-                    $suggest,
+                    $suggest
                 ),
             );
         } else {
@@ -215,7 +220,11 @@ class FunctionChecker extends NodeChecker
             }
 
             $this->addIssue(
-                sprintf('%s %s() should start with a verb', $funcType, $funcName),
+                sprintf(
+                    'Rename %s %s() to start with an imperative verb. Method names should describe the action being performed.',
+                    $funcType,
+                    $funcName
+                ),
             );
         }
     }
@@ -252,7 +261,10 @@ class FunctionChecker extends NodeChecker
 
         if (!$usesThis instanceof Node) {
             $this->addIssue(
-                sprintf('Method %s() does not use $this; consider making it static', $methodName),
+                sprintf(
+                    'Declare method %s() as static. It does not use $this and therefore does not belong to an object instance.',
+                    $methodName
+                ),
             );
         }
     }
@@ -294,9 +306,9 @@ class FunctionChecker extends NodeChecker
             $uniqueKeys = array_unique($keys);
             $this->addIssue(
                 sprintf(
-                    'Parameter $%s is an array accessed with string keys; consider using a DTO. Suggested properties: %s',
+                    'Replace array parameter $%s with a DTO class. The array is accessed with string keys (%s), which suggests a structured data type is more appropriate.',
                     $paramName,
-                    implode(', ', $uniqueKeys),
+                    implode(', ', $uniqueKeys)
                 ),
             );
         }
@@ -335,8 +347,8 @@ class FunctionChecker extends NodeChecker
             $uniqueKeys = array_unique($keys);
             $this->addIssue(
                 sprintf(
-                    'Function returns an array with string keys; consider using a DTO. Suggested properties: %s',
-                    implode(', ', $uniqueKeys),
+                    'Return a DTO object instead of an array. The return array uses string keys (%s), which suggests a structured data type is more appropriate.',
+                    implode(', ', $uniqueKeys)
                 ),
             );
         }
@@ -376,9 +388,9 @@ class FunctionChecker extends NodeChecker
 
             $this->addIssue(
                 sprintf(
-                    'Method %s() instantiates %s; consider using Dependency Injection instead.',
-                    $funcName,
+                    'Use Dependency Injection for %s in method %s() instead of instantiating it with `new`. This improves testability and decouples the class.',
                     $className,
+                    $funcName
                 ),
             );
         }
