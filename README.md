@@ -65,7 +65,7 @@ The linter analyzes your code for the following issues:
 ### Naming conventions
 - **CamelCase usage:** Classes, interfaces, and traits must use `UpperCamelCase`. Methods, functions, and variables must use `lowerCamelCase`.
 - **Constants:** Must be in `ALL_CAPS`.
-- **Name length:** Global names (classes/methods) should be 3–32 characters. Local variables should be 3–24 characters.
+- **Name length:** Global names (classes/methods) should be 3–32 characters. Local variables should be 1–24 characters.
 - **Redundant suffixes:** Identifies redundant or leaky suffixes like `Abstract`, `Impl`, `Manager`, `Helper`, `Collection`, or `Data`.
 - **Boolean naming:** Boolean return functions should start with declarative verbs (e.g., `is`, `has`, `can`).
 - **Verb-based naming:** Non-boolean functions should start with an imperative verb.

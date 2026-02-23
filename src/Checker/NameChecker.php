@@ -215,17 +215,12 @@ class NameChecker extends NodeChecker
     }
 
     /**
-     * Local names are names of variables that are only locally visible and can be shorter.
+     * Local names are names of variables that are only locally visible and have no minimum length.
      */
     protected function checkLocalNameLength(string $name, string $type): void
     {
         if (strlen($name) > 24) {
             $issue = $type . ' name too long: ' . $name;
-            $this->addIssue($issue);
-        }
-
-        if (strlen($name) < 3 && ! in_array($name, self::VALID_SHORT_NAMES, true)) {
-            $issue = $type . ' name too short: ' . $name;
             $this->addIssue($issue);
         }
     }
