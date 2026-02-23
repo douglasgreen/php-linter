@@ -70,13 +70,13 @@ class ClassVisitor extends VisitorChecker
 
             if ($prop['visibility'] === 'private') {
                 $issue = sprintf(
-                    'Private %s property %s is not used within the class.',
+                    'Remove unused private %s property %s to reduce dead code.',
                     $type,
                     $propName,
                 );
                 $this->issues[$issue] = true;
             } elseif ($prop['visibility'] === 'public') {
-                $issue = sprintf('Avoid using public properties like %s', $propName);
+                $issue = sprintf('Change public property %s to private or protected to improve encapsulation.', $propName);
                 $this->issues[$issue] = true;
             }
         }
@@ -89,7 +89,7 @@ class ClassVisitor extends VisitorChecker
                 $type = $method['static'] ? 'static' : 'non-static';
                 $className = $this->className ?? '<anonymous>';
                 $issue = sprintf(
-                    'Private %s method %s::%s() is not used within the class.',
+                    'Remove unused private %s method %s::%s() to reduce dead code.',
                     $type,
                     $className,
                     $methodName,
@@ -115,7 +115,7 @@ class ClassVisitor extends VisitorChecker
             }
 
             if ($this->methods !== []) {
-                $this->addIssue('Properties should come before methods');
+                $this->addIssue('Move all properties above all methods to follow standard code organization.');
             }
         }
 
@@ -146,7 +146,7 @@ class ClassVisitor extends VisitorChecker
             if (strcasecmp($methodName, (string) $this->className) === 0) {
                 $this->addIssue(
                     sprintf(
-                        'Use __construct instead of PHP 4 style constructors like %s() in class %s',
+                        'Rename method %s() to __construct() in class %s to use modern PHP constructor syntax.',
                         $methodName,
                         $this->className,
                     ),
@@ -191,7 +191,7 @@ class ClassVisitor extends VisitorChecker
         if ($badOrder !== null) {
             $this->addIssue(
                 sprintf(
-                    '%s visibility order should be public, then protected, then private: %s',
+                    'Reorder %ss to place public members first, followed by protected, then private, correcting position of %s.',
                     $type,
                     $badOrder,
                 ),
