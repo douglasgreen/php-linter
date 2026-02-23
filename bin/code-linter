@@ -27,7 +27,6 @@ $filesChecked = [];
 
 $repository = new Repository();
 $phpFiles = $repository->getPhpFiles();
-$repository->check();
 $repository->printIssues();
 
 $parser = (new ParserFactory())->createForNewestSupportedVersion();

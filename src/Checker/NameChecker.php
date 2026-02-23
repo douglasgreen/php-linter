@@ -196,8 +196,8 @@ class NameChecker extends NodeChecker
             $this->addIssue(
                 sprintf(
                     "Rename constant '%s' to use UPPER_SNAKE_CASE. Constants should be uppercase to distinguish them from variables.",
-                    $name
-                )
+                    $name,
+                ),
             );
         }
     }
@@ -212,8 +212,8 @@ class NameChecker extends NodeChecker
                 sprintf(
                     "Rename %s '%s' to be 32 characters or fewer. Long names harm readability.",
                     $type,
-                    $name
-                )
+                    $name,
+                ),
             );
         }
 
@@ -222,8 +222,8 @@ class NameChecker extends NodeChecker
                 sprintf(
                     "Rename %s '%s' to be at least 3 characters long. Short names are often ambiguous unless they are standard abbreviations like 'id' or 'db'.",
                     $type,
-                    $name
-                )
+                    $name,
+                ),
             );
         }
     }
@@ -238,8 +238,8 @@ class NameChecker extends NodeChecker
                 sprintf(
                     "Rename %s '%s' to be 24 characters or fewer. Long variable names can make code harder to read.",
                     $type,
-                    $name
-                )
+                    $name,
+                ),
             );
         }
     }
@@ -250,8 +250,8 @@ class NameChecker extends NodeChecker
             $this->addIssue(
                 sprintf(
                     "Rename '%s' to use camelCase. Methods, functions, and variables should start with a lowercase letter.",
-                    $name
-                )
+                    $name,
+                ),
             );
         }
     }
@@ -272,8 +272,8 @@ class NameChecker extends NodeChecker
                         $name,
                         $badSuffix,
                         $badSuffix,
-                        $reason
-                    )
+                        $reason,
+                    ),
                 );
                 return;
             }
@@ -286,8 +286,8 @@ class NameChecker extends NodeChecker
                     $type,
                     $name,
                     $type,
-                    $type
-                )
+                    $type,
+                ),
             );
         }
     }
@@ -298,8 +298,8 @@ class NameChecker extends NodeChecker
             $this->addIssue(
                 sprintf(
                     "Rename '%s' to use PascalCase. Classes, interfaces, traits, and namespaces should start with an uppercase letter.",
-                    $name
-                )
+                    $name,
+                ),
             );
         }
     }

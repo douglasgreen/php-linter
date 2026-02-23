@@ -114,7 +114,7 @@ class ElementVisitor extends NodeVisitorAbstract
 
             $this->addIssue(sprintf(
                 'Import the class "%s" with a "use" statement instead of using a fully qualified name to improve readability.',
-                $qualifiedName
+                $qualifiedName,
             ));
         }
 

@@ -21,7 +21,7 @@ class LocalScopeChecker extends NodeChecker
             $kind = $this->node->getAttribute('kind');
             $name = $kind === Exit_::KIND_EXIT ? 'exit' : 'die';
             $this->addIssue(
-                "Replace the '$name' expression with an exception throw to allow proper error handling.",
+                sprintf("Replace the '%s' expression with an exception throw to allow proper error handling.", $name),
             );
         }
 

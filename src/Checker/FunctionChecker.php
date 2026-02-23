@@ -150,7 +150,7 @@ class FunctionChecker extends NodeChecker
                     'Reduce the parameter count of %s %s() from %d to 9 or fewer. Long parameter lists reduce readability and increase the chance of errors.',
                     $funcType,
                     $funcName,
-                    $paramCount
+                    $paramCount,
                 ),
             );
         }
@@ -174,7 +174,7 @@ class FunctionChecker extends NodeChecker
                             'Replace the boolean parameter $%s in %s %s() with an integer flag or enum. Boolean parameters often indicate a violation of the Single Responsibility Principle.',
                             $paramName,
                             $funcType,
-                            $funcName
+                            $funcName,
                         ),
                     );
                 }
@@ -211,7 +211,7 @@ class FunctionChecker extends NodeChecker
                     'Rename %s %s() to %s or a similar boolean prefix (is, has, can). Methods returning bool should indicate their result via their name.',
                     $funcType,
                     $funcName,
-                    $suggest
+                    $suggest,
                 ),
             );
         } else {
@@ -223,7 +223,7 @@ class FunctionChecker extends NodeChecker
                 sprintf(
                     'Rename %s %s() to start with an imperative verb. Method names should describe the action being performed.',
                     $funcType,
-                    $funcName
+                    $funcName,
                 ),
             );
         }
@@ -263,7 +263,7 @@ class FunctionChecker extends NodeChecker
             $this->addIssue(
                 sprintf(
                     'Declare method %s() as static. It does not use $this and therefore does not belong to an object instance.',
-                    $methodName
+                    $methodName,
                 ),
             );
         }
@@ -308,7 +308,7 @@ class FunctionChecker extends NodeChecker
                 sprintf(
                     'Replace array parameter $%s with a DTO class. The array is accessed with string keys (%s), which suggests a structured data type is more appropriate.',
                     $paramName,
-                    implode(', ', $uniqueKeys)
+                    implode(', ', $uniqueKeys),
                 ),
             );
         }
@@ -348,7 +348,7 @@ class FunctionChecker extends NodeChecker
             $this->addIssue(
                 sprintf(
                     'Return a DTO object instead of an array. The return array uses string keys (%s), which suggests a structured data type is more appropriate.',
-                    implode(', ', $uniqueKeys)
+                    implode(', ', $uniqueKeys),
                 ),
             );
         }
@@ -390,7 +390,7 @@ class FunctionChecker extends NodeChecker
                 sprintf(
                     'Use Dependency Injection for %s in method %s() instead of instantiating it with `new`. This improves testability and decouples the class.',
                     $className,
-                    $funcName
+                    $funcName,
                 ),
             );
         }

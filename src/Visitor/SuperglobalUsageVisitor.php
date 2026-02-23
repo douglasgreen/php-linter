@@ -59,8 +59,8 @@ class SuperglobalUsageVisitor extends NodeVisitorAbstract
                 sprintf(
                     'Move superglobal $%s access out of %s. Superglobals should only be accessed in the global scope or within classes ending in Controller or Middleware to ensure proper encapsulation.',
                     $node->name,
-                    $context
-                )
+                    $context,
+                ),
             );
         }
 
@@ -88,7 +88,7 @@ class SuperglobalUsageVisitor extends NodeVisitorAbstract
         if ($currentClass) {
             return 'class ' . $currentClass;
         }
-        
+
         if ($this->functionDepth > 0) {
             return 'function scope';
         }
