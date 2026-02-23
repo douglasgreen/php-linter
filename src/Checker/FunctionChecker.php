@@ -53,7 +53,7 @@ class FunctionChecker extends NodeChecker
         'append', 'apply', 'as', 'ask', 'assert', 'assign', 'at', 'attempt',
         'authenticate', 'authorize', 'be', 'before', 'begin', 'build', 'by', 'cache',
         'calculate', 'call', 'cancel', 'cast', 'change', 'check', 'choose', 'clean',
-        'cleanup', 'clear', 'clone', 'close', 'collect', 'colorize', 'comment',
+        'cleanup', 'clear', 'clone', 'close', 'collect', 'colorize', 'combine', 'comment',
         'commit', 'compare', 'compile', 'complete', 'compose', 'compute', 'configure',
         'confirm', 'connect', 'construct', 'consume', 'continue', 'convert', 'copy',
         'count', 'create', 'current', 'debug', 'decide', 'decline', 'decode',
