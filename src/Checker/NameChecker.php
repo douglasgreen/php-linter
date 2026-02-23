@@ -193,8 +193,12 @@ class NameChecker extends NodeChecker
     protected function checkAllCapName(string $name): void
     {
         if (preg_match('/^[A-Z]+(_[A-Z]+)*$/', $name) === 0) {
-            $issue = 'Not all caps: ' . $name;
-            $this->addIssue($issue);
+            $this->addIssue(
+                sprintf(
+                    "Rename constant '%s' to use UPPER_SNAKE_CASE. Constants should be uppercase to distinguish them from variables.",
+                    $name
+                )
+            );
         }
     }
 
@@ -204,13 +208,23 @@ class NameChecker extends NodeChecker
     protected function checkGlobalNameLength(string $name, string $type): void
     {
         if (strlen($name) > 32) {
-            $issue = $type . ' name too long: ' . $name;
-            $this->addIssue($issue);
+            $this->addIssue(
+                sprintf(
+                    "Rename %s '%s' to be 32 characters or fewer. Long names harm readability.",
+                    $type,
+                    $name
+                )
+            );
         }
 
         if (strlen($name) < 3 && ! in_array($name, self::VALID_SHORT_NAMES, true)) {
-            $issue = $type . ' name too short: ' . $name;
-            $this->addIssue($issue);
+            $this->addIssue(
+                sprintf(
+                    "Rename %s '%s' to be at least 3 characters long. Short names are often ambiguous unless they are standard abbreviations like 'id' or 'db'.",
+                    $type,
+                    $name
+                )
+            );
         }
     }
 
@@ -220,16 +234,25 @@ class NameChecker extends NodeChecker
     protected function checkLocalNameLength(string $name, string $type): void
     {
         if (strlen($name) > 24) {
-            $issue = $type . ' name too long: ' . $name;
-            $this->addIssue($issue);
+            $this->addIssue(
+                sprintf(
+                    "Rename %s '%s' to be 24 characters or fewer. Long variable names can make code harder to read.",
+                    $type,
+                    $name
+                )
+            );
         }
     }
 
     protected function checkLowerName(string $name): void
     {
         if (! self::isLowerCamelCase($name)) {
-            $issue = 'Not camel case: ' . $name;
-            $this->addIssue($issue);
+            $this->addIssue(
+                sprintf(
+                    "Rename '%s' to use camelCase. Methods, functions, and variables should start with a lowercase letter.",
+                    $name
+                )
+            );
         }
     }
 
@@ -242,31 +265,42 @@ class NameChecker extends NodeChecker
 
         foreach ($badSuffixes as $badSuffix => $reason) {
             if (preg_match('/' . $badSuffix . '$/i', $name)) {
-                $match = $badSuffix;
-            } elseif (str_ends_with($name, $type)) {
-                $match = $type;
-            } else {
-                continue;
+                $this->addIssue(
+                    sprintf(
+                        "Rename %s '%s' to remove the '%s' suffix. The suffix '%s' %s.",
+                        $type,
+                        $name,
+                        $badSuffix,
+                        $badSuffix,
+                        $reason
+                    )
+                );
+                return;
             }
+        }
 
+        if (str_ends_with($name, $type)) {
             $this->addIssue(
                 sprintf(
-                    '%s names like %s should not end in %s because it %s.',
+                    "Rename %s '%s' to remove the '%s' suffix. The suffix '%s' is redundant.",
                     $type,
                     $name,
-                    $match,
-                    $reason,
-                ),
+                    $type,
+                    $type
+                )
             );
-            break;
         }
     }
 
     protected function checkUpperName(string $name): void
     {
         if (! self::isUpperCamelCase($name)) {
-            $issue = 'Not camel case: ' . $name;
-            $this->addIssue($issue);
+            $this->addIssue(
+                sprintf(
+                    "Rename '%s' to use PascalCase. Classes, interfaces, traits, and namespaces should start with an uppercase letter.",
+                    $name
+                )
+            );
         }
     }
 
