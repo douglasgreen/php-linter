@@ -23,7 +23,12 @@ class MagicNumberVisitor extends VisitorChecker
             $valStr = (string) abs($value);
 
             // Ignore 0 and 1
-            if (in_array($value, [0, 1, 0.0, 1.0], true)) {
+            if (in_array($value, [0.0, 1.0], true)) {
+                return;
+            }
+
+            // Ignore single digits.
+            if (strlen($value) === 1) {
                 return;
             }
 
