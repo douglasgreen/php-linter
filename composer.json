@@ -54,6 +54,6 @@
     ]
   },
   "bin": [
-    "bin/code_linter.php"
+    "bin/code-linter"
   ]
 }

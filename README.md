@@ -32,7 +32,7 @@ composer require --dev douglasgreen/code-linter
 Execute the linter script from the root directory of your repository. 
 
 ```bash
-vendor/bin/code_linter.php
+vendor/bin/code-linter
 ```
 
 > **IMPORTANT:**
@@ -46,7 +46,7 @@ To integrate the linter into your continuous integration (CI) pipeline or daily 
 {
   "scripts": {
     "lint": [
-      "vendor/bin/code_linter.php"
+      "vendor/bin/code-linter"
     ]
   }
 }
