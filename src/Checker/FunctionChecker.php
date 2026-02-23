@@ -49,7 +49,7 @@ class FunctionChecker extends NodeChecker
      * @var list<string>
      */
     protected const FUNC_NAMES = [
-        'accept', 'access', 'act', 'activate', 'add', 'adjust', 'allow', 'analyze',
+        'accept', 'access', 'act', 'activate', 'add', 'adjust', 'after', 'allow', 'analyze',
         'append', 'apply', 'as', 'ask', 'assert', 'assign', 'at', 'attempt',
         'authenticate', 'authorize', 'be', 'before', 'begin', 'build', 'by', 'cache',
         'calculate', 'call', 'cancel', 'cast', 'change', 'check', 'choose', 'clean',
