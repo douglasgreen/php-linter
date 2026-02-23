@@ -344,13 +344,19 @@ class FunctionChecker extends NodeChecker
 
     protected function checkDiSuggestion(string $funcName): void
     {
-        // Narrow type to access $stmts
-        if (!$this->node instanceof Function_ && !$this->node instanceof ClassMethod) {
+        if (!$this->node instanceof ClassMethod) {
             return;
         }
 
-        // Skip methods with "Factory" in the name
-        if (stripos($funcName, 'Factory') !== false) {
+        // Skip methods with "Factory" or "build" in the name
+        if (preg_match('/(factory|build)/i', $funcName)) {
+            return;
+        }
+
+        // If we are in the __construct method, we are much more lenient
+        if ($funcName === '__construct') {
+            // Only flag 'new' in constructors if you want to be extremely strict.
+            // Most developers instantiate Collections/Arrays here.
             return;
         }
 
@@ -363,6 +369,11 @@ class FunctionChecker extends NodeChecker
 
         foreach ($newNodes as $newNode) {
             $className = $this->getNewClassName($newNode);
+
+            if ($this->isNewable($className)) {
+                continue;
+            }
+
             $this->addIssue(
                 sprintf(
                     'Method %s() instantiates %s; consider using Dependency Injection instead.',
@@ -371,6 +382,45 @@ class FunctionChecker extends NodeChecker
                 ),
             );
         }
+    }
+
+    /**
+     * Determines if a class is a "Newable" (fine to instantiate)
+     * vs an "Injectable" (should be DI'd).
+     */
+    protected function isNewable(string $className): bool
+    {
+        // 1. Exceptions and Errors
+        if (str_ends_with($className, 'Exception') || str_ends_with($className, 'Error')) {
+            return true;
+        }
+
+        // 2. Common PHP built-in Value Objects/Containers
+        $builtIns = [
+            'stdClass',
+            'DateTime',
+            'DateTimeImmutable',
+            'DateTimeZone',
+            'DateInterval',
+            'ArrayObject',
+            'ArrayIterator',
+            'SplFileInfo',
+            'ReflectionClass',
+        ];
+        if (in_array($className, $builtIns, true)) {
+            return true;
+        }
+
+        // 3. Data-centric suffixes (DTOs, Entities, Value Objects)
+        $dataSuffixes = ['Dto', 'Entity', 'Value', 'Vo', 'Collection', 'Criteria'];
+        foreach ($dataSuffixes as $suffix) {
+            if (str_ends_with($className, $suffix)) {
+                return true;
+            }
+        }
+
+        // 4. Anonymous classes
+        return $className === 'anonymous or dynamic class';
     }
 
     protected function getNewClassName(New_ $node): string
