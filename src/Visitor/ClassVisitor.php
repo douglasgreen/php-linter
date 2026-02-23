@@ -106,7 +106,7 @@ class ClassVisitor extends VisitorChecker
         if ($node instanceof Property) {
             foreach ($node->props as $prop) {
                 $propName = $prop->name->toString();
-                $visibility = $this->getVisibility($node);
+                $visibility = static::getVisibility($node);
                 $this->properties[$propName] = [
                     'visibility' => $visibility,
                     'static' => $node->isStatic(),
@@ -120,14 +120,14 @@ class ClassVisitor extends VisitorChecker
         }
 
         if ($node instanceof PropertyFetch || $node instanceof StaticPropertyFetch) {
-            $propName = $this->getPropertyName($node);
+            $propName = static::getPropertyName($node);
             if ($propName !== null) {
                 $this->trackPropertyUsage($propName);
             }
         }
 
         if ($node instanceof MethodCall || $node instanceof StaticCall) {
-            $methodName = $this->getMethodName($node);
+            $methodName = static::getMethodName($node);
             if ($methodName !== null) {
                 $this->trackMethodUsage($methodName);
             }
@@ -135,7 +135,7 @@ class ClassVisitor extends VisitorChecker
 
         if ($node instanceof ClassMethod) {
             $methodName = $node->name->toString();
-            $visibility = $this->getVisibility($node);
+            $visibility = static::getVisibility($node);
             $this->methods[$methodName] = [
                 'visibility' => $visibility,
                 'static' => $node->isStatic(),

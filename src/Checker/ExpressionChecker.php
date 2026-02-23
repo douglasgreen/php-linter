@@ -40,7 +40,7 @@ class ExpressionChecker extends NodeChecker
         }
 
         if ($this->node instanceof Include_) {
-            $type = $this->getIncludeType($this->node->type);
+            $type = static::getIncludeType($this->node->type);
             if ($type !== 'require_once') {
                 $this->addIssue('Replace ' . $type . ' with require_once to ensure the file is loaded and halt execution on failure');
             }
@@ -48,6 +48,17 @@ class ExpressionChecker extends NodeChecker
 
         return $this->getIssues();
     }
+
+    protected static function getIncludeType(int $type): string
+    {
+        return match ($type) {
+            Include_::TYPE_INCLUDE => 'include',
+            Include_::TYPE_INCLUDE_ONCE => 'include_once',
+            Include_::TYPE_REQUIRE => 'require',
+            Include_::TYPE_REQUIRE_ONCE => 'require_once',
+            default => 'unknown',
+        };
+    } // end
 
     protected function checkCondition(Node $condition, string $clauseType): void
     {
@@ -69,15 +80,4 @@ class ExpressionChecker extends NodeChecker
             }
         }
     }
-
-    protected static function getIncludeType(int $type): string
-    {
-        return match ($type) {
-            Include_::TYPE_INCLUDE => 'include',
-            Include_::TYPE_INCLUDE_ONCE => 'include_once',
-            Include_::TYPE_REQUIRE => 'require',
-            Include_::TYPE_REQUIRE_ONCE => 'require_once',
-            default => 'unknown',
-        };
-    } // end
 }

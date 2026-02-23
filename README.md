@@ -66,7 +66,7 @@ The linter analyzes your code for the following issues:
 - **CamelCase usage:** Classes, interfaces, and traits must use `UpperCamelCase`. Methods, functions, and variables must use `lowerCamelCase`.
 - **Constants:** Must be in `ALL_CAPS`.
 - **Name length:** Global names (classes/methods) should be 3–32 characters. Local variables should be 1–24 characters.
-- **Redundant suffixes:** Identifies redundant or leaky suffixes like `Abstract`, `Impl`, `Manager`, `Helper`, `Collection`, or `Data`.
+- **Redundant suffixes:** Identifies redundant or leaky suffixes like `Abstract`, `Impl`, `Manager`, or `Helper`.
 - **Boolean naming:** Boolean return functions should start with declarative verbs (e.g., `is`, `has`, `can`).
 - **Verb-based naming:** Non-boolean functions should start with an imperative verb.
 
@@ -77,7 +77,6 @@ The linter analyzes your code for the following issues:
 - **Namespace imports:** External classes must be imported via `use` statements rather than using fully qualified names inline.
 
 ### Best practices & Modernization
-- **Dependency Injection:** Identifies direct instantiation (`new`) inside methods, suggesting DI instead.
 - **DTO suggestions:** Identifies arrays accessed with string keys as parameters or return types and suggests using Data Transfer Objects (DTOs) instead.
 - **Static vs Instance:** Suggests making methods `static` if they do not use `$this`.
 - **PHP 4 Constructors:** Flags old-style constructors (methods named after the class).

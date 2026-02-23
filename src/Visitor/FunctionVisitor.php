@@ -72,8 +72,8 @@ class FunctionVisitor extends VisitorChecker
     public function checkNode(Node $node): void
     {
         // Check if the variable is not part of a property fetch
-        if ($node instanceof Variable && ! $this->isPropertyFetch($node)) {
-            $variableName = $this->getVariableName($node);
+        if ($node instanceof Variable && ! static::isPropertyFetch($node)) {
+            $variableName = static::getVariableName($node);
             if ($variableName !== null) {
                 $this->incrementVariableCount($variableName);
             }
@@ -99,6 +99,12 @@ class FunctionVisitor extends VisitorChecker
         return null;
     }
 
+    protected static function isPropertyFetch(Node $node): bool
+    {
+        $parent = $node->getAttribute('parent');
+        return $parent instanceof PropertyFetch && $parent->var === $node;
+    }
+
     protected function incrementVariableCount(string $variableName): void
     {
         if (isset($this->variableCounts[$variableName])) {
@@ -106,11 +112,5 @@ class FunctionVisitor extends VisitorChecker
         } else {
             $this->variableCounts[$variableName] = 1;
         }
-    }
-
-    protected static function isPropertyFetch(Node $node): bool
-    {
-        $parent = $node->getAttribute('parent');
-        return $parent instanceof PropertyFetch && $parent->var === $node;
     }
 }

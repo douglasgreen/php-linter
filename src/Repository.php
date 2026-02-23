@@ -38,7 +38,7 @@ class Repository
     {
         $matches = [];
         foreach ($this->files as $file) {
-            if ($this->getFileType($file) === 'php') {
+            if (static::getFileType($file) === 'php') {
                 $matches[] = $file;
             }
         }
@@ -75,37 +75,6 @@ class Repository
             'yaml', 'yml' => 'yaml',
             default => null,
         };
-    }
-
-    /**
-     * Get the type of a file based on its extension, shebang, or file command.
-     */
-    protected function getFileType(string $path): ?string
-    {
-        // 1. Check extension
-        if (preg_match('/\.(\w+)$/', $path, $match)) {
-            $type = $this->getExtensionType($match[1]);
-            if ($type !== null) {
-                return $type;
-            }
-        }
-
-        // 2. Check shebang
-        $fileHandle = fopen($path, 'r');
-        if ($fileHandle !== false) {
-            $line = fgets($fileHandle);
-            fclose($fileHandle);
-
-            if ($line !== false && preg_match('/^#!.*\b(\w+)$/', rtrim($line), $match)) {
-                $type = $this->getExtensionType($match[1]);
-                if ($type !== null) {
-                    return $type;
-                }
-            }
-        }
-
-        // 3. Fallback to file command
-        return $this->getTypeFromFileCommand($path);
     }
 
     protected static function getTypeFromFileCommand(string $path): ?string
@@ -146,5 +115,36 @@ class Repository
         }
 
         return null;
+    }
+
+    /**
+     * Get the type of a file based on its extension, shebang, or file command.
+     */
+    protected static function getFileType(string $path): ?string
+    {
+        // 1. Check extension
+        if (preg_match('/\.(\w+)$/', $path, $match)) {
+            $type = static::getExtensionType($match[1]);
+            if ($type !== null) {
+                return $type;
+            }
+        }
+
+        // 2. Check shebang
+        $fileHandle = fopen($path, 'r');
+        if ($fileHandle !== false) {
+            $line = fgets($fileHandle);
+            fclose($fileHandle);
+
+            if ($line !== false && preg_match('/^#!.*\b(\w+)$/', rtrim($line), $match)) {
+                $type = static::getExtensionType($match[1]);
+                if ($type !== null) {
+                    return $type;
+                }
+            }
+        }
+
+        // 3. Fallback to file command
+        return static::getTypeFromFileCommand($path);
     }
 }

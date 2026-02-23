@@ -15,19 +15,8 @@ class IgnoreList
 
     public function __construct(string $currentDir)
     {
-        $ignoreFile = $this->addSubpath($currentDir, self::IGNORE_FILE);
-        $this->ignorePatterns = $this->loadIgnoreFile($ignoreFile);
-    }
-
-    public function shouldIgnore(string $filePath): bool
-    {
-        foreach ($this->ignorePatterns as $ignorePattern) {
-            if (preg_match($ignorePattern, $filePath)) {
-                return true;
-            }
-        }
-
-        return false;
+        $ignoreFile = static::addSubpath($currentDir, self::IGNORE_FILE);
+        $this->ignorePatterns = static::loadIgnoreFile($ignoreFile);
     }
 
     /**
@@ -46,6 +35,17 @@ class IgnoreList
         }
 
         return $path . $subpath;
+    }
+
+    public function shouldIgnore(string $filePath): bool
+    {
+        foreach ($this->ignorePatterns as $ignorePattern) {
+            if (preg_match($ignorePattern, $filePath)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     protected static function preparePattern(string $pattern): string

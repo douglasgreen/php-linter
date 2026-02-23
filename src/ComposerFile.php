@@ -17,7 +17,7 @@ class ComposerFile
 
     public function __construct(string $composerJsonPath)
     {
-        $this->psr4Mappings = $this->loadComposerJson($composerJsonPath);
+        $this->psr4Mappings = static::loadComposerJson($composerJsonPath);
     }
 
     /**
