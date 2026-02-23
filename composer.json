@@ -3,7 +3,7 @@
   "_modified": "2026-02-22",
   "name": "douglasgreen/code-linter",
   "description": "Code linter for PHP based on Nikic parser",
-  "type": "project",
+  "type": "library",
   "license": "MIT",
   "require": {
     "php": "^8.3",
