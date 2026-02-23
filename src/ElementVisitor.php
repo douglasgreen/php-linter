@@ -112,7 +112,10 @@ class ElementVisitor extends NodeVisitorAbstract
                 continue;
             }
 
-            $this->addIssue('Import external classes with use statement: ' . $qualifiedName);
+            $this->addIssue(sprintf(
+                'Import the class "%s" with a "use" statement instead of using a fully qualified name to improve readability.',
+                $qualifiedName
+            ));
         }
 
         $this->magicNumberVisitor->checkDuplicates();
@@ -166,7 +169,7 @@ class ElementVisitor extends NodeVisitorAbstract
                 if ($expectedFile !== $this->phpFile) {
                     $this->addIssue(
                         sprintf(
-                            'File name %s does not match expected file name %s.',
+                            'Rename the file "%s" to "%s" to match the class namespace according to PSR-4 autoloading standards.',
                             $this->phpFile,
                             $expectedFile,
                         ),
