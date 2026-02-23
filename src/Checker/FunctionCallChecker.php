@@ -30,7 +30,7 @@ class FunctionCallChecker extends NodeChecker
             }
 
             if (in_array(strtolower($functionName), self::DEBUG_FUNCTIONS, true)) {
-                $this->addIssue('Debug function found: ' . $functionName);
+                $this->addIssue("Remove call to debug function '{$functionName}' to prevent information leakage in production.");
             }
         }
 
