@@ -20,7 +20,7 @@ class TryCatchChecker extends NodeChecker
 
         foreach ($this->node->catches as $catch) {
             if ($catch->stmts === [] || $catch->stmts[0] instanceof Nop) {
-                $this->addIssue('Empty catch block found suppressing errors');
+                $this->addIssue('Add error handling or logging to the empty catch block. Suppressing exceptions hides bugs and makes debugging difficult.');
             }
         }
 
