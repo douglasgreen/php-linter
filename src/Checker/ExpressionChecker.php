@@ -28,21 +28,21 @@ class ExpressionChecker extends NodeChecker
         }
 
         if ($this->node instanceof Eval_) {
-            $this->addIssue('Avoid using eval() because it is a security risk');
+            $this->addIssue('Remove eval() usage to prevent code injection vulnerabilities');
         }
 
         if ($this->node instanceof Global_) {
-            $this->addIssue('Avoid using the global keyword and pass function arguments instead');
+            $this->addIssue('Remove the "global" keyword and pass variables as function arguments to ensure explicit dependencies');
         }
 
         if ($this->node instanceof Goto_) {
-            $this->addIssue('Use structured programming instead of goto statements');
+            $this->addIssue('Remove goto statements and refactor control flow to improve code structure');
         }
 
         if ($this->node instanceof Include_) {
             $type = $this->getIncludeType($this->node->type);
             if ($type !== 'require_once') {
-                $this->addIssue('Use require_once instead of ' . $type);
+                $this->addIssue('Replace ' . $type . ' with require_once to ensure the file is loaded and halt execution on failure');
             }
         }
 
@@ -52,7 +52,7 @@ class ExpressionChecker extends NodeChecker
     protected function checkCondition(Node $condition, string $clauseType): void
     {
         if ($condition instanceof Assign) {
-            $this->addIssue('Avoid assignments in if conditions');
+            $this->addIssue('Move the assignment out of the condition to avoid confusion with equality checks');
         }
 
         // Recursively check subnodes
