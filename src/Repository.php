@@ -16,8 +16,6 @@ class Repository
     /** @var list<string> */
     protected readonly array $files;
 
-    protected readonly string $defaultBranch;
-
     /**
      * @throws Exception
      */
@@ -31,30 +29,6 @@ class Repository
         }
 
         $this->files = $files;
-
-        // Command to get the default branch
-        $command = "git remote show origin | sed -n '/HEAD branch/s/.*: //p'";
-
-        // Execute the command
-        exec($command, $output, $returnCode);
-
-        // Check if the command was successful
-        if ($returnCode !== 0) {
-            throw new Exception($gitMessage);
-        }
-
-        // Get the branch name from the output
-        $this->defaultBranch = trim($output[0]);
-    }
-
-    public function check(): void
-    {
-        // Check if the default branch is 'main'
-        if ($this->defaultBranch !== 'main') {
-            $this->addIssue(
-                sprintf('The default branch is "%s" but should be "main"', $this->defaultBranch),
-            );
-        }
     }
 
     /**
