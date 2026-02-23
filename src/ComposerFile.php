@@ -62,7 +62,7 @@ class ComposerFile
      *
      * @throws Exception
      */
-    protected function loadComposerJson(string $composerJsonPath): array
+    protected static function loadComposerJson(string $composerJsonPath): array
     {
         $composerJson = file_get_contents($composerJsonPath);
         if ($composerJson === false) {

@@ -88,7 +88,7 @@ class FunctionVisitor extends VisitorChecker
         return $this->variableCounts;
     }
 
-    protected function getVariableName(Variable $variable): ?string
+    protected static function getVariableName(Variable $variable): ?string
     {
         // Exclude $this as it's a special case
         if (is_string($variable->name) && $variable->name !== 'this') {
@@ -108,7 +108,7 @@ class FunctionVisitor extends VisitorChecker
         }
     }
 
-    protected function isPropertyFetch(Node $node): bool
+    protected static function isPropertyFetch(Node $node): bool
     {
         $parent = $node->getAttribute('parent');
         return $parent instanceof PropertyFetch && $parent->var === $node;

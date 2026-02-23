@@ -400,7 +400,7 @@ class FunctionChecker extends NodeChecker
      * Determines if a class is a "Newable" (fine to instantiate)
      * vs an "Injectable" (should be DI'd).
      */
-    protected function isNewable(string $className): bool
+    protected static function isNewable(string $className): bool
     {
         // 1. Exceptions and Errors
         if (str_ends_with($className, 'Exception') || str_ends_with($className, 'Error')) {
@@ -435,7 +435,7 @@ class FunctionChecker extends NodeChecker
         return $className === 'anonymous or dynamic class';
     }
 
-    protected function getNewClassName(New_ $node): string
+    protected static function getNewClassName(New_ $node): string
     {
         if ($node->class instanceof Name) {
             return (string) $node->class;

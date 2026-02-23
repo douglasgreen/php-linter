@@ -207,7 +207,7 @@ class ClassVisitor extends VisitorChecker
         return $this->methods;
     }
 
-    protected function getMethodName(MethodCall|StaticCall $node): ?string
+    protected static function getMethodName(MethodCall|StaticCall $node): ?string
     {
         if ($node->name instanceof Identifier) {
             return $node->name->toString();
@@ -217,7 +217,7 @@ class ClassVisitor extends VisitorChecker
         return null;
     }
 
-    protected function getPropertyName(Node $node): ?string
+    protected static function getPropertyName(Node $node): ?string
     {
         if ($node instanceof PropertyFetch) {
             if ($node->name instanceof Identifier) {
@@ -237,7 +237,7 @@ class ClassVisitor extends VisitorChecker
         return null;
     }
 
-    protected function getVisibility(ClassMethod|Property $node): string
+    protected static function getVisibility(ClassMethod|Property $node): string
     {
         if ($node->isPublic()) {
             return 'public';

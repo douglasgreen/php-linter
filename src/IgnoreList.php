@@ -33,7 +33,7 @@ class IgnoreList
     /**
      * Add a subpath.
      */
-    public function addSubpath(string $path, string $subpath): string
+    public static function addSubpath(string $path, string $subpath): string
     {
         // Ensure the current filename ends with a directory separator
         if (substr($path, -1) !== DIRECTORY_SEPARATOR) {
@@ -62,7 +62,7 @@ class IgnoreList
      *
      * @throws Exception
      */
-    protected function loadIgnoreFile(string $ignoreFile): array
+    protected static function loadIgnoreFile(string $ignoreFile): array
     {
         if (! file_exists($ignoreFile)) {
             return [];

@@ -59,7 +59,7 @@ class Repository
         }
     }
 
-    protected function getExtensionType(string $extension): ?string
+    protected static function getExtensionType(string $extension): ?string
     {
         return match ($extension) {
             'bash', 'sh' => 'bash',
@@ -91,7 +91,7 @@ class Repository
         }
 
         // 2. Check shebang
-        $fileHandle = @fopen($path, 'r');
+        $fileHandle = fopen($path, 'r');
         if ($fileHandle !== false) {
             $line = fgets($fileHandle);
             fclose($fileHandle);
@@ -108,7 +108,7 @@ class Repository
         return $this->getTypeFromFileCommand($path);
     }
 
-    protected function getTypeFromFileCommand(string $path): ?string
+    protected static function getTypeFromFileCommand(string $path): ?string
     {
         $command = sprintf('file -b %s', escapeshellarg($path));
         exec($command, $output, $returnCode);

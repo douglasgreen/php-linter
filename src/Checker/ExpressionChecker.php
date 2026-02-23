@@ -70,7 +70,7 @@ class ExpressionChecker extends NodeChecker
         }
     }
 
-    protected function getIncludeType(int $type): string
+    protected static function getIncludeType(int $type): string
     {
         return match ($type) {
             Include_::TYPE_INCLUDE => 'include',
