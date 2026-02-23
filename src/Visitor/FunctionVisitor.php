@@ -43,12 +43,13 @@ class FunctionVisitor extends VisitorChecker
             }
 
             // The parameter names are also counted as variables.
-            if (isset($this->variableCounts[$paramName]) && $this->variableCounts[$paramName] > 1) {
+            // If the variable count is set, the parameter is used at least once.
+            if (isset($this->variableCounts[$paramName])) {
                 continue;
             }
 
             $issue = sprintf(
-                'Parameter %s is not used within function %s().',
+                'Remove unused parameter "%s" from function "%s()"; it is defined but not used in the function body.',
                 $paramName,
                 $this->functionName,
             );
@@ -59,7 +60,7 @@ class FunctionVisitor extends VisitorChecker
         foreach ($this->variableCounts as $variable => $count) {
             if ($count === 1 && ! isset($this->params[$variable])) {
                 $issue = sprintf(
-                    'Variable %s is used only once within function %s().',
+                    'Remove or inline variable "%s" in function "%s()"; it is referenced only once.',
                     $variable,
                     $this->functionName,
                 );
