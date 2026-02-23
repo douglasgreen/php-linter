@@ -28,7 +28,7 @@ class MagicNumberVisitor extends VisitorChecker
             }
 
             // Ignore single digits.
-            if (strlen($value) === 1) {
+            if (strlen((string) $value) === 1) {
                 return;
             }
 
