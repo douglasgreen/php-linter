@@ -1,38 +1,19 @@
 {
+  "_version": "1.1.0",
+  "_modified": "2026-02-22",
   "name": "douglasgreen/code-linter",
   "description": "Code linter for PHP based on Nikic parser",
-  "type": "library",
-  "keywords": [
-    "ast",
-    "automation",
-    "cli",
-    "code quality",
-    "coding standards",
-    "linter",
-    "linting",
-    "php",
-    "php parser",
-    "static analysis"
-  ],
-  "homepage": "https://github.com/douglasgreen/code-linter",
-  "prefer-stable": true,
+  "type": "project",
   "license": "MIT",
-  "authors": [
-    {
-      "name": "Douglas Green",
-      "email": "douglas@nurd.site",
-      "homepage": "https://nurd.site/",
-      "role": "Developer"
-    }
-  ],
   "require": {
-    "php": ">=8.3",
+    "php": "^8.3",
     "nikic/php-parser": "^5.7"
   },
   "require-dev": {
     "friendsofphp/php-cs-fixer": "^3.94.2",
     "phpstan/phpstan": "^2.1.39",
-    "rector/rector": "^2.3.7"
+    "phpunit/phpunit": "^12.5.14",
+    "rector/rector": "^2.3.8"
   },
   "autoload": {
     "psr-4": {
@@ -40,6 +21,9 @@
     }
   },
   "config": {
+    "platform": {
+      "php": "8.3"
+    },
     "sort-packages": true
   },
   "scripts": {
@@ -51,6 +35,18 @@
     "lint:fix": [
       "php-cs-fixer fix",
       "rector process"
+    ],
+    "test": [
+      "phpunit"
+    ],
+    "test:unit": [
+      "phpunit --testsuite=Unit"
+    ],
+    "test:integration": [
+      "phpunit --testsuite=Integration"
+    ],
+    "qa": [
+      "@lint"
     ]
   },
   "bin": [
