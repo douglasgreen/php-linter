@@ -22,31 +22,14 @@ class NameChecker extends NodeChecker
 {
     /** @var array<string, string> */
     protected const BAD_CLASS_SUFFIXES = [
-        'Abstract' => 'is redundant',
-        'Array' => 'leaks implementation details',
-        'Collection' => 'leaks implementation details',
-        'Component' => 'is architectural, not class-related',
-        'Container' => 'leaks implementation details',
-        'Helper' => 'can be dropped',
-        'Impl' => 'is redundant',
-        'Implementation' => 'is redundant',
-        'Instance' => 'is redundant',
-        'List' => 'leaks implementation details',
-        'Manager' => 'can be dropped',
-        'Map' => 'leaks implementation details',
-        'Module' => 'is architectural, not class-related',
-        'Object' => 'is redundant',
-        'Processor' => 'can be dropped',
-        'Set' => 'leaks implementation details',
-        'Type' => 'is redundant',
-    ];
-
-    /** @var array<string, string> */
-    protected const BAD_GENERIC_SUFFIXES = [
-        'Data' => 'is generic',
-        'Info' => 'is generic',
-        'Information' => 'is generic',
-        'Stuff' => 'is generic',
+        'Abstract' => 'violates standard PHP naming conventions; use as a prefix or let the "abstract" keyword handle it',
+        'Array' => 'classes are objects, not primitives; use "Collection" or a domain-specific plural name instead',
+        'Helper' => 'suggests a "dumping ground" for unrelated logic; logic should be moved to a specific Service or Value Object',
+        'Impl' => 'is a "Java-ism" that adds no value; name the class after its specific strategy (e.g., "S3Storage" vs "StorageImpl")',
+        'Implementation' => 'is redundant when using interfaces; describe *how* it implements it (e.g., "JsonParser" vs "ParserImplementation")',
+        'Instance' => 'is redundant; every class is a blueprint for an instance, so the suffix provides no additional context',
+        'Manager' => 'is a "God Class" smell; replace with specific actors like "Registrar", "Authenticator", or "Dispatcher"',
+        'Object' => 'is redundant; in an OOP language, the fact that a class defines an object is already implied',
     ];
 
     /** @var list<string> */
@@ -258,12 +241,11 @@ class NameChecker extends NodeChecker
 
     protected function checkSuffix(string $name, string $type): void
     {
-        $badSuffixes = self::BAD_GENERIC_SUFFIXES;
-        if (in_array($type, ['Namespace', 'Class', 'Interface', 'Trait'], true)) {
-            $badSuffixes = array_merge($badSuffixes, self::BAD_CLASS_SUFFIXES);
+        if (! in_array($type, ['Namespace', 'Class', 'Interface', 'Trait'], true)) {
+            return;
         }
 
-        foreach ($badSuffixes as $badSuffix => $reason) {
+        foreach (self::BAD_CLASS_SUFFIXES as $badSuffix => $reason) {
             if (preg_match('/' . $badSuffix . '$/i', $name)) {
                 $this->addIssue(
                     sprintf(
