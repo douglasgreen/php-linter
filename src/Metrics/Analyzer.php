@@ -8,79 +8,41 @@ use Exception;
 
 class Analyzer
 {
-    public const CLASS_SIZE_WARN = 25;
+    public const CLASS_SIZE_LIMIT = 60;
 
-    public const CLASS_SIZE_ERROR = 60;
+    public const CODE_RANK_LIMIT = 2.0;
 
-    public const CODE_RANK_WARN = 0.5;
+    public const CLASS_LOC_LIMIT = 1100;
 
-    public const CODE_RANK_ERROR = 2.0;
+    public const NON_PRIVATE_PROPS_LIMIT = 30;
 
-    public const CLASS_LOC_WARN = 400;
+    public const PROPERTIES_LIMIT = 25;
 
-    public const CLASS_LOC_ERROR = 1100;
+    public const PUBLIC_METHODS_LIMIT = 40;
 
-    public const NON_PRIVATE_PROPS_WARN = 10;
+    public const AFFERENT_COUPLING_LIMIT = 45;
 
-    public const NON_PRIVATE_PROPS_ERROR = 30;
+    public const EFFERENT_COUPLING_LIMIT = 24;
 
-    public const PROPERTIES_WARN = 10;
+    public const INHERITANCE_DEPTH_LIMIT = 5;
 
-    public const PROPERTIES_ERROR = 25;
+    public const CHILD_CLASSES_LIMIT = 35;
 
-    public const PUBLIC_METHODS_WARN = 15;
+    public const OBJECT_COUPLING_LIMIT = 24;
 
-    public const PUBLIC_METHODS_ERROR = 40;
+    public const COMMENT_RATIO_LIMIT = 0.05;
 
-    public const AFFERENT_COUPLING_WARN = 15;
+    public const CYCLOMATIC_COMPLEXITY_LIMIT = 25;
 
-    public const AFFERENT_COUPLING_ERROR = 45;
+    public const METHOD_LOC_LIMIT = 130;
 
-    public const EFFERENT_COUPLING_WARN = 12;
+    public const NPATH_COMPLEXITY_LIMIT = 10000;
 
-    public const EFFERENT_COUPLING_ERROR = 24;
+    public const HALSTEAD_EFFORT_LIMIT = 135000;
 
-    public const INHERITANCE_DEPTH_WARN = 4;
+    public const MAINTAINABILITY_INDEX_LIMIT = 25;
 
-    public const INHERITANCE_DEPTH_ERROR = 5;
-
-    public const CHILD_CLASSES_WARN = 15;
-
-    public const CHILD_CLASSES_ERROR = 35;
-
-    public const OBJECT_COUPLING_WARN = 12;
-
-    public const OBJECT_COUPLING_ERROR = 24;
-
-    public const COMMENT_RATIO_WARN = 0.1;
-
-    public const COMMENT_RATIO_ERROR = 0.05;
-
-    public const CYCLOMATIC_COMPLEXITY_WARN = 10;
-
-    public const CYCLOMATIC_COMPLEXITY_ERROR = 25;
-
-    public const METHOD_LOC_WARN = 50;
-
-    public const METHOD_LOC_ERROR = 130;
-
-    public const NPATH_COMPLEXITY_WARN = 50;
-
-    public const NPATH_COMPLEXITY_ERROR = 10000;
-
-    public const HALSTEAD_EFFORT_WARN = 25000;
-
-    public const HALSTEAD_EFFORT_ERROR = 135000;
-
-    public const MAINTAINABILITY_INDEX_WARN = 40;
-
-    public const MAINTAINABILITY_INDEX_ERROR = 25;
-
-    public const FUNCTION_CYCLOMATIC_COMPLEXITY_WARN = 9;
-
-    public const FILE_LOC_WARN = 100;
-
-    public const FILE_LOC_ERROR = 200;
+    public const FILE_LOC_LIMIT = 200;
 
     public function __construct(
         protected readonly string $currentDir,
@@ -130,18 +92,18 @@ class Analyzer
                     }
 
                     $classChecker = new MetricChecker($class, $class['name']);
-                    $classChecker->checkMaxClassSize(self::CLASS_SIZE_WARN, self::CLASS_SIZE_ERROR);
-                    $classChecker->checkMaxCodeRank(self::CODE_RANK_WARN, self::CODE_RANK_ERROR);
-                    $classChecker->checkMaxLinesOfCode(self::CLASS_LOC_WARN, self::CLASS_LOC_ERROR);
-                    $classChecker->checkMaxNonPrivateProperties(self::NON_PRIVATE_PROPS_WARN, self::NON_PRIVATE_PROPS_ERROR);
-                    $classChecker->checkMaxProperties(self::PROPERTIES_WARN, self::PROPERTIES_ERROR);
-                    $classChecker->checkMaxPublicMethods(self::PUBLIC_METHODS_WARN, self::PUBLIC_METHODS_ERROR);
-                    $classChecker->checkMaxAfferentCoupling(self::AFFERENT_COUPLING_WARN, self::AFFERENT_COUPLING_ERROR);
-                    $classChecker->checkMaxEfferentCoupling(self::EFFERENT_COUPLING_WARN, self::EFFERENT_COUPLING_ERROR);
-                    $classChecker->checkMaxInheritanceDepth(self::INHERITANCE_DEPTH_WARN, self::INHERITANCE_DEPTH_ERROR);
-                    $classChecker->checkMaxNumberOfChildClasses(self::CHILD_CLASSES_WARN, self::CHILD_CLASSES_ERROR);
-                    $classChecker->checkMaxObjectCoupling(self::OBJECT_COUPLING_WARN, self::OBJECT_COUPLING_ERROR);
-                    $classChecker->checkMinCommentRatio(self::COMMENT_RATIO_WARN, self::COMMENT_RATIO_ERROR);
+                    $classChecker->checkMaxClassSize(self::CLASS_SIZE_LIMIT);
+                    $classChecker->checkMaxCodeRank(self::CODE_RANK_LIMIT);
+                    $classChecker->checkMaxLinesOfCode(self::CLASS_LOC_LIMIT);
+                    $classChecker->checkMaxNonPrivateProperties(self::NON_PRIVATE_PROPS_LIMIT);
+                    $classChecker->checkMaxProperties(self::PROPERTIES_LIMIT);
+                    $classChecker->checkMaxPublicMethods(self::PUBLIC_METHODS_LIMIT);
+                    $classChecker->checkMaxAfferentCoupling(self::AFFERENT_COUPLING_LIMIT);
+                    $classChecker->checkMaxEfferentCoupling(self::EFFERENT_COUPLING_LIMIT);
+                    $classChecker->checkMaxInheritanceDepth(self::INHERITANCE_DEPTH_LIMIT);
+                    $classChecker->checkMaxNumberOfChildClasses(self::CHILD_CLASSES_LIMIT);
+                    $classChecker->checkMaxObjectCoupling(self::OBJECT_COUPLING_LIMIT);
+                    $classChecker->checkMinCommentRatio(self::COMMENT_RATIO_LIMIT);
 
                     $loc = $class['loc'] ?? 0;
                     $filesChecked[$filename] = ($filesChecked[$filename] ?? 0) + $loc;
@@ -149,11 +111,11 @@ class Analyzer
 
                     foreach ($class['methods'] as $method) {
                         $methodChecker = new MetricChecker($method, $class['name'], $method['name']);
-                        $methodChecker->checkMaxCyclomaticComplexity(self::CYCLOMATIC_COMPLEXITY_WARN, self::CYCLOMATIC_COMPLEXITY_ERROR);
-                        $methodChecker->checkMaxLinesOfCode(self::METHOD_LOC_WARN, self::METHOD_LOC_ERROR);
-                        $methodChecker->checkMaxNpathComplexity(self::NPATH_COMPLEXITY_WARN, self::NPATH_COMPLEXITY_ERROR);
-                        $methodChecker->checkMaxHalsteadEffort(self::HALSTEAD_EFFORT_WARN, self::HALSTEAD_EFFORT_ERROR);
-                        $methodChecker->checkMinMaintainabilityIndex(self::MAINTAINABILITY_INDEX_WARN, self::MAINTAINABILITY_INDEX_ERROR);
+                        $methodChecker->checkMaxCyclomaticComplexity(self::CYCLOMATIC_COMPLEXITY_LIMIT);
+                        $methodChecker->checkMaxLinesOfCode(self::METHOD_LOC_LIMIT);
+                        $methodChecker->checkMaxNpathComplexity(self::NPATH_COMPLEXITY_LIMIT);
+                        $methodChecker->checkMaxHalsteadEffort(self::HALSTEAD_EFFORT_LIMIT);
+                        $methodChecker->checkMinMaintainabilityIndex(self::MAINTAINABILITY_INDEX_LIMIT);
                         $methodChecker->printIssues($filename);
                     }
                 }
@@ -165,11 +127,11 @@ class Analyzer
                     }
 
                     $functionChecker = new MetricChecker($function, null, $function['name']);
-                    $functionChecker->checkMaxCyclomaticComplexity(self::FUNCTION_CYCLOMATIC_COMPLEXITY_WARN, self::CYCLOMATIC_COMPLEXITY_ERROR);
-                    $functionChecker->checkMaxLinesOfCode(self::METHOD_LOC_WARN, self::METHOD_LOC_ERROR);
-                    $functionChecker->checkMaxNpathComplexity(self::NPATH_COMPLEXITY_WARN, self::NPATH_COMPLEXITY_ERROR);
-                    $functionChecker->checkMaxHalsteadEffort(self::HALSTEAD_EFFORT_WARN, self::HALSTEAD_EFFORT_ERROR);
-                    $functionChecker->checkMinMaintainabilityIndex(self::MAINTAINABILITY_INDEX_WARN, self::MAINTAINABILITY_INDEX_ERROR);
+                    $functionChecker->checkMaxCyclomaticComplexity(self::CYCLOMATIC_COMPLEXITY_LIMIT);
+                    $functionChecker->checkMaxLinesOfCode(self::METHOD_LOC_LIMIT);
+                    $functionChecker->checkMaxNpathComplexity(self::NPATH_COMPLEXITY_LIMIT);
+                    $functionChecker->checkMaxHalsteadEffort(self::HALSTEAD_EFFORT_LIMIT);
+                    $functionChecker->checkMinMaintainabilityIndex(self::MAINTAINABILITY_INDEX_LIMIT);
 
                     $loc = $function['loc'] ?? 0;
                     $filesChecked[$filename] = ($filesChecked[$filename] ?? 0) + $loc;
@@ -193,7 +155,7 @@ class Analyzer
                 $otherLoc = $totalLoc - $locChecked;
 
                 $fileChecker = new MetricChecker(['loc' => $otherLoc]);
-                $fileChecker->checkMaxLinesOfCode(self::FILE_LOC_WARN, self::FILE_LOC_ERROR);
+                $fileChecker->checkMaxLinesOfCode(self::FILE_LOC_LIMIT);
                 $fileChecker->printIssues($filename);
             }
         } catch (Exception $exception) {
