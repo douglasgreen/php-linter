@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace DouglasGreen\PhpLinter;
 
+use Exception;
 use PhpParser\Error;
 use PhpParser\NodeTraverser;
 use PhpParser\ParserFactory;
@@ -27,7 +28,7 @@ class Linter
             try {
                 $code = file_get_contents($phpFile);
                 if ($code === false) {
-                    throw new \Exception('Unable to load file to string');
+                    throw new Exception('Unable to load file to string');
                 }
 
                 $stmts = $parser->parse($code);
