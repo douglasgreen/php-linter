@@ -8,24 +8,32 @@ use DouglasGreen\PhpLinter\IssueHolder;
 use PhpParser\Node;
 
 /**
- * Node checker checks a single node.
+ * Base class for checking individual PHP AST nodes.
  *
- * It checks a single node which it takes in the constructor.
+ * Provides a common interface and issue collection mechanism for specific
+ * node validation rules.
  *
- * See also VisitorChecker.
+ * @package DouglasGreen\PhpLinter\Checker
+ * @since 1.0.0
+ * @api
  */
 abstract class NodeChecker
 {
     use IssueHolder;
 
+    /**
+     * Initializes the checker with the target node.
+     *
+     * @param Node $node The PHP AST node to inspect.
+     */
     public function __construct(
         protected readonly Node $node,
     ) {}
 
     /**
-     * Do the check and return a list of issues.
+     * Performs validation checks on the associated node.
      *
-     * @return array<string, bool>
+     * @return array<string, bool> A map of issue messages to their status.
      */
     abstract public function check(): array;
 }

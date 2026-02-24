@@ -6,10 +6,21 @@ namespace DouglasGreen\PhpLinter\Checker;
 
 use PhpParser\Node\Expr\ErrorSuppress;
 
+/**
+ * Checks for usage of undesirable operators.
+ *
+ * Specifically targets the error suppression operator (@).
+ *
+ * @package DouglasGreen\PhpLinter\Checker
+ * @since 1.0.0
+ * @internal
+ */
 class OperatorChecker extends NodeChecker
 {
     /**
-     * @return array<string, bool>
+     * Checks for the error suppression operator (@).
+     *
+     * @return array<string, bool> List of issues found.
      */
     public function check(): array
     {

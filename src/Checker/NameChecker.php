@@ -18,9 +18,22 @@ use PhpParser\Node\Stmt\Interface_;
 use PhpParser\Node\Stmt\Namespace_;
 use PhpParser\Node\Stmt\Trait_;
 
+/**
+ * Checks naming conventions for PHP code elements.
+ *
+ * Validates casing, length, and suffixes for classes, methods, properties, etc.
+ *
+ * @package DouglasGreen\PhpLinter\Checker
+ * @since 1.0.0
+ * @internal
+ */
 class NameChecker extends NodeChecker
 {
-    /** @var array<string, string> */
+    /**
+     * Map of undesirable class suffixes to reasons why they are bad.
+     *
+     * @var array<string, string>
+     */
     protected const BAD_CLASS_SUFFIXES = [
         'Abstract' => 'violates standard PHP naming conventions; use as a prefix or let the "abstract" keyword handle it',
         'Array' => 'classes are objects, not primitives; use "Collection" or a domain-specific plural name instead',
@@ -30,7 +43,11 @@ class NameChecker extends NodeChecker
         'Object' => 'is redundant; in an OOP language, the fact that a class defines an object is already implied',
     ];
 
-    /** @var list<string> */
+    /**
+     * List of PHP magic methods.
+     *
+     * @var list<string>
+     */
     protected const MAGIC_METHODS = [
         '__construct',
         '__destruct',
@@ -51,7 +68,11 @@ class NameChecker extends NodeChecker
         '__debugInfo',
     ];
 
-    /** @var list<string> */
+    /**
+     * List of PHP superglobals.
+     *
+     * @var list<string>
+     */
     protected const SUPERGLOBALS = [
         'GLOBALS',
         '_SERVER',
@@ -67,11 +88,17 @@ class NameChecker extends NodeChecker
         'argv',
     ];
 
-    /** @var list<string> */
+    /**
+     * List of acceptable short variable names.
+     *
+     * @var list<string>
+     */
     protected const VALID_SHORT_NAMES = ['db', 'id'];
 
     /**
-     * @return array<string, bool>
+     * Performs naming convention checks on the node.
+     *
+     * @return array<string, bool> List of issues found.
      */
     public function check(): array
     {
@@ -134,6 +161,12 @@ class NameChecker extends NodeChecker
         return $this->getIssues();
     }
 
+    /**
+     * Extracts the string name from a Variable node.
+     *
+     * @param Variable $variable The variable node.
+     * @return string|null The variable name or null if it's a complex expression.
+     */
     protected static function getVariableName(Variable $variable): ?string
     {
         if (is_string($variable->name)) {
@@ -145,6 +178,12 @@ class NameChecker extends NodeChecker
         return null;
     }
 
+    /**
+     * Checks if a name follows lowerCamelCase conventions.
+     *
+     * @param string $name The name to check.
+     * @return bool True if the name is valid lowerCamelCase.
+     */
     protected static function isLowerCamelCase(string $name): bool
     {
         if (in_array($name, self::MAGIC_METHODS, true)) {
@@ -158,6 +197,12 @@ class NameChecker extends NodeChecker
         return preg_match('/\$[A-Z]|^[A-Z]|[A-Z]{2}|_/', $name) === 0;
     }
 
+    /**
+     * Checks if a name follows UpperCamelCase (PascalCase) conventions.
+     *
+     * @param string $name The name to check.
+     * @return bool True if the name is valid UpperCamelCase.
+     */
     protected static function isUpperCamelCase(string $name): bool
     {
         if (in_array($name, self::MAGIC_METHODS, true)) {
@@ -171,6 +216,11 @@ class NameChecker extends NodeChecker
         return preg_match('/[A-Z]{2}|_/', $name) === 0;
     }
 
+    /**
+     * Validates that a constant name is in UPPER_SNAKE_CASE.
+     *
+     * @param string $name The constant name to check.
+     */
     protected function checkAllCapName(string $name): void
     {
         if (preg_match('/^[A-Z]+(_[A-Z]+)*$/', $name) === 0) {
@@ -184,7 +234,10 @@ class NameChecker extends NodeChecker
     }
 
     /**
-     * Global names are names of classes, methods, functions. etc. that are globally visible.
+     * Validates the length of globally visible names (classes, methods, etc.).
+     *
+     * @param string $name The name to check.
+     * @param string $type The type of element (e.g., 'Class', 'Method').
      */
     protected function checkGlobalNameLength(string $name, string $type): void
     {
@@ -210,7 +263,10 @@ class NameChecker extends NodeChecker
     }
 
     /**
-     * Local names are names of variables that are only locally visible and have no minimum length.
+     * Validates the length of locally visible names (variables).
+     *
+     * @param string $name The name to check.
+     * @param string $type The type of element (e.g., 'Variable').
      */
     protected function checkLocalNameLength(string $name, string $type): void
     {
@@ -225,6 +281,11 @@ class NameChecker extends NodeChecker
         }
     }
 
+    /**
+     * Validates that a name uses camelCase.
+     *
+     * @param string $name The name to check.
+     */
     protected function checkLowerName(string $name): void
     {
         if (! self::isLowerCamelCase($name)) {
@@ -237,6 +298,12 @@ class NameChecker extends NodeChecker
         }
     }
 
+    /**
+     * Checks for undesirable suffixes on class-like elements.
+     *
+     * @param string $name The name to check.
+     * @param string $type The type of element (e.g., 'Class', 'Interface').
+     */
     protected function checkSuffix(string $name, string $type): void
     {
         if (! in_array($type, ['Namespace', 'Class', 'Interface', 'Trait'], true)) {
@@ -272,6 +339,11 @@ class NameChecker extends NodeChecker
         }
     }
 
+    /**
+     * Validates that a name uses PascalCase.
+     *
+     * @param string $name The name to check.
+     */
     protected function checkUpperName(string $name): void
     {
         if (! self::isUpperCamelCase($name)) {
@@ -284,6 +356,12 @@ class NameChecker extends NodeChecker
         }
     }
 
+    /**
+     * Extracts a string name from a node if possible.
+     *
+     * @param Node $node The node to extract a name from.
+     * @return string|null The extracted name or null.
+     */
     protected function getName(Node $node): ?string
     {
         if (! property_exists($node, 'name')) {
@@ -320,6 +398,12 @@ class NameChecker extends NodeChecker
         return null;
     }
 
+    /**
+     * Constructs a string representation of a property fetch.
+     *
+     * @param PropertyFetch $propertyFetch The property fetch node.
+     * @return string|null The string representation (e.g., "$this->prop") or null.
+     */
     protected function getPropertyFetchName(PropertyFetch $propertyFetch): ?string
     {
         $varName = $this->getName($propertyFetch->var);

@@ -18,10 +18,19 @@ use PhpParser\Node\Stmt\Function_;
 use PhpParser\Node\Stmt\Return_;
 use PhpParser\NodeFinder;
 
+/**
+ * Analyzes function and method definitions for best practices.
+ *
+ * Checks parameter counts, return types, naming conventions, and static recommendations.
+ *
+ * @package DouglasGreen\PhpLinter\Checker
+ * @since 1.0.0
+ * @internal
+ */
 class FunctionChecker extends NodeChecker
 {
     /**
-     * Boolean function names usually start with declarative verbs.
+     * Common prefixes for boolean function names.
      *
      * @var list<string>
      */
@@ -31,7 +40,11 @@ class FunctionChecker extends NodeChecker
         'requires', 'returns', 'should', 'supports', 'uses', 'was',
     ];
 
-    /** @var array<string, string> */
+    /**
+     * Map of non-boolean prefixes to suggested boolean prefixes.
+     *
+     * @var array<string, string>
+     */
     protected const BOOL_FUNC_RENAMES = [
         'check' => 'isValid',
         'validate' => 'isValid',
@@ -44,7 +57,7 @@ class FunctionChecker extends NodeChecker
     ];
 
     /**
-     * Function names usually start with an imperative verb or preposition.
+     * Common imperative verb prefixes for function names.
      *
      * @var list<string>
      */
@@ -93,11 +106,17 @@ class FunctionChecker extends NodeChecker
         'wait', 'walk', 'warm', 'warn', 'will', 'with', 'without', 'wrap', 'write',
     ];
 
-    /** @var array<string, array{type: ?string, promoted: bool}> */
+    /**
+     * Stores parameter metadata indexed by parameter name.
+     *
+     * @var array<string, array{type: ?string, promoted: bool}>
+     */
     protected array $params = [];
 
     /**
-     * @return array<string, bool>
+     * Performs validation checks on function or method nodes.
+     *
+     * @return array<string, bool> List of issues found.
      */
     public function check(): array
     {
@@ -130,6 +149,8 @@ class FunctionChecker extends NodeChecker
     }
 
     /**
+     * Returns the collected parameter metadata.
+     *
      * @return array<string, array{type: ?string, promoted: bool}>
      */
     public function getParams(): array
@@ -138,8 +159,10 @@ class FunctionChecker extends NodeChecker
     }
 
     /**
-     * Determines if a class is a "Newable" (fine to instantiate)
-     * vs an "Injectable" (should be DI'd).
+     * Determines if a class is a "Newable" (fine to instantiate) vs an "Injectable" (should be DI'd).
+     *
+     * @param string $className The name of the class to check.
+     * @return bool True if the class is considered safe to instantiate directly.
      */
     protected static function isNewable(string $className): bool
     {
@@ -176,6 +199,12 @@ class FunctionChecker extends NodeChecker
         return $className === 'anonymous or dynamic class';
     }
 
+    /**
+     * Extracts the class name from a New_ expression node.
+     *
+     * @param New_ $node The instantiation node.
+     * @return string The class name or a placeholder for anonymous classes.
+     */
     protected static function getNewClassName(New_ $node): string
     {
         if ($node->class instanceof Name) {
@@ -186,7 +215,11 @@ class FunctionChecker extends NodeChecker
     }
 
     /**
-     * @param array<Param> $params
+     * Validates the parameter list of a function or method.
+     *
+     * @param array<Param> $params Array of parameter nodes.
+     * @param string $funcName The name of the function or method.
+     * @param string $funcType The type of element ('Function' or 'Method').
      */
     protected function checkParams(array $params, string $funcName, string $funcType): void
     {
@@ -228,6 +261,13 @@ class FunctionChecker extends NodeChecker
         }
     }
 
+    /**
+     * Validates the return type against the function or method name.
+     *
+     * @param string $funcName The name of the function or method.
+     * @param string $funcType The type of element ('Function' or 'Method').
+     * @param string $returnType The return type string.
+     */
     protected function checkReturnType(string $funcName, string $funcType, string $returnType): void
     {
         $prefix = (string) preg_replace('/([a-z])[A-Z_].*/', '\1', $funcName);
@@ -266,6 +306,11 @@ class FunctionChecker extends NodeChecker
         }
     }
 
+    /**
+     * Checks if a method should be static if it does not use $this.
+     *
+     * @param string $methodName The name of the method.
+     */
     protected function checkStaticRecommendation(string $methodName): void
     {
         // Fix for undefined method isStatic/isAbstract
@@ -306,6 +351,11 @@ class FunctionChecker extends NodeChecker
         }
     }
 
+    /**
+     * Checks if an array parameter should be replaced with a DTO.
+     *
+     * @param string $paramName The name of the parameter to check.
+     */
     protected function checkArrayDto(string $paramName): void
     {
         // Narrow type to access $stmts
@@ -351,6 +401,9 @@ class FunctionChecker extends NodeChecker
         }
     }
 
+    /**
+     * Checks if an array return type should be replaced with a DTO.
+     */
     protected function checkReturnArrayDto(): void
     {
         // Narrow type to access $stmts

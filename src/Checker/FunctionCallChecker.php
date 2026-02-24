@@ -7,9 +7,22 @@ namespace DouglasGreen\PhpLinter\Checker;
 use PhpParser\Node\Expr\FuncCall;
 use PhpParser\Node\Name;
 
+/**
+ * Checks for usage of undesirable function calls.
+ *
+ * Detects calls to debug functions that should not be present in production code.
+ *
+ * @package DouglasGreen\PhpLinter\Checker
+ * @since 1.0.0
+ * @internal
+ */
 class FunctionCallChecker extends NodeChecker
 {
-    /** @var list<string> */
+    /**
+     * List of debug functions that should be removed in production.
+     *
+     * @var list<string>
+     */
     protected const DEBUG_FUNCTIONS = [
         'debug_print_backtrace',
         'debug_zval_dump',
@@ -18,7 +31,9 @@ class FunctionCallChecker extends NodeChecker
     ];
 
     /**
-     * @return array<string, bool>
+     * Checks for calls to debug functions.
+     *
+     * @return array<string, bool> List of issues found.
      */
     public function check(): array
     {

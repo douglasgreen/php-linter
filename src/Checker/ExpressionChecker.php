@@ -12,10 +12,21 @@ use PhpParser\Node\Stmt\Global_;
 use PhpParser\Node\Stmt\Goto_;
 use PhpParser\Node\Stmt\If_;
 
+/**
+ * Checks various PHP expressions and statements for best practices.
+ *
+ * Analyzes if conditions, eval, global, goto, and include statements.
+ *
+ * @package DouglasGreen\PhpLinter\Checker
+ * @since 1.0.0
+ * @internal
+ */
 class ExpressionChecker extends NodeChecker
 {
     /**
-     * @return array<string, bool>
+     * Performs checks on expression and statement nodes.
+     *
+     * @return array<string, bool> List of issues found.
      */
     public function check(): array
     {
@@ -49,6 +60,12 @@ class ExpressionChecker extends NodeChecker
         return $this->getIssues();
     }
 
+    /**
+     * Maps the integer type constant of an Include_ node to a string name.
+     *
+     * @param int $type The Include_ type constant.
+     * @return string The string representation of the include type.
+     */
     protected static function getIncludeType(int $type): string
     {
         return match ($type) {
@@ -60,6 +77,12 @@ class ExpressionChecker extends NodeChecker
         };
     } // end
 
+    /**
+     * Recursively checks a condition node for assignments.
+     *
+     * @param Node $condition The condition node to check.
+     * @param string $clauseType The type of clause ('if', 'elseif').
+     */
     protected function checkCondition(Node $condition, string $clauseType): void
     {
         if ($condition instanceof Assign) {

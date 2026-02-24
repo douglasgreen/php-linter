@@ -7,10 +7,21 @@ namespace DouglasGreen\PhpLinter\Checker;
 use PhpParser\Node\Stmt\Nop;
 use PhpParser\Node\Stmt\TryCatch;
 
+/**
+ * Checks try-catch blocks for proper error handling.
+ *
+ * Ensures catch blocks are not empty, which would suppress errors silently.
+ *
+ * @package DouglasGreen\PhpLinter\Checker
+ * @since 1.0.0
+ * @internal
+ */
 class TryCatchChecker extends NodeChecker
 {
     /**
-     * @return array<string, bool>
+     * Checks for empty catch blocks.
+     *
+     * @return array<string, bool> List of issues found.
      */
     public function check(): array
     {

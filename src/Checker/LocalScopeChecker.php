@@ -7,12 +7,20 @@ namespace DouglasGreen\PhpLinter\Checker;
 use PhpParser\Node\Expr\Exit_;
 
 /**
- * Check rules that only apply in local scope.
+ * Checks for constructs that disrupt local scope control flow.
+ *
+ * Detects usage of exit/die expressions.
+ *
+ * @package DouglasGreen\PhpLinter\Checker
+ * @since 1.0.0
+ * @internal
  */
 class LocalScopeChecker extends NodeChecker
 {
     /**
-     * @return array<string, bool>
+     * Checks for exit or die expressions.
+     *
+     * @return array<string, bool> List of issues found.
      */
     public function check(): array
     {
