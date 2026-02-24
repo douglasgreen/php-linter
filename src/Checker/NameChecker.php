@@ -24,11 +24,9 @@ class NameChecker extends NodeChecker
     protected const BAD_CLASS_SUFFIXES = [
         'Abstract' => 'violates standard PHP naming conventions; use as a prefix or let the "abstract" keyword handle it',
         'Array' => 'classes are objects, not primitives; use "Collection" or a domain-specific plural name instead',
-        'Helper' => 'suggests a "dumping ground" for unrelated logic; logic should be moved to a specific Service or Value Object',
         'Impl' => 'is a "Java-ism" that adds no value; name the class after its specific strategy (e.g., "S3Storage" vs "StorageImpl")',
         'Implementation' => 'is redundant when using interfaces; describe *how* it implements it (e.g., "JsonParser" vs "ParserImplementation")',
         'Instance' => 'is redundant; every class is a blueprint for an instance, so the suffix provides no additional context',
-        'Manager' => 'is a "God Class" smell; replace with specific actors like "Registrar", "Authenticator", or "Dispatcher"',
         'Object' => 'is redundant; in an OOP language, the fact that a class defines an object is already implied',
     ];
 
