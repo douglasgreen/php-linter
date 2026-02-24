@@ -14,25 +14,29 @@ class Analyzer
         protected readonly IgnoreList $ignoreList,
     ) {}
 
-    public function run(array $phpFiles, bool $generate): void
+    public function run(array $phpFiles): void
     {
-        if ($generate) {
+        $summaryFile = $this->cache->getSummaryFile();
+        $shouldGenerate = !file_exists($summaryFile);
+
+        if (!$shouldGenerate) {
+            $summaryTimestamp = filemtime($summaryFile);
+            foreach ($phpFiles as $phpFile) {
+                if (filemtime($phpFile) > $summaryTimestamp) {
+                    $shouldGenerate = true;
+                    break;
+                }
+            }
+        }
+
+        if ($shouldGenerate) {
             $metricGenerator = new MetricGenerator($this->cache, $phpFiles);
             $metricGenerator->generate();
         }
 
-        $summaryFile = $this->cache->getSummaryFile();
         if (!file_exists($summaryFile)) {
             echo '=> Skipping metrics checks (PDepend summary XML file not found)' . PHP_EOL;
             return;
-        }
-
-        $summaryTimestamp = filemtime($summaryFile);
-        foreach ($phpFiles as $phpFile) {
-            if (filemtime($phpFile) > $summaryTimestamp) {
-                echo '=> You need to run generate-metrics to update the PDepend metrics with your recent code changes.' . PHP_EOL;
-                break;
-            }
         }
 
         try {

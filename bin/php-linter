@@ -19,9 +19,6 @@ if ($currentDir === false) {
 
 require_once $currentDir . '/vendor/autoload.php';
 
-$options = getopt('g', ['generate']);
-$generate = isset($options['g']) || isset($options['generate']);
-
 $repository = new Repository();
 $phpFiles = $repository->getPhpFiles();
 $repository->printIssues();
@@ -36,4 +33,4 @@ $linter->run($phpFiles);
 $cache = new CacheManager($currentDir);
 $metricsIgnoreList = new MetricsIgnoreList($currentDir);
 $analyzer = new Analyzer($currentDir, $cache, $metricsIgnoreList);
-$analyzer->run($phpFiles, $generate);
+$analyzer->run($phpFiles);
