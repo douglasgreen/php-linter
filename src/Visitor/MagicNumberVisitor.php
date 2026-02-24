@@ -6,6 +6,7 @@ namespace DouglasGreen\PhpLinter\Visitor;
 
 use PhpParser\Node;
 use PhpParser\Node\Const_;
+use PhpParser\Node\Stmt\ClassConst;
 use PhpParser\Node\Scalar\Float_;
 use PhpParser\Node\Scalar\Int_;
 
@@ -21,7 +22,8 @@ class MagicNumberVisitor extends VisitorChecker
     {
         if ($node instanceof Int_ || $node instanceof Float_) {
             // Ignore numbers in constant definitions.
-            if ($node->getAttribute('parent') instanceof Const_) {
+            $parent = $node->getAttribute('parent');
+            if ($parent instanceof Const_ || $parent instanceof ClassConst) {
                 return;
             }
 
