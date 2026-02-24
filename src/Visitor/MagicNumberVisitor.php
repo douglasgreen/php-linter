@@ -28,19 +28,17 @@ class MagicNumberVisitor extends VisitorChecker
             $this->inConst++;
         }
 
-        return parent::enterNode($node);
+        return null;
     }
 
     #[\ReturnTypeWillChange]
     public function leaveNode(Node $node)
     {
-        $result = parent::leaveNode($node);
-
         if ($node instanceof Const_ || $node instanceof ClassConst) {
             $this->inConst--;
         }
 
-        return $result;
+        return null;
     }
 
     public function checkNode(Node $node): void
