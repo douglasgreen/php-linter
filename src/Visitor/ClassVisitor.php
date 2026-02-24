@@ -15,24 +15,49 @@ use PhpParser\Node\Stmt\ClassMethod;
 use PhpParser\Node\Stmt\Property;
 
 /**
- * Visit classes and traits, but traits don't have $attribs.
+ * Analyzes class and trait structures for property and method usage.
+ *
+ * Checks for unused private members, visibility ordering, and PHP 4 style constructors.
+ *
+ * @package DouglasGreen\PhpLinter\Visitor
+ * @since 1.0.0
+ * @internal
  */
 class ClassVisitor extends VisitorChecker
 {
-    /** @var array<string, array{visibility: string, static: bool, used: bool}> */
+    /**
+     * Defined methods with their metadata.
+     *
+     * @var array<string, array{visibility: string, static: bool, used: bool}>
+     */
     protected array $methods = [];
 
-    /** @var array<string, array{visibility: string, static: bool, used: bool}> */
+    /**
+     * Defined properties with their metadata.
+     *
+     * @var array<string, array{visibility: string, static: bool, used: bool}>
+     */
     protected array $properties = [];
 
-    /** @var array<string, bool> */
+    /**
+     * List of method names that were called.
+     *
+     * @var array<string, bool>
+     */
     protected array $usedMethodNames = [];
 
-    /** @var array<string, bool> */
+    /**
+     * List of property names that were accessed.
+     *
+     * @var array<string, bool>
+     */
     protected array $usedPropertyNames = [];
 
     /**
-     * @param array<string, bool> $attribs
+     * Initializes a new instance of the ClassVisitor.
+     *
+     * @param string|null $className The name of the class being visited, or null for anonymous classes.
+     * @param array<string, bool> $attribs Attributes of the class (e.g., 'abstract').
      */
     public function __construct(
         protected readonly ?string $className,
@@ -40,9 +65,11 @@ class ClassVisitor extends VisitorChecker
     ) {}
 
     /**
-     * Check the class when we have completely traversed it.
+     * Performs final checks after the class/traverse has been fully traversed.
      *
-     * Call this function in leaveNode().
+     * This method should be called in leaveNode() when the class node is left.
+     *
+     * @return void
      */
     public function checkClass(): void
     {
@@ -101,6 +128,12 @@ class ClassVisitor extends VisitorChecker
         $this->checkVisibilityOrder($visibilities, 'Method');
     }
 
+    /**
+     * Inspects a node for property or method definitions and usages.
+     *
+     * @param Node $node The node to check.
+     * @return void
+     */
     public function checkNode(Node $node): void
     {
         if ($node instanceof Property) {
@@ -156,9 +189,11 @@ class ClassVisitor extends VisitorChecker
     }
 
     /**
-     * Check if visibility order is public, then protected, then private.
+     * Validates that members are ordered by visibility: public, protected, private.
      *
-     * @param array<string, string> $visibilities
+     * @param array<string, string> $visibilities Map of member names to their visibility.
+     * @param string $type The type of member (e.g., 'Property', 'Method').
+     * @return void
      */
     public function checkVisibilityOrder(array $visibilities, string $type): void
     {
@@ -200,6 +235,8 @@ class ClassVisitor extends VisitorChecker
     }
 
     /**
+     * Returns the list of defined methods.
+     *
      * @return array<string, array{visibility: string, static: bool, used: bool}>
      */
     public function getMethods(): array
@@ -207,6 +244,12 @@ class ClassVisitor extends VisitorChecker
         return $this->methods;
     }
 
+    /**
+     * Extracts the method name from a method call node.
+     *
+     * @param MethodCall|StaticCall $node The method call node.
+     * @return string|null The method name or null if it is dynamic.
+     */
     protected static function getMethodName(MethodCall|StaticCall $node): ?string
     {
         if ($node->name instanceof Identifier) {
@@ -217,6 +260,12 @@ class ClassVisitor extends VisitorChecker
         return null;
     }
 
+    /**
+     * Extracts the property name from a property fetch node.
+     *
+     * @param Node $node The property fetch node.
+     * @return string|null The property name or null if it is dynamic.
+     */
     protected static function getPropertyName(Node $node): ?string
     {
         if ($node instanceof PropertyFetch) {
@@ -237,6 +286,12 @@ class ClassVisitor extends VisitorChecker
         return null;
     }
 
+    /**
+     * Determines the visibility of a method or property node.
+     *
+     * @param ClassMethod|Property $node The node to inspect.
+     * @return string The visibility ('public', 'protected', or 'private').
+     */
     protected static function getVisibility(ClassMethod|Property $node): string
     {
         if ($node->isPublic()) {
@@ -255,12 +310,24 @@ class ClassVisitor extends VisitorChecker
         return 'public';
     }
 
+    /**
+     * Records the usage of a method.
+     *
+     * @param string $methodName The name of the method being used.
+     * @return void
+     */
     protected function trackMethodUsage(string $methodName): void
     {
         // Store the name blindly - we don't care if it exists yet.
         $this->usedMethodNames[$methodName] = true;
     }
 
+    /**
+     * Records the usage of a property.
+     *
+     * @param string $propName The name of the property being used.
+     * @return void
+     */
     protected function trackPropertyUsage(string $propName): void
     {
         // Store the name blindly.

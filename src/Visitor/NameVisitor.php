@@ -15,11 +15,31 @@ use PhpParser\Node\Name;
 use PhpParser\Node\Scalar\String_;
 use PhpParser\Node\Stmt\ClassLike;
 
+/**
+ * Collects fully qualified names used within a code structure.
+ *
+ * Tracks class names, interface names, and other references to ensure
+ * proper dependency analysis and namespace usage.
+ *
+ * @package DouglasGreen\PhpLinter\Visitor
+ * @since 1.0.0
+ * @internal
+ */
 class NameVisitor extends VisitorChecker
 {
-    /** @var array<string, true> */
+    /**
+     * Set of qualified names found in the code.
+     *
+     * @var array<string, true>
+     */
     protected array $qualifiedNames = [];
 
+    /**
+     * Inspects a node for fully qualified names.
+     *
+     * @param Node $node The node to check.
+     * @return void
+     */
     public function checkNode(Node $node): void
     {
         // Check for fully-qualified names.
@@ -40,6 +60,8 @@ class NameVisitor extends VisitorChecker
     }
 
     /**
+     * Returns the set of collected qualified names.
+     *
      * @return array<string, true>
      */
     public function getQualifiedNames(): array
@@ -47,11 +69,23 @@ class NameVisitor extends VisitorChecker
         return $this->qualifiedNames;
     }
 
+    /**
+     * Adds a qualified name to the set.
+     *
+     * @param string $name The fully qualified name.
+     * @return void
+     */
     protected function addQualifiedName(string $name): void
     {
         $this->qualifiedNames[$name] = true;
     }
 
+    /**
+     * Recursively checks sub-nodes for Name instances.
+     *
+     * @param Node $node The node to traverse.
+     * @return void
+     */
     protected function checkNodeForNames(Node $node): void
     {
         foreach ($node->getSubNodeNames() as $subNodeName) {
@@ -68,6 +102,12 @@ class NameVisitor extends VisitorChecker
         }
     }
 
+    /**
+     * Handles class, interface, or trait definitions.
+     *
+     * @param ClassLike $classLike The class-like node.
+     * @return void
+     */
     protected function handleClassLike(ClassLike $classLike): void
     {
         if (!$classLike->name instanceof Identifier) {
@@ -77,6 +117,12 @@ class NameVisitor extends VisitorChecker
         $this->addQualifiedName($classLike->name->toString());
     }
 
+    /**
+     * Handles instanceof expressions.
+     *
+     * @param Instanceof_ $instanceof The instanceof node.
+     * @return void
+     */
     protected function handleInstanceofExpression(Instanceof_ $instanceof): void
     {
         if ($instanceof->class instanceof Name && $instanceof->class->isFullyQualified()) {
@@ -84,6 +130,12 @@ class NameVisitor extends VisitorChecker
         }
     }
 
+    /**
+     * Handles new object instantiation.
+     *
+     * @param New_ $new The new expression node.
+     * @return void
+     */
     protected function handleNewExpression(New_ $new): void
     {
         if ($new->class instanceof Name && $new->class->isFullyQualified()) {
@@ -101,6 +153,12 @@ class NameVisitor extends VisitorChecker
         }
     }
 
+    /**
+     * Handles static method calls and property fetches.
+     *
+     * @param StaticCall|StaticPropertyFetch $node The static expression node.
+     * @return void
+     */
     protected function handleStaticExpression(StaticCall|StaticPropertyFetch $node): void
     {
         if ($node->class instanceof Name && $node->class->isFullyQualified()) {

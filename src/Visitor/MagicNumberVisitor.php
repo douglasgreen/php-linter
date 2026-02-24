@@ -11,17 +11,45 @@ use PhpParser\Node\Scalar\Int_;
 use PhpParser\Node\Stmt\ClassConst;
 use ReturnTypeWillChange;
 
+/**
+ * Detects and reports magic numbers in code.
+ *
+ * Magic numbers are numeric literals that appear directly in the code
+ * without a named constant definition, reducing maintainability.
+ *
+ * @package DouglasGreen\PhpLinter\Visitor
+ * @since 1.0.0
+ * @internal
+ */
 class MagicNumberVisitor extends VisitorChecker
 {
-    /** @var array<string|int, int> */
+    /**
+     * Counts of occurrences for each magic number found.
+     *
+     * @var array<string|int, int>
+     */
     protected array $counts = [];
 
-    /** @var array<string|int, array<int>> */
+    /**
+     * Line numbers where each magic number appears.
+     *
+     * @var array<string|int, array<int>>
+     */
     protected array $lines = [];
 
-    /** @var int */
+    /**
+     * Depth counter for constant definitions to ignore them.
+     *
+     * @var int
+     */
     protected int $inConst = 0;
 
+    /**
+     * Enters a node to track constant definition context.
+     *
+     * @param Node $node The node being entered.
+     * @return null
+     */
     #[ReturnTypeWillChange]
     public function enterNode(Node $node): null
     {
@@ -32,6 +60,12 @@ class MagicNumberVisitor extends VisitorChecker
         return null;
     }
 
+    /**
+     * Leaves a node to update constant definition context.
+     *
+     * @param Node $node The node being left.
+     * @return null
+     */
     #[ReturnTypeWillChange]
     public function leaveNode(Node $node): null
     {
@@ -42,6 +76,12 @@ class MagicNumberVisitor extends VisitorChecker
         return null;
     }
 
+    /**
+     * Inspects a node for magic numbers.
+     *
+     * @param Node $node The node to check.
+     * @return void
+     */
     public function checkNode(Node $node): void
     {
         if ($node instanceof Int_ || $node instanceof Float_) {
@@ -81,6 +121,11 @@ class MagicNumberVisitor extends VisitorChecker
         }
     }
 
+    /**
+     * Reports magic numbers that appear more than once.
+     *
+     * @return void
+     */
     public function checkDuplicates(): void
     {
         foreach ($this->counts as $value => $count) {

@@ -12,16 +12,39 @@ use PhpParser\Node\Identifier;
 use PhpParser\Node\Stmt\Class_;
 use PhpParser\NodeVisitorAbstract;
 
+/**
+ * Enforces encapsulation of superglobal access.
+ *
+ * Detects direct access to PHP superglobals and flags usage outside of
+ * allowed contexts (Controllers, Middleware, or global scope).
+ *
+ * @package DouglasGreen\PhpLinter\Visitor
+ * @since 1.0.0
+ * @internal
+ */
 class SuperglobalUsageVisitor extends NodeVisitorAbstract
 {
     use IssueHolder;
 
-    /** @var string[] */
+    /**
+     * Stack of class names currently being traversed.
+     *
+     * @var array<int, string>
+     */
     protected array $classStack = [];
 
+    /**
+     * Depth within function or method calls.
+     *
+     * @var int
+     */
     protected int $functionDepth = 0;
 
-    /** @var string[] */
+    /**
+     * List of PHP superglobals.
+     *
+     * @var list<string>
+     */
     protected array $superglobals = [
         '_GET',
         '_POST',
@@ -33,12 +56,22 @@ class SuperglobalUsageVisitor extends NodeVisitorAbstract
         '_REQUEST',
     ];
 
-    /** @var string[] */
+    /**
+     * Class suffixes that are allowed to use superglobals.
+     *
+     * @var list<string>
+     */
     protected array $allowedSuffixes = [
         'Controller',
         'Middleware',
     ];
 
+    /**
+     * Enters a node to track class/function context and check for superglobals.
+     *
+     * @param Node $node The node being entered.
+     * @return null
+     */
     public function enterNode(Node $node): null
     {
         // 1. Track class context
@@ -67,6 +100,12 @@ class SuperglobalUsageVisitor extends NodeVisitorAbstract
         return null;
     }
 
+    /**
+     * Leaves a node to update class/function context stacks.
+     *
+     * @param Node $node The node being left.
+     * @return null
+     */
     public function leaveNode(Node $node): null
     {
         // Pop class stack when exiting a class definition
@@ -82,6 +121,11 @@ class SuperglobalUsageVisitor extends NodeVisitorAbstract
         return null;
     }
 
+    /**
+     * Returns a string representation of the current context.
+     *
+     * @return string The context name (e.g., 'class MyClass', 'function scope').
+     */
     protected function getContextName(): string
     {
         $currentClass = end($this->classStack);
@@ -96,6 +140,11 @@ class SuperglobalUsageVisitor extends NodeVisitorAbstract
         return 'global scope';
     }
 
+    /**
+     * Determines if the current context allows superglobal access.
+     *
+     * @return bool True if superglobals are allowed in the current context.
+     */
     protected function isAllowedContext(): bool
     {
         // Global scope (outside functions and classes) is allowed
