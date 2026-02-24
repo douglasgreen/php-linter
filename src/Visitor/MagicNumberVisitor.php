@@ -18,10 +18,40 @@ class MagicNumberVisitor extends VisitorChecker
     /** @var array<string|int, array<int>> */
     protected array $lines = [];
 
+    /** @var int */
+    protected int $inConst = 0;
+
+    #[\ReturnTypeWillChange]
+    public function enterNode(Node $node)
+    {
+        if ($node instanceof Const_ || $node instanceof ClassConst) {
+            $this->inConst++;
+        }
+
+        return parent::enterNode($node);
+    }
+
+    #[\ReturnTypeWillChange]
+    public function leaveNode(Node $node)
+    {
+        $result = parent::leaveNode($node);
+
+        if ($node instanceof Const_ || $node instanceof ClassConst) {
+            $this->inConst--;
+        }
+
+        return $result;
+    }
+
     public function checkNode(Node $node): void
     {
         if ($node instanceof Int_ || $node instanceof Float_) {
             // Ignore numbers in constant definitions.
+            if ($this->inConst > 0) {
+                return;
+            }
+
+            // Fallback for parent attribute if it is actively set.
             $parent = $node->getAttribute('parent');
             if ($parent instanceof Const_ || $parent instanceof ClassConst) {
                 return;
