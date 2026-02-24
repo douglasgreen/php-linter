@@ -119,3 +119,7 @@ config/*.php
 # Ignore build artifacts
 build/*.tmp.php
 ```
+
+## Disclaimer
+
+This project is not affiliated with or endorsed by the PHP Group.
