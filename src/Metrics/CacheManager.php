@@ -12,6 +12,8 @@ class CacheManager
 
     public const SUMMARY_FILE = 'var/cache/pdepend/summary.xml';
 
+    public const DIRECTORY_MODE = 0777;
+
     protected readonly string $cacheDir;
 
     protected readonly string $fileCacheDir;
@@ -27,7 +29,7 @@ class CacheManager
 
         // Ensure the cache directory exists
         if (! is_dir($this->cacheDir)) {
-            mkdir($this->cacheDir, 0777, true);
+            mkdir($this->cacheDir, self::DIRECTORY_MODE, true);
         }
 
         // Ensure the file cache directory exists and is clear.
@@ -41,7 +43,7 @@ class CacheManager
                 }
             }
         } else {
-            mkdir($this->fileCacheDir, 0777, true);
+            mkdir($this->fileCacheDir, self::DIRECTORY_MODE, true);
         }
     }
 
@@ -77,7 +79,7 @@ class CacheManager
 
         // Ensure the directory exists
         if (! is_dir($newFileDir)) {
-            mkdir($newFileDir, 0777, true);
+            mkdir($newFileDir, self::DIRECTORY_MODE, true);
         }
 
         // Copy the file
