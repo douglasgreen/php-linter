@@ -40,14 +40,10 @@ class MetricChecker
      */
     protected array $issues = [];
 
-    /**
-     * The current file being processed, used for formatting output.
-     */
+    /** The current file being processed, used for formatting output. */
     protected ?string $currentFile = null;
 
-    /**
-     * Count of errors encountered.
-     */
+    /** Count of errors encountered. */
     protected int $errorCount = 0;
 
     /**

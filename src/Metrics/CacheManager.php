@@ -45,19 +45,13 @@ class CacheManager
      */
     public const DIRECTORY_MODE = 0777;
 
-    /**
-     * Absolute path to the main cache directory.
-     */
+    /** Absolute path to the main cache directory. */
     protected readonly string $cacheDir;
 
-    /**
-     * Absolute path to the file cache directory.
-     */
+    /** Absolute path to the file cache directory. */
     protected readonly string $fileCacheDir;
 
-    /**
-     * Absolute path to the summary XML file.
-     */
+    /** Absolute path to the summary XML file. */
     protected readonly string $summaryFile;
 
     /**

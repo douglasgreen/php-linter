@@ -28,9 +28,7 @@ class Repository
      */
     protected readonly array $files;
 
-    /**
-     * The default branch name of the repository.
-     */
+    /** The default branch name of the repository. */
     protected readonly string $defaultBranch;
 
     /**

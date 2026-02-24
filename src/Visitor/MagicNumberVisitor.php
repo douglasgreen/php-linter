@@ -39,9 +39,7 @@ class MagicNumberVisitor extends VisitorChecker
      */
     protected array $lines = [];
 
-    /**
-     * Depth counter for constant definitions to ignore them.
-     */
+    /** Depth counter for constant definitions to ignore them. */
     protected int $inConst = 0;
 
     /**

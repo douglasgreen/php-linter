@@ -166,7 +166,6 @@ class Analyzer
      *
      * @param list<string> $phpFiles List of PHP file paths to analyze.
      *
-     *
      * @throws Exception If parsing or file operations fail.
      *
      * @sideeffect Writes to stdout for progress and issues.

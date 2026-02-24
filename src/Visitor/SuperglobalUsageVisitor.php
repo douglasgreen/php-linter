@@ -35,9 +35,7 @@ class SuperglobalUsageVisitor extends NodeVisitorAbstract
      */
     protected array $classStack = [];
 
-    /**
-     * Depth within function or method calls.
-     */
+    /** Depth within function or method calls. */
     protected int $functionDepth = 0;
 
     /**

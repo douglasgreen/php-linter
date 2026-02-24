@@ -35,7 +35,6 @@ class MetricGenerator
      * Copies non-.php files to the cache directory with a .php extension,
      * constructs the PDepend command, and executes it.
      *
-     *
      * @throws RuntimeException If the PDepend command fails to execute (implied by process handling).
      *
      * @sideeffect Creates files in the cache directory.

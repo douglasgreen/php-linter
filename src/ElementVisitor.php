@@ -40,44 +40,28 @@ class ElementVisitor extends NodeVisitorAbstract
 {
     use IssueHolder;
 
-    /**
-     * Visitor for class-related checks.
-     */
+    /** Visitor for class-related checks. */
     protected ClassVisitor $classVisitor;
 
-    /**
-     * Visitor for function-related checks.
-     */
+    /** Visitor for function-related checks. */
     protected FunctionVisitor $functionVisitor;
 
-    /**
-     * Visitor for magic number checks.
-     */
+    /** Visitor for magic number checks. */
     protected MagicNumberVisitor $magicNumberVisitor;
 
-    /**
-     * Visitor for superglobal usage checks.
-     */
+    /** Visitor for superglobal usage checks. */
     protected SuperglobalUsageVisitor $superglobalUsageVisitor;
 
-    /**
-     * Current namespace name.
-     */
+    /** Current namespace name. */
     protected ?string $currentNamespace = null;
 
-    /**
-     * Current class name.
-     */
+    /** Current class name. */
     protected ?string $currentClassName = null;
 
-    /**
-     * Current file being processed.
-     */
+    /** Current file being processed. */
     protected ?string $currentFile = null;
 
-    /**
-     * Current function or method name.
-     */
+    /** Current function or method name. */
     protected ?string $currentFunctionName = null;
 
     /**
@@ -87,9 +71,7 @@ class ElementVisitor extends NodeVisitorAbstract
      */
     protected array $methodCalls = [];
 
-    /**
-     * Indicates if currently inside a class, trait, method, function, or closure.
-     */
+    /** Indicates if currently inside a class, trait, method, function, or closure. */
     protected bool $isLocalScope = false;
 
     /**
