@@ -13,7 +13,9 @@ use PhpParser\Node\Stmt\TryCatch;
  * Ensures catch blocks are not empty, which would suppress errors silently.
  *
  * @package DouglasGreen\PhpLinter\Checker
+ *
  * @since 1.0.0
+ *
  * @internal
  */
 class TryCatchChecker extends NodeChecker

@@ -10,7 +10,9 @@ namespace DouglasGreen\PhpLinter\Metrics;
  * Maintains an internal list of unique issues identified during checks.
  *
  * @package DouglasGreen\PhpLinter\Metrics
+ *
  * @since 1.0.0
+ *
  * @internal
  */
 trait IssueHolder
@@ -46,7 +48,6 @@ trait IssueHolder
      * Adds a single issue to the collection.
      *
      * @param string $issue The issue description.
-     * @return void
      */
     protected function addIssue(string $issue): void
     {
@@ -57,7 +58,6 @@ trait IssueHolder
      * Merges multiple issues into the collection.
      *
      * @param array<string, bool> $issues Map of issues to merge.
-     * @return void
      */
     protected function addIssues(array $issues): void
     {

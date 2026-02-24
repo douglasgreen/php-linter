@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace DouglasGreen\PhpLinter\Metrics;
 
+use RuntimeException;
+
 /**
  * Generates metrics by running PDepend on PHP files.
  *
@@ -11,7 +13,9 @@ namespace DouglasGreen\PhpLinter\Metrics;
  * to generate a summary XML file.
  *
  * @package DouglasGreen\PhpLinter\Metrics
+ *
  * @since 1.0.0
+ *
  * @internal
  */
 class MetricGenerator
@@ -31,9 +35,8 @@ class MetricGenerator
      * Copies non-.php files to the cache directory with a .php extension,
      * constructs the PDepend command, and executes it.
      *
-     * @return void
      *
-     * @throws \RuntimeException If the PDepend command fails to execute (implied by process handling).
+     * @throws RuntimeException If the PDepend command fails to execute (implied by process handling).
      *
      * @sideeffect Creates files in the cache directory.
      * @sideeffect Executes a shell command (vendor/bin/pdepend).

@@ -22,7 +22,9 @@ use PhpParser\Node\Stmt\ClassLike;
  * proper dependency analysis and namespace usage.
  *
  * @package DouglasGreen\PhpLinter\Visitor
+ *
  * @since 1.0.0
+ *
  * @internal
  */
 class NameVisitor extends VisitorChecker
@@ -38,7 +40,6 @@ class NameVisitor extends VisitorChecker
      * Inspects a node for fully qualified names.
      *
      * @param Node $node The node to check.
-     * @return void
      */
     public function checkNode(Node $node): void
     {
@@ -73,7 +74,6 @@ class NameVisitor extends VisitorChecker
      * Adds a qualified name to the set.
      *
      * @param string $name The fully qualified name.
-     * @return void
      */
     protected function addQualifiedName(string $name): void
     {
@@ -84,7 +84,6 @@ class NameVisitor extends VisitorChecker
      * Recursively checks sub-nodes for Name instances.
      *
      * @param Node $node The node to traverse.
-     * @return void
      */
     protected function checkNodeForNames(Node $node): void
     {
@@ -106,7 +105,6 @@ class NameVisitor extends VisitorChecker
      * Handles class, interface, or trait definitions.
      *
      * @param ClassLike $classLike The class-like node.
-     * @return void
      */
     protected function handleClassLike(ClassLike $classLike): void
     {
@@ -121,7 +119,6 @@ class NameVisitor extends VisitorChecker
      * Handles instanceof expressions.
      *
      * @param Instanceof_ $instanceof The instanceof node.
-     * @return void
      */
     protected function handleInstanceofExpression(Instanceof_ $instanceof): void
     {
@@ -134,7 +131,6 @@ class NameVisitor extends VisitorChecker
      * Handles new object instantiation.
      *
      * @param New_ $new The new expression node.
-     * @return void
      */
     protected function handleNewExpression(New_ $new): void
     {
@@ -157,7 +153,6 @@ class NameVisitor extends VisitorChecker
      * Handles static method calls and property fetches.
      *
      * @param StaticCall|StaticPropertyFetch $node The static expression node.
-     * @return void
      */
     protected function handleStaticExpression(StaticCall|StaticPropertyFetch $node): void
     {

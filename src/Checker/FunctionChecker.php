@@ -24,7 +24,9 @@ use PhpParser\NodeFinder;
  * Checks parameter counts, return types, naming conventions, and static recommendations.
  *
  * @package DouglasGreen\PhpLinter\Checker
+ *
  * @since 1.0.0
+ *
  * @internal
  */
 class FunctionChecker extends NodeChecker
@@ -162,6 +164,7 @@ class FunctionChecker extends NodeChecker
      * Determines if a class is a "Newable" (fine to instantiate) vs an "Injectable" (should be DI'd).
      *
      * @param string $className The name of the class to check.
+     *
      * @return bool True if the class is considered safe to instantiate directly.
      */
     protected static function isNewable(string $className): bool
@@ -203,6 +206,7 @@ class FunctionChecker extends NodeChecker
      * Extracts the class name from a New_ expression node.
      *
      * @param New_ $node The instantiation node.
+     *
      * @return string The class name or a placeholder for anonymous classes.
      */
     protected static function getNewClassName(New_ $node): string

@@ -13,14 +13,17 @@ use SimpleXMLElement;
  * Provides access to metrics, files, and packages extracted from the XML.
  *
  * @package DouglasGreen\PhpLinter\Metrics
+ *
  * @since 1.0.0
  * @see https://pdepend.org/documentation/software-metrics/index.html
+ *
  * @internal
  */
 class XmlParser
 {
     /**
      * Parsed data containing metrics, files, and packages.
+     *
      * @var array<string, mixed>
      */
     protected readonly array $data;
@@ -89,6 +92,7 @@ class XmlParser
      * Parses class elements from XML.
      *
      * @param SimpleXMLElement $classes The XML element containing classes.
+     *
      * @return array<string|int, mixed>[] List of class data arrays.
      */
     protected static function parseClasses(SimpleXMLElement $classes): array
@@ -115,6 +119,7 @@ class XmlParser
      * Parses file elements from XML.
      *
      * @param SimpleXMLElement $files The XML element containing files.
+     *
      * @return array<int<0, max>, array<string|int, string>> List of file data arrays.
      */
     protected static function parseFiles(SimpleXMLElement $files): array
@@ -136,6 +141,7 @@ class XmlParser
      * Parses function elements from XML.
      *
      * @param SimpleXMLElement $functions The XML element containing functions.
+     *
      * @return array<mixed, array<string|int, string>> List of function data arrays.
      */
     protected static function parseFunctions(SimpleXMLElement $functions): array
@@ -160,6 +166,7 @@ class XmlParser
      * Parses method elements from XML.
      *
      * @param SimpleXMLElement $methods The XML element containing methods.
+     *
      * @return array<mixed, array<string|int, string>> List of method data arrays.
      */
     protected static function parseMethods(SimpleXMLElement $methods): array
@@ -181,6 +188,7 @@ class XmlParser
      * Parses metric attributes from the root XML element.
      *
      * @param SimpleXMLElement $xml The root XML element.
+     *
      * @return string[] Associative array of metric names to values.
      */
     protected static function parseMetrics(SimpleXMLElement $xml): array
@@ -198,6 +206,7 @@ class XmlParser
      * Parses package elements from XML.
      *
      * @param SimpleXMLElement $packages The XML element containing packages.
+     *
      * @return array<string|int, mixed>[] List of package data arrays.
      */
     protected static function parsePackages(SimpleXMLElement $packages): array

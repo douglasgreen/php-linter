@@ -12,7 +12,9 @@ use PhpParser\Node\Expr\Variable;
  * Analyzes function and method scope for variable usage and parameter handling.
  *
  * @package DouglasGreen\PhpLinter\Visitor
+ *
  * @since 1.0.0
+ *
  * @internal
  */
 class FunctionVisitor extends VisitorChecker
@@ -42,8 +44,6 @@ class FunctionVisitor extends VisitorChecker
      *
      * Checks for unused parameters and variables referenced only once.
      * Call this function in leaveNode().
-     *
-     * @return void
      */
     public function checkFunction(): void
     {
@@ -90,7 +90,6 @@ class FunctionVisitor extends VisitorChecker
      * Inspects a node for variable usage.
      *
      * @param Node $node The node to check.
-     * @return void
      */
     public function checkNode(Node $node): void
     {
@@ -117,6 +116,7 @@ class FunctionVisitor extends VisitorChecker
      * Extracts the variable name from a Variable node.
      *
      * @param Variable $variable The variable node.
+     *
      * @return string|null The variable name or null if it is $this.
      */
     protected static function getVariableName(Variable $variable): ?string
@@ -134,6 +134,7 @@ class FunctionVisitor extends VisitorChecker
      * Determines if a node is the variable part of a property fetch.
      *
      * @param Node $node The node to check.
+     *
      * @return bool True if the node is the variable in a property fetch.
      */
     protected static function isPropertyFetch(Node $node): bool
@@ -146,7 +147,6 @@ class FunctionVisitor extends VisitorChecker
      * Increments the reference count for a variable.
      *
      * @param string $variableName The name of the variable.
-     * @return void
      */
     protected function incrementVariableCount(string $variableName): void
     {

@@ -10,19 +10,23 @@ namespace DouglasGreen\PhpLinter\Metrics;
  * Loads patterns from a `.phplintignore` file and matches file paths against them.
  *
  * @package DouglasGreen\PhpLinter\Metrics
+ *
  * @since 1.0.0
+ *
  * @internal
  */
 class IgnoreList
 {
     /**
      * The name of the ignore file.
+     *
      * @var string
      */
     public const IGNORE_FILE = '.phplintignore';
 
     /**
      * List of compiled regex patterns derived from the ignore file.
+     *
      * @var list<string>
      */
     protected readonly array $ignorePatterns;
@@ -42,6 +46,7 @@ class IgnoreList
      * Checks if a file path should be ignored.
      *
      * @param string $filePath The file path to check.
+     *
      * @return bool True if the file matches an ignore pattern, false otherwise.
      */
     public function shouldIgnore(string $filePath): bool
@@ -59,6 +64,7 @@ class IgnoreList
      * Converts a glob-like pattern to a regex pattern.
      *
      * @param string $pattern The glob pattern (e.g., "vendor/*").
+     *
      * @return string The compiled regex pattern (e.g., "#^vendor/.*#").
      */
     protected static function preparePattern(string $pattern): string
@@ -74,6 +80,7 @@ class IgnoreList
      * Loads and parses the ignore file into a list of regex patterns.
      *
      * @param string $ignoreFile The path to the ignore file.
+     *
      * @return list<string> List of compiled regex patterns.
      */
     protected static function loadIgnoreFile(string $ignoreFile): array

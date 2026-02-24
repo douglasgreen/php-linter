@@ -12,7 +12,9 @@ use Exception;
  * Provides access to tracked files and repository metadata.
  *
  * @package DouglasGreen\PhpLinter\Metrics
+ *
  * @since 1.0.0
+ *
  * @api
  */
 class Repository
@@ -21,13 +23,13 @@ class Repository
 
     /**
      * List of files tracked by Git.
+     *
      * @var list<string>
      */
     protected readonly array $files;
 
     /**
      * The default branch name of the repository.
-     * @var string
      */
     protected readonly string $defaultBranch;
 
@@ -73,8 +75,6 @@ class Repository
 
     /**
      * Checks repository standards (e.g., default branch name).
-     *
-     * @return void
      */
     public function check(): void
     {
@@ -105,8 +105,6 @@ class Repository
 
     /**
      * Prints any issues found during checks.
-     *
-     * @return void
      */
     public function printIssues(): void
     {

@@ -10,6 +10,7 @@ use Exception;
  * Parses composer.json to extract PSR-4 autoloading mappings.
  *
  * @package DouglasGreen\PhpLinter
+ *
  * @since 1.0.0
  */
 class ComposerFile

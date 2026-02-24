@@ -33,6 +33,7 @@ use PhpParser\NodeVisitorAbstract;
  * Visitor for traversing PHP AST nodes to detect linting issues.
  *
  * @package DouglasGreen\PhpLinter
+ *
  * @since 1.0.0
  */
 class ElementVisitor extends NodeVisitorAbstract
@@ -41,57 +42,41 @@ class ElementVisitor extends NodeVisitorAbstract
 
     /**
      * Visitor for class-related checks.
-     *
-     * @var ClassVisitor
      */
     protected ClassVisitor $classVisitor;
 
     /**
      * Visitor for function-related checks.
-     *
-     * @var FunctionVisitor
      */
     protected FunctionVisitor $functionVisitor;
 
     /**
      * Visitor for magic number checks.
-     *
-     * @var MagicNumberVisitor
      */
     protected MagicNumberVisitor $magicNumberVisitor;
 
     /**
      * Visitor for superglobal usage checks.
-     *
-     * @var SuperglobalUsageVisitor
      */
     protected SuperglobalUsageVisitor $superglobalUsageVisitor;
 
     /**
      * Current namespace name.
-     *
-     * @var string|null
      */
     protected ?string $currentNamespace = null;
 
     /**
      * Current class name.
-     *
-     * @var string|null
      */
     protected ?string $currentClassName = null;
 
     /**
      * Current file being processed.
-     *
-     * @var string|null
      */
     protected ?string $currentFile = null;
 
     /**
      * Current function or method name.
-     *
-     * @var string|null
      */
     protected ?string $currentFunctionName = null;
 
@@ -104,8 +89,6 @@ class ElementVisitor extends NodeVisitorAbstract
 
     /**
      * Indicates if currently inside a class, trait, method, function, or closure.
-     *
-     * @var bool
      */
     protected bool $isLocalScope = false;
 
@@ -124,8 +107,6 @@ class ElementVisitor extends NodeVisitorAbstract
      * Initializes visitors before traversal.
      *
      * @param array<Node> $nodes The nodes to traverse.
-     *
-     * @return null
      */
     public function beforeTraverse(array $nodes): null
     {
@@ -139,8 +120,6 @@ class ElementVisitor extends NodeVisitorAbstract
      * Finalizes checks after traversal.
      *
      * @param array<Node> $nodes The nodes traversed.
-     *
-     * @return null
      */
     public function afterTraverse(array $nodes): null
     {
@@ -156,8 +135,6 @@ class ElementVisitor extends NodeVisitorAbstract
      * Enters a node to perform checks.
      *
      * @param Node $node The node being entered.
-     *
-     * @return null
      */
     public function enterNode(Node $node): null
     {
@@ -189,8 +166,6 @@ class ElementVisitor extends NodeVisitorAbstract
      * Leaves a node to clean up state.
      *
      * @param Node $node The node being left.
-     *
-     * @return null
      */
     public function leaveNode(Node $node): null
     {

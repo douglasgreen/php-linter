@@ -14,7 +14,9 @@ use PhpParser\Node;
  * and accumulate issues during traversal.
  *
  * @package DouglasGreen\PhpLinter\Visitor
+ *
  * @since 1.0.0
+ *
  * @internal
  */
 abstract class VisitorChecker
@@ -25,7 +27,6 @@ abstract class VisitorChecker
      * Check a node and store issues for later retrieval.
      *
      * @param Node $node The node to check.
-     * @return void
      */
     abstract public function checkNode(Node $node): void;
 }

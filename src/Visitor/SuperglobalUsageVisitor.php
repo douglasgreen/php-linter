@@ -19,7 +19,9 @@ use PhpParser\NodeVisitorAbstract;
  * allowed contexts (Controllers, Middleware, or global scope).
  *
  * @package DouglasGreen\PhpLinter\Visitor
+ *
  * @since 1.0.0
+ *
  * @internal
  */
 class SuperglobalUsageVisitor extends NodeVisitorAbstract
@@ -35,8 +37,6 @@ class SuperglobalUsageVisitor extends NodeVisitorAbstract
 
     /**
      * Depth within function or method calls.
-     *
-     * @var int
      */
     protected int $functionDepth = 0;
 
@@ -70,7 +70,6 @@ class SuperglobalUsageVisitor extends NodeVisitorAbstract
      * Enters a node to track class/function context and check for superglobals.
      *
      * @param Node $node The node being entered.
-     * @return null
      */
     public function enterNode(Node $node): null
     {
@@ -104,7 +103,6 @@ class SuperglobalUsageVisitor extends NodeVisitorAbstract
      * Leaves a node to update class/function context stacks.
      *
      * @param Node $node The node being left.
-     * @return null
      */
     public function leaveNode(Node $node): null
     {

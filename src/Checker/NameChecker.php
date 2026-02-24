@@ -24,7 +24,9 @@ use PhpParser\Node\Stmt\Trait_;
  * Validates casing, length, and suffixes for classes, methods, properties, etc.
  *
  * @package DouglasGreen\PhpLinter\Checker
+ *
  * @since 1.0.0
+ *
  * @internal
  */
 class NameChecker extends NodeChecker
@@ -165,6 +167,7 @@ class NameChecker extends NodeChecker
      * Extracts the string name from a Variable node.
      *
      * @param Variable $variable The variable node.
+     *
      * @return string|null The variable name or null if it's a complex expression.
      */
     protected static function getVariableName(Variable $variable): ?string
@@ -182,6 +185,7 @@ class NameChecker extends NodeChecker
      * Checks if a name follows lowerCamelCase conventions.
      *
      * @param string $name The name to check.
+     *
      * @return bool True if the name is valid lowerCamelCase.
      */
     protected static function isLowerCamelCase(string $name): bool
@@ -201,6 +205,7 @@ class NameChecker extends NodeChecker
      * Checks if a name follows UpperCamelCase (PascalCase) conventions.
      *
      * @param string $name The name to check.
+     *
      * @return bool True if the name is valid UpperCamelCase.
      */
     protected static function isUpperCamelCase(string $name): bool
@@ -360,6 +365,7 @@ class NameChecker extends NodeChecker
      * Extracts a string name from a node if possible.
      *
      * @param Node $node The node to extract a name from.
+     *
      * @return string|null The extracted name or null.
      */
     protected function getName(Node $node): ?string
@@ -402,6 +408,7 @@ class NameChecker extends NodeChecker
      * Constructs a string representation of a property fetch.
      *
      * @param PropertyFetch $propertyFetch The property fetch node.
+     *
      * @return string|null The string representation (e.g., "$this->prop") or null.
      */
     protected function getPropertyFetchName(PropertyFetch $propertyFetch): ?string

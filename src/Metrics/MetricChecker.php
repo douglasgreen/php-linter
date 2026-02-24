@@ -11,39 +11,42 @@ namespace DouglasGreen\PhpLinter\Metrics;
  * collecting issues for reporting.
  *
  * @package DouglasGreen\PhpLinter\Metrics
+ *
  * @since 1.0.0
  * @see https://pdepend.org/documentation/software-metrics/index.html
+ *
  * @api
  */
 class MetricChecker
 {
     /**
      * Status constant for a passed check.
+     *
      * @var int
      */
     public const STATUS_OK = 0;
 
     /**
      * Status constant for a failed check.
+     *
      * @var int
      */
     public const STATUS_ERROR = 1;
 
     /**
      * List of issues found during checks.
+     *
      * @var list<string>
      */
     protected array $issues = [];
 
     /**
      * The current file being processed, used for formatting output.
-     * @var string|null
      */
     protected ?string $currentFile = null;
 
     /**
      * Count of errors encountered.
-     * @var int
      */
     protected int $errorCount = 0;
 
@@ -64,6 +67,7 @@ class MetricChecker
      * Checks if afferent coupling exceeds the limit.
      *
      * @param int $limit The maximum allowed afferent coupling.
+     *
      * @return int Status code (STATUS_OK or STATUS_ERROR).
      */
     public function checkMaxAfferentCoupling(int $limit): int
@@ -78,6 +82,7 @@ class MetricChecker
      * Checks if class size (methods + properties) exceeds the limit.
      *
      * @param int $limit The maximum allowed class size.
+     *
      * @return int Status code (STATUS_OK or STATUS_ERROR).
      */
     public function checkMaxClassSize(int $limit): int
@@ -92,6 +97,7 @@ class MetricChecker
      * Checks if code rank exceeds the limit.
      *
      * @param float $limit The maximum allowed code rank.
+     *
      * @return int Status code (STATUS_OK or STATUS_ERROR).
      */
     public function checkMaxCodeRank(float $limit): int
@@ -106,6 +112,7 @@ class MetricChecker
      * Checks if cyclomatic complexity exceeds the limit.
      *
      * @param int $limit The maximum allowed cyclomatic complexity.
+     *
      * @return int Status code (STATUS_OK or STATUS_ERROR).
      */
     public function checkMaxCyclomaticComplexity(int $limit): int
@@ -120,6 +127,7 @@ class MetricChecker
      * Checks if efferent coupling exceeds the limit.
      *
      * @param int $limit The maximum allowed efferent coupling.
+     *
      * @return int Status code (STATUS_OK or STATUS_ERROR).
      */
     public function checkMaxEfferentCoupling(int $limit): int
@@ -134,6 +142,7 @@ class MetricChecker
      * Checks if Halstead effort exceeds the limit.
      *
      * @param int $limit The maximum allowed Halstead effort.
+     *
      * @return int Status code (STATUS_OK or STATUS_ERROR).
      */
     public function checkMaxHalsteadEffort(int $limit): int
@@ -148,6 +157,7 @@ class MetricChecker
      * Checks if inheritance depth exceeds the limit.
      *
      * @param int $limit The maximum allowed inheritance depth.
+     *
      * @return int Status code (STATUS_OK or STATUS_ERROR).
      */
     public function checkMaxInheritanceDepth(int $limit): int
@@ -162,6 +172,7 @@ class MetricChecker
      * Checks if lines of code exceed the limit.
      *
      * @param int $limit The maximum allowed lines of code.
+     *
      * @return int Status code (STATUS_OK or STATUS_ERROR).
      */
     public function checkMaxLinesOfCode(int $limit): int
@@ -176,6 +187,7 @@ class MetricChecker
      * Checks if non-private properties exceed the limit.
      *
      * @param int $limit The maximum allowed non-private properties.
+     *
      * @return int Status code (STATUS_OK or STATUS_ERROR).
      */
     public function checkMaxNonPrivateProperties(int $limit): int
@@ -190,6 +202,7 @@ class MetricChecker
      * Checks if NPath complexity exceeds the limit.
      *
      * @param int $limit The maximum allowed NPath complexity.
+     *
      * @return int Status code (STATUS_OK or STATUS_ERROR).
      */
     public function checkMaxNpathComplexity(int $limit): int
@@ -204,6 +217,7 @@ class MetricChecker
      * Checks if the number of child classes exceeds the limit.
      *
      * @param int $limit The maximum allowed child classes.
+     *
      * @return int Status code (STATUS_OK or STATUS_ERROR).
      */
     public function checkMaxNumberOfChildClasses(int $limit): int
@@ -218,6 +232,7 @@ class MetricChecker
      * Checks if object coupling exceeds the limit.
      *
      * @param int $limit The maximum allowed object coupling.
+     *
      * @return int Status code (STATUS_OK or STATUS_ERROR).
      */
     public function checkMaxObjectCoupling(int $limit): int
@@ -232,6 +247,7 @@ class MetricChecker
      * Checks if the number of properties exceeds the limit.
      *
      * @param int $limit The maximum allowed properties.
+     *
      * @return int Status code (STATUS_OK or STATUS_ERROR).
      */
     public function checkMaxProperties(int $limit): int
@@ -246,6 +262,7 @@ class MetricChecker
      * Checks if the number of public methods exceeds the limit.
      *
      * @param int $limit The maximum allowed public methods.
+     *
      * @return int Status code (STATUS_OK or STATUS_ERROR).
      */
     public function checkMaxPublicMethods(int $limit): int
@@ -260,6 +277,7 @@ class MetricChecker
      * Checks if the comment ratio is below the limit.
      *
      * @param float $limit The minimum allowed comment ratio.
+     *
      * @return int Status code (STATUS_OK or STATUS_ERROR).
      */
     public function checkMinCommentRatio(float $limit): int
@@ -280,6 +298,7 @@ class MetricChecker
      * Checks if the maintainability index is below the limit.
      *
      * @param float $limit The minimum allowed maintainability index.
+     *
      * @return int Status code (STATUS_OK or STATUS_ERROR).
      */
     public function checkMinMaintainabilityIndex(float $limit): int
@@ -314,7 +333,6 @@ class MetricChecker
      * Prints the collected issues for a specific file.
      *
      * @param string $filename The file name to print issues for.
-     * @return void
      */
     public function printIssues(string $filename): void
     {
@@ -339,6 +357,7 @@ class MetricChecker
      * @param float|int $value The actual value.
      * @param float|int $limit The limit to check against.
      * @param string $hint Optional hint for resolving the issue.
+     *
      * @return int Status code (STATUS_OK or STATUS_ERROR).
      */
     protected function checkMax(
@@ -363,6 +382,7 @@ class MetricChecker
      * @param float|int $value The actual value.
      * @param float|int $limit The limit to check against.
      * @param string $hint Optional hint for resolving the issue.
+     *
      * @return int Status code (STATUS_OK or STATUS_ERROR).
      */
     protected function checkMin(
@@ -385,7 +405,6 @@ class MetricChecker
      *
      * @param string $issue The issue message.
      * @param string $hint A hint for resolving the issue.
-     * @return void
      */
     protected function report(string $issue, string $hint): void
     {

@@ -18,7 +18,9 @@ use ReturnTypeWillChange;
  * without a named constant definition, reducing maintainability.
  *
  * @package DouglasGreen\PhpLinter\Visitor
+ *
  * @since 1.0.0
+ *
  * @internal
  */
 class MagicNumberVisitor extends VisitorChecker
@@ -39,8 +41,6 @@ class MagicNumberVisitor extends VisitorChecker
 
     /**
      * Depth counter for constant definitions to ignore them.
-     *
-     * @var int
      */
     protected int $inConst = 0;
 
@@ -48,7 +48,6 @@ class MagicNumberVisitor extends VisitorChecker
      * Enters a node to track constant definition context.
      *
      * @param Node $node The node being entered.
-     * @return null
      */
     #[ReturnTypeWillChange]
     public function enterNode(Node $node): null
@@ -64,7 +63,6 @@ class MagicNumberVisitor extends VisitorChecker
      * Leaves a node to update constant definition context.
      *
      * @param Node $node The node being left.
-     * @return null
      */
     #[ReturnTypeWillChange]
     public function leaveNode(Node $node): null
@@ -80,7 +78,6 @@ class MagicNumberVisitor extends VisitorChecker
      * Inspects a node for magic numbers.
      *
      * @param Node $node The node to check.
-     * @return void
      */
     public function checkNode(Node $node): void
     {
@@ -123,8 +120,6 @@ class MagicNumberVisitor extends VisitorChecker
 
     /**
      * Reports magic numbers that appear more than once.
-     *
-     * @return void
      */
     public function checkDuplicates(): void
     {

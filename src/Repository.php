@@ -10,6 +10,7 @@ use Exception;
  * Interacts with the Git repository to list files and determine their types.
  *
  * @package DouglasGreen\PhpLinter
+ *
  * @since 1.0.0
  */
 class Repository

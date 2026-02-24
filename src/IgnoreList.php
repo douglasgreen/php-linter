@@ -10,6 +10,7 @@ use Exception;
  * Manages the list of files to ignore based on .phplintignore patterns.
  *
  * @package DouglasGreen\PhpLinter
+ *
  * @since 1.0.0
  */
 class IgnoreList

@@ -18,7 +18,9 @@ use PhpParser\Node\Stmt\If_;
  * Analyzes if conditions, eval, global, goto, and include statements.
  *
  * @package DouglasGreen\PhpLinter\Checker
+ *
  * @since 1.0.0
+ *
  * @internal
  */
 class ExpressionChecker extends NodeChecker
@@ -64,6 +66,7 @@ class ExpressionChecker extends NodeChecker
      * Maps the integer type constant of an Include_ node to a string name.
      *
      * @param int $type The Include_ type constant.
+     *
      * @return string The string representation of the include type.
      */
     protected static function getIncludeType(int $type): string

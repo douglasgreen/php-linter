@@ -14,7 +14,9 @@ use PhpParser\Node;
  * node validation rules.
  *
  * @package DouglasGreen\PhpLinter\Checker
+ *
  * @since 1.0.0
+ *
  * @api
  */
 abstract class NodeChecker
