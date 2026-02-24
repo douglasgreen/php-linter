@@ -1,0 +1,165 @@
+#!/usr/bin/env php
+<?php
+
+declare(strict_types=1);
+
+use DouglasGreen\PhpLinter\Metrics\CacheManager;
+use DouglasGreen\PhpLinter\Metrics\IgnoreList;
+use DouglasGreen\PhpLinter\Metrics\MetricChecker;
+use DouglasGreen\PhpLinter\Metrics\MetricGenerator;
+use DouglasGreen\PhpLinter\Metrics\Repository;
+use DouglasGreen\PhpLinter\Metrics\XmlParser;
+
+// Must be run in repository root directory.
+$currentDir = getcwd();
+if ($currentDir === false) {
+    throw new Exception('Unable to get working dir');
+}
+
+require_once $currentDir . '/vendor/autoload.php';
+
+$options = getopt('g', ['generate']);
+
+$cache = new CacheManager($currentDir);
+
+$repository = new Repository();
+$phpFiles = $repository->getPhpFiles();
+
+// Check if the -g or --generate option is present.
+if (isset($options['g']) || isset($options['generate'])) {
+    $metricGenerator = new MetricGenerator($cache, $phpFiles);
+    $metricGenerator->generate();
+}
+
+$ignoreList = new IgnoreList($currentDir);
+
+$filesChecked = [];
+
+$summaryFile = $cache->getSummaryFile();
+if (!file_exists($summaryFile)) {
+    die('=> Skipping metrics checks (PDepend summary XML file not found)' . PHP_EOL);
+}
+
+$summaryTimestamp = filemtime($summaryFile);
+
+foreach ($phpFiles as $phpFile) {
+    if (filemtime($phpFile) > $summaryTimestamp) {
+        echo '=> You need to run generate-metrics to update the PDepend metrics with your recent code changes.' .
+            PHP_EOL;
+        break;
+    }
+}
+
+try {
+    $parser = new XmlParser($summaryFile);
+    $packages = $parser->getPackages();
+    if ($packages === null) {
+        die('No packages found.' . PHP_EOL);
+    }
+
+    foreach ($packages as $package) {
+        $classes = $package['classes'];
+        foreach ($classes as $class) {
+            $filename = CacheManager::getOriginalFile(str_replace($currentDir . DIRECTORY_SEPARATOR, '', $class['filename']));
+            if ($ignoreList->shouldIgnore($filename)) {
+                continue;
+            }
+
+            // Warnings exceed 95% of similar code, errors exceed 99%.
+            $classChecker = new MetricChecker($class, $class['name']);
+
+            $classChecker->checkMaxClassSize(25, 60);
+
+            // Has no error level.
+            $classChecker->checkMaxCodeRank(0.5, 2.0);
+
+            $classChecker->checkMaxLinesOfCode(400, 1100);
+
+            $classChecker->checkMaxNonPrivateProperties(10, 30);
+            $classChecker->checkMaxProperties(10, 25);
+            $classChecker->checkMaxPublicMethods(15, 40);
+
+            $classChecker->checkMaxAfferentCoupling(15, 45);
+            $classChecker->checkMaxEfferentCoupling(12, 24);
+
+            $classChecker->checkMaxInheritanceDepth(4, 5);
+            $classChecker->checkMaxNumberOfChildClasses(15, 35);
+            $classChecker->checkMaxObjectCoupling(12, 24);
+
+            // @see https://everything2.com/title/comment-to-code+ratio
+            $classChecker->checkMinCommentRatio(0.1, 0.05);
+
+            $loc = $class['loc'] ?? 0;
+            $filesChecked[$filename] = isset($filesChecked[$filename])
+                ? $filesChecked[$filename] + $loc
+                : $loc;
+            $classChecker->printIssues($filename);
+
+            foreach ($class['methods'] as $method) {
+                $methodChecker = new MetricChecker($method, $class['name'], $method['name']);
+                $methodChecker->checkMaxCyclomaticComplexity(10, 25);
+                $methodChecker->checkMaxLinesOfCode(50, 130);
+                $methodChecker->checkMaxNpathComplexity(50, 10000);
+                $methodChecker->checkMaxHalsteadEffort(25000, 135000);
+                $methodChecker->checkMinMaintainabilityIndex(40, 25);
+
+                $methodChecker->printIssues($filename);
+            }
+        }
+
+        foreach ($package['functions'] as $function) {
+            $filename = CacheManager::getOriginalFile(
+                str_replace($currentDir . DIRECTORY_SEPARATOR, '', $function['filename']),
+            );
+            if ($ignoreList->shouldIgnore($filename)) {
+                continue;
+            }
+            $functionChecker = new MetricChecker($function, null, $function['name']);
+            $functionChecker->checkMaxCyclomaticComplexity(9, 25);
+            $functionChecker->checkMaxLinesOfCode(50, 130);
+            $functionChecker->checkMaxNpathComplexity(50, 10000);
+            $functionChecker->checkMaxHalsteadEffort(25000, 135000);
+            $functionChecker->checkMinMaintainabilityIndex(40, 25);
+
+            $loc = $function['loc'] ?? 0;
+            $filesChecked[$filename] = isset($filesChecked[$filename])
+                ? $filesChecked[$filename] + $loc
+                : $loc;
+            $functionChecker->printIssues($filename);
+        }
+    }
+
+    // Check other files that don't contain classes or functions.
+    foreach ($phpFiles as $phpFile) {
+        $filename = str_replace($currentDir . DIRECTORY_SEPARATOR, '', $phpFile);
+        if ($ignoreList->shouldIgnore($filename)) {
+            continue;
+        }
+
+        if (isset($filesChecked[$filename])) {
+            $locChecked = $filesChecked[$filename];
+        } else {
+            $locChecked = 0;
+            $filesChecked[$filename] = 0;
+        }
+
+        if (! file_exists($phpFile)) {
+            continue;
+        }
+
+        $lines = file($phpFile);
+        $totalLoc = $lines !== false ? count($lines) : 0;
+
+        // Other LOC is outside classes and functions
+        $otherLoc = $totalLoc - $locChecked;
+        $fileChecker = new MetricChecker([
+            'loc' => $otherLoc,
+        ]);
+
+        $fileChecker->checkMaxLinesOfCode(100, 200);
+        $filesChecked[$filename] += $otherLoc;
+        $fileChecker->printIssues($filename);
+    }
+} catch (Exception $exception) {
+    echo 'PDepend error: ' . $exception->getMessage() . PHP_EOL;
+}

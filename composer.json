@@ -7,7 +7,8 @@
   "license": "MIT",
   "require": {
     "php": "^8.3",
-    "nikic/php-parser": "^5.7"
+    "nikic/php-parser": "^5.7",
+    "pdepend/pdepend": "^2.16.2"
   },
   "require-dev": {
     "friendsofphp/php-cs-fixer": "^3.94.2",
@@ -50,6 +51,7 @@
     ]
   },
   "bin": [
+    "bin/code-metrics",
     "bin/php-linter"
   ]
 }
