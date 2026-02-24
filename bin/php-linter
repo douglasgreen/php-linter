@@ -23,14 +23,15 @@ $repository = new Repository();
 $phpFiles = $repository->getPhpFiles();
 $repository->printIssues();
 
-// 1. Run Linter
+// 1. Run Metrics
+$cache = new CacheManager($currentDir);
+$metricsIgnoreList = new MetricsIgnoreList($currentDir);
+$analyzer = new Analyzer($currentDir, $cache, $metricsIgnoreList);
+$analyzer->run($phpFiles);
+
+// 2. Run Linter
 $composerFile = new ComposerFile($currentDir . '/composer.json');
 $ignoreList = new IgnoreList($currentDir);
 $linter = new Linter($composerFile, $ignoreList);
 $linter->run($phpFiles);
 
-// 2. Run Metrics
-$cache = new CacheManager($currentDir);
-$metricsIgnoreList = new MetricsIgnoreList($currentDir);
-$analyzer = new Analyzer($currentDir, $cache, $metricsIgnoreList);
-$analyzer->run($phpFiles);
