@@ -9,15 +9,29 @@ use PhpParser\Error;
 use PhpParser\NodeTraverser;
 use PhpParser\ParserFactory;
 
+/**
+ * Orchestrates the linting process for a list of PHP files.
+ *
+ * @package DouglasGreen\PhpLinter
+ * @since 1.0.0
+ */
 class Linter
 {
+    /**
+     * Constructs a new Linter instance.
+     *
+     * @param ComposerFile $composerFile The composer file handler.
+     * @param IgnoreList $ignoreList The ignore list handler.
+     */
     public function __construct(
         protected readonly ComposerFile $composerFile,
         protected readonly IgnoreList $ignoreList,
     ) {}
 
     /**
-     * @param list<string> $phpFiles
+     * Runs the linter on the provided list of PHP files.
+     *
+     * @param list<string> $phpFiles The list of PHP file paths to lint.
      */
     public function run(array $phpFiles): void
     {

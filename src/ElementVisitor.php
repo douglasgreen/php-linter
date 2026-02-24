@@ -29,37 +29,104 @@ use PhpParser\Node\Stmt\Trait_;
 use PhpParser\Node\Stmt\TryCatch;
 use PhpParser\NodeVisitorAbstract;
 
+/**
+ * Visitor for traversing PHP AST nodes to detect linting issues.
+ *
+ * @package DouglasGreen\PhpLinter
+ * @since 1.0.0
+ */
 class ElementVisitor extends NodeVisitorAbstract
 {
     use IssueHolder;
 
+    /**
+     * Visitor for class-related checks.
+     *
+     * @var ClassVisitor
+     */
     protected ClassVisitor $classVisitor;
 
+    /**
+     * Visitor for function-related checks.
+     *
+     * @var FunctionVisitor
+     */
     protected FunctionVisitor $functionVisitor;
 
+    /**
+     * Visitor for magic number checks.
+     *
+     * @var MagicNumberVisitor
+     */
     protected MagicNumberVisitor $magicNumberVisitor;
 
+    /**
+     * Visitor for superglobal usage checks.
+     *
+     * @var SuperglobalUsageVisitor
+     */
     protected SuperglobalUsageVisitor $superglobalUsageVisitor;
 
+    /**
+     * Current namespace name.
+     *
+     * @var string|null
+     */
     protected ?string $currentNamespace = null;
 
+    /**
+     * Current class name.
+     *
+     * @var string|null
+     */
     protected ?string $currentClassName = null;
 
+    /**
+     * Current file being processed.
+     *
+     * @var string|null
+     */
     protected ?string $currentFile = null;
 
+    /**
+     * Current function or method name.
+     *
+     * @var string|null
+     */
     protected ?string $currentFunctionName = null;
 
-    /** @var array<string, bool> */
+    /**
+     * Tracks method calls encountered.
+     *
+     * @var array<string, bool>
+     */
     protected array $methodCalls = [];
 
-    /** Are we inside a class, trait, method, function, or closure? */
+    /**
+     * Indicates if currently inside a class, trait, method, function, or closure.
+     *
+     * @var bool
+     */
     protected bool $isLocalScope = false;
 
+    /**
+     * Constructs a new ElementVisitor instance.
+     *
+     * @param ComposerFile $composerFile The composer file handler.
+     * @param string $phpFile The PHP file path being processed.
+     */
     public function __construct(
         protected readonly ComposerFile $composerFile,
         protected readonly string $phpFile,
     ) {}
 
+    /**
+     * Initializes visitors before traversal.
+     *
+     * @param array<Node> $nodes The nodes to traverse.
+     *
+     * @return null
+     */
     public function beforeTraverse(array $nodes): null
     {
         $this->magicNumberVisitor = new MagicNumberVisitor();
@@ -68,6 +135,13 @@ class ElementVisitor extends NodeVisitorAbstract
         return null;
     }
 
+    /**
+     * Finalizes checks after traversal.
+     *
+     * @param array<Node> $nodes The nodes traversed.
+     *
+     * @return null
+     */
     public function afterTraverse(array $nodes): null
     {
         $this->magicNumberVisitor->checkDuplicates();
@@ -78,6 +152,13 @@ class ElementVisitor extends NodeVisitorAbstract
         return null;
     }
 
+    /**
+     * Enters a node to perform checks.
+     *
+     * @param Node $node The node being entered.
+     *
+     * @return null
+     */
     public function enterNode(Node $node): null
     {
         $this->handleNamespace($node);
@@ -94,11 +175,23 @@ class ElementVisitor extends NodeVisitorAbstract
         return null;
     }
 
+    /**
+     * Checks if currently in local scope.
+     *
+     * @return bool True if in local scope, false otherwise.
+     */
     public function isLocalScope(): bool
     {
         return $this->isLocalScope;
     }
 
+    /**
+     * Leaves a node to clean up state.
+     *
+     * @param Node $node The node being left.
+     *
+     * @return null
+     */
     public function leaveNode(Node $node): null
     {
         if ($node instanceof Namespace_) {
@@ -131,6 +224,11 @@ class ElementVisitor extends NodeVisitorAbstract
         return null;
     }
 
+    /**
+     * Prints the issues found for a specific file.
+     *
+     * @param string $filename The file name.
+     */
     public function printIssues(string $filename): void
     {
         if (! $this->hasIssues()) {
@@ -147,6 +245,11 @@ class ElementVisitor extends NodeVisitorAbstract
         }
     }
 
+    /**
+     * Handles namespace nodes.
+     *
+     * @param Node $node The current node.
+     */
     private function handleNamespace(Node $node): void
     {
         if ($node instanceof Namespace_ && $node->name instanceof Name) {
@@ -154,6 +257,11 @@ class ElementVisitor extends NodeVisitorAbstract
         }
     }
 
+    /**
+     * Handles class or trait nodes.
+     *
+     * @param Node $node The current node.
+     */
     private function handleClassOrTrait(Node $node): void
     {
         if ($node instanceof Class_ || $node instanceof Trait_) {
@@ -192,6 +300,11 @@ class ElementVisitor extends NodeVisitorAbstract
         }
     }
 
+    /**
+     * Checks a node within a class context.
+     *
+     * @param Node $node The current node.
+     */
     private function checkClassNode(Node $node): void
     {
         if ($this->currentClassName !== null) {
@@ -199,6 +312,11 @@ class ElementVisitor extends NodeVisitorAbstract
         }
     }
 
+    /**
+     * Handles function or method nodes.
+     *
+     * @param Node $node The current node.
+     */
     private function handleFunctionOrMethod(Node $node): void
     {
         if ($node instanceof Function_ || $node instanceof ClassMethod) {
@@ -234,6 +352,11 @@ class ElementVisitor extends NodeVisitorAbstract
         }
     }
 
+    /**
+     * Checks a node within a function context.
+     *
+     * @param Node $node The current node.
+     */
     private function checkFunctionNode(Node $node): void
     {
         if ($this->currentFunctionName !== null) {
@@ -241,6 +364,11 @@ class ElementVisitor extends NodeVisitorAbstract
         }
     }
 
+    /**
+     * Handles closure nodes.
+     *
+     * @param Node $node The current node.
+     */
     private function handleClosure(Node $node): void
     {
         if ($node instanceof Closure) {
@@ -248,6 +376,11 @@ class ElementVisitor extends NodeVisitorAbstract
         }
     }
 
+    /**
+     * Checks a node within local scope.
+     *
+     * @param Node $node The current node.
+     */
     private function checkLocalScope(Node $node): void
     {
         if ($this->isLocalScope) {
@@ -256,6 +389,11 @@ class ElementVisitor extends NodeVisitorAbstract
         }
     }
 
+    /**
+     * Tracks method calls.
+     *
+     * @param Node $node The current node.
+     */
     private function trackMethodCalls(Node $node): void
     {
         if (($node instanceof MethodCall || $node instanceof StaticCall) && $node->name instanceof Identifier) {
@@ -264,6 +402,11 @@ class ElementVisitor extends NodeVisitorAbstract
         }
     }
 
+    /**
+     * Checks try-catch blocks.
+     *
+     * @param Node $node The current node.
+     */
     private function checkTryCatch(Node $node): void
     {
         if ($node instanceof TryCatch) {
@@ -272,6 +415,11 @@ class ElementVisitor extends NodeVisitorAbstract
         }
     }
 
+    /**
+     * Runs generic checkers on a node.
+     *
+     * @param Node $node The current node.
+     */
     private function runGenericCheckers(Node $node): void
     {
         $funcCallChecker = new FunctionCallChecker($node);

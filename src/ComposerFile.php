@@ -6,22 +6,35 @@ namespace DouglasGreen\PhpLinter;
 
 use Exception;
 
+/**
+ * Parses composer.json to extract PSR-4 autoloading mappings.
+ *
+ * @package DouglasGreen\PhpLinter
+ * @since 1.0.0
+ */
 class ComposerFile
 {
     /**
-     * Array to store the PSR-4 autoload mappings.
+     * PSR-4 autoload mappings from composer.json.
      *
      * @var array<string, string|list<string>>
      */
     protected readonly array $psr4Mappings;
 
+    /**
+     * Constructs a new ComposerFile instance.
+     *
+     * @param string $composerJsonPath Path to the composer.json file.
+     *
+     * @throws Exception If the composer.json file cannot be loaded or parsed.
+     */
     public function __construct(string $composerJsonPath)
     {
         $this->psr4Mappings = static::loadComposerJson($composerJsonPath);
     }
 
     /**
-     * Convert a fully-qualified class name to a file name.
+     * Converts a fully-qualified class name to a file name based on PSR-4 rules.
      *
      * @param string $className Fully-qualified class name.
      *
@@ -56,11 +69,13 @@ class ComposerFile
     }
 
     /**
-     * Load the composer.json file and extract PSR-4 autoload mappings.
+     * Loads the composer.json file and extracts PSR-4 autoload mappings.
      *
-     * @return array<string, string|list<string>>
+     * @param string $composerJsonPath Path to the composer.json file.
      *
-     * @throws Exception
+     * @return array<string, string|list<string>> The PSR-4 autoload mappings.
+     *
+     * @throws Exception If the file cannot be loaded or parsed.
      */
     protected static function loadComposerJson(string $composerJsonPath): array
     {

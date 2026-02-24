@@ -6,18 +6,34 @@ namespace DouglasGreen\PhpLinter;
 
 use Exception;
 
+/**
+ * Interacts with the Git repository to list files and determine their types.
+ *
+ * @package DouglasGreen\PhpLinter
+ * @since 1.0.0
+ */
 class Repository
 {
     use IssueHolder;
 
-    /** @var array<string, bool> */
+    /**
+     * List of issues found in the repository.
+     *
+     * @var array<string, bool>
+     */
     protected array $issues = [];
 
-    /** @var list<string> */
+    /**
+     * List of files in the repository.
+     *
+     * @var list<string>
+     */
     protected readonly array $files;
 
     /**
-     * @throws Exception
+     * Constructs a new Repository instance.
+     *
+     * @throws Exception If Git is not installed or the directory is not a repository.
      */
     public function __construct()
     {
@@ -32,7 +48,9 @@ class Repository
     }
 
     /**
-     * @return list<string>
+     * Returns the list of PHP files in the repository.
+     *
+     * @return list<string> The list of PHP file paths.
      */
     public function getPhpFiles(): array
     {
@@ -46,6 +64,9 @@ class Repository
         return $matches;
     }
 
+    /**
+     * Prints the list of issues found in the repository.
+     */
     public function printIssues(): void
     {
         if (! $this->hasIssues()) {
@@ -59,6 +80,13 @@ class Repository
         }
     }
 
+    /**
+     * Determines the file type based on the extension.
+     *
+     * @param string $extension The file extension.
+     *
+     * @return string|null The internal file type or null if unknown.
+     */
     protected static function getExtensionType(string $extension): ?string
     {
         return match ($extension) {
@@ -77,6 +105,13 @@ class Repository
         };
     }
 
+    /**
+     * Determines the file type using the 'file' system command.
+     *
+     * @param string $path The file path.
+     *
+     * @return string|null The internal file type or null if unknown.
+     */
     protected static function getTypeFromFileCommand(string $path): ?string
     {
         $command = sprintf('file -b %s', escapeshellarg($path));
@@ -118,7 +153,11 @@ class Repository
     }
 
     /**
-     * Get the type of a file based on its extension, shebang, or file command.
+     * Determines the type of a file based on extension, shebang, or file command.
+     *
+     * @param string $path The file path.
+     *
+     * @return string|null The internal file type or null if unknown.
      */
     protected static function getFileType(string $path): ?string
     {
