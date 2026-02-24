@@ -1,6 +1,29 @@
 #!/usr/bin/env php
 <?php
 
+/**
+ * PHP Linter and Metrics Analyzer Execution Script.
+ *
+ * Scans the current repository for PHP files and performs static analysis
+ * and linting checks. It first runs metrics analysis to evaluate code quality
+ * indicators, followed by linting to enforce coding standards.
+ *
+ * ## Preconditions
+ * - Must be run from the repository root directory to correctly locate `vendor/autoload.php` and configuration files.
+ *
+ * ## Arguments
+ * This script accepts no command-line arguments. It automatically detects
+ * PHP files within the repository.
+ *
+ * @package DouglasGreen\PhpLinter
+ *
+ * @example
+ * ```bash
+ * # Execute from the repository root
+ * php bin/php-linter
+ * ```
+ */
+
 declare(strict_types=1);
 
 use DouglasGreen\PhpLinter\ComposerFile;
@@ -11,7 +34,6 @@ use DouglasGreen\PhpLinter\Metrics\CacheManager;
 use DouglasGreen\PhpLinter\Metrics\IgnoreList as MetricsIgnoreList;
 use DouglasGreen\PhpLinter\Repository;
 
-// Must be run in repository root directory.
 $currentDir = getcwd();
 if ($currentDir === false) {
     throw new Exception('Unable to get working dir');
