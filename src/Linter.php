@@ -16,6 +16,9 @@ class Linter
         protected readonly IgnoreList $ignoreList,
     ) {}
 
+    /**
+     * @param list<string> $phpFiles
+     */
     public function run(array $phpFiles): void
     {
         $parser = (new ParserFactory())->createForNewestSupportedVersion();

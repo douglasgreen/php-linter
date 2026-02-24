@@ -50,6 +50,9 @@ class Analyzer
         protected readonly IgnoreList $ignoreList,
     ) {}
 
+    /**
+     * @param list<string> $phpFiles
+     */
     public function run(array $phpFiles): void
     {
         $summaryFile = $this->cache->getSummaryFile();

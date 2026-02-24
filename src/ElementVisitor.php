@@ -17,7 +17,6 @@ use DouglasGreen\PhpLinter\Visitor\MagicNumberVisitor;
 use DouglasGreen\PhpLinter\Visitor\SuperglobalUsageVisitor;
 use PhpParser\Node;
 use PhpParser\Node\Expr\Closure;
-use PhpParser\Node\Expr\FuncCall;
 use PhpParser\Node\Expr\MethodCall;
 use PhpParser\Node\Expr\StaticCall;
 use PhpParser\Node\Identifier;

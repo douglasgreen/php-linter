@@ -32,7 +32,7 @@ class Repository
     }
 
     /**
-     * @return mixed[]
+     * @return list<string>
      */
     public function getPhpFiles(): array
     {
