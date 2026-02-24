@@ -51,7 +51,6 @@
     ]
   },
   "bin": [
-    "bin/code-metrics",
     "bin/php-linter"
   ]
 }

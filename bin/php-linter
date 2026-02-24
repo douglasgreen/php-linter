@@ -4,12 +4,12 @@
 declare(strict_types=1);
 
 use DouglasGreen\PhpLinter\ComposerFile;
-use DouglasGreen\PhpLinter\ElementVisitor;
 use DouglasGreen\PhpLinter\IgnoreList;
+use DouglasGreen\PhpLinter\Linter;
+use DouglasGreen\PhpLinter\Metrics\Analyzer;
+use DouglasGreen\PhpLinter\Metrics\CacheManager;
+use DouglasGreen\PhpLinter\Metrics\IgnoreList as MetricsIgnoreList;
 use DouglasGreen\PhpLinter\Repository;
-use PhpParser\Error;
-use PhpParser\NodeTraverser;
-use PhpParser\ParserFactory;
 
 // Must be run in repository root directory.
 $currentDir = getcwd();
@@ -19,41 +19,21 @@ if ($currentDir === false) {
 
 require_once $currentDir . '/vendor/autoload.php';
 
-$composerFile = new ComposerFile($currentDir . '/composer.json');
-
-$ignoreList = new IgnoreList($currentDir);
-
-$filesChecked = [];
+$options = getopt('g', ['generate']);
+$generate = isset($options['g']) || isset($options['generate']);
 
 $repository = new Repository();
 $phpFiles = $repository->getPhpFiles();
 $repository->printIssues();
 
-$parser = (new ParserFactory())->createForNewestSupportedVersion();
+// 1. Run Linter
+$composerFile = new ComposerFile($currentDir . '/composer.json');
+$ignoreList = new IgnoreList($currentDir);
+$linter = new Linter($composerFile, $ignoreList);
+$linter->run($phpFiles);
 
-foreach ($phpFiles as $phpFile) {
-    if ($ignoreList->shouldIgnore($phpFile)) {
-        continue;
-    }
-
-    try {
-        $code = file_get_contents($phpFile);
-        if ($code === false) {
-            throw new Exception('Unable to load file to string');
-        }
-
-        $stmts = $parser->parse($code);
-        if ($stmts === null) {
-            echo 'No statements found in file.' . PHP_EOL;
-            continue;
-        }
-
-        $traverser = new NodeTraverser();
-        $visitor = new ElementVisitor($composerFile, $phpFile);
-        $traverser->addVisitor($visitor);
-        $traverser->traverse($stmts);
-        $visitor->printIssues($phpFile);
-    } catch (Error $error) {
-        echo 'Parse Error: ', $error->getMessage();
-    }
-}
+// 2. Run Metrics
+$cache = new CacheManager($currentDir);
+$metricsIgnoreList = new MetricsIgnoreList($currentDir);
+$analyzer = new Analyzer($currentDir, $cache, $metricsIgnoreList);
+$analyzer->run($phpFiles, $generate);
