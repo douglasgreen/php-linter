@@ -8,15 +8,29 @@ use RuntimeException;
 use SimpleXMLElement;
 
 /**
+ * Parses PDepend summary XML files into structured arrays.
+ *
+ * Provides access to metrics, files, and packages extracted from the XML.
+ *
+ * @package DouglasGreen\PhpLinter\Metrics
+ * @since 1.0.0
  * @see https://pdepend.org/documentation/software-metrics/index.html
+ * @internal
  */
 class XmlParser
 {
-    /** @var array<string, mixed> */
+    /**
+     * Parsed data containing metrics, files, and packages.
+     * @var array<string, mixed>
+     */
     protected readonly array $data;
 
     /**
-     * @throws RuntimeException
+     * Loads and parses the specified XML file.
+     *
+     * @param string $xmlFile Path to the PDepend summary XML file.
+     *
+     * @throws RuntimeException If the XML file cannot be loaded or is invalid.
      */
     public function __construct(
         protected readonly string $xmlFile,
@@ -42,7 +56,9 @@ class XmlParser
     }
 
     /**
-     * @return array<string, mixed>
+     * Returns the entire parsed data structure.
+     *
+     * @return array<string, mixed> Associative array of parsed data.
      */
     public function getData(): array
     {
@@ -50,7 +66,9 @@ class XmlParser
     }
 
     /**
-     * @return array<int, mixed>
+     * Returns the list of parsed files.
+     *
+     * @return array<int, mixed>|null List of file data arrays or null if absent.
      */
     public function getFiles(): ?array
     {
@@ -58,7 +76,9 @@ class XmlParser
     }
 
     /**
-     * @return array<int, mixed>
+     * Returns the list of parsed packages.
+     *
+     * @return array<int, mixed>|null List of package data arrays or null if absent.
      */
     public function getPackages(): ?array
     {
@@ -66,7 +86,10 @@ class XmlParser
     }
 
     /**
-     * @return array<string|int, mixed>[]
+     * Parses class elements from XML.
+     *
+     * @param SimpleXMLElement $classes The XML element containing classes.
+     * @return array<string|int, mixed>[] List of class data arrays.
      */
     protected static function parseClasses(SimpleXMLElement $classes): array
     {
@@ -89,7 +112,10 @@ class XmlParser
     }
 
     /**
-     * @return array<int<0, max>, array<string|int, string>>
+     * Parses file elements from XML.
+     *
+     * @param SimpleXMLElement $files The XML element containing files.
+     * @return array<int<0, max>, array<string|int, string>> List of file data arrays.
      */
     protected static function parseFiles(SimpleXMLElement $files): array
     {
@@ -107,7 +133,10 @@ class XmlParser
     }
 
     /**
-     * @return array<mixed, array<string|int, string>>
+     * Parses function elements from XML.
+     *
+     * @param SimpleXMLElement $functions The XML element containing functions.
+     * @return array<mixed, array<string|int, string>> List of function data arrays.
      */
     protected static function parseFunctions(SimpleXMLElement $functions): array
     {
@@ -128,7 +157,10 @@ class XmlParser
     }
 
     /**
-     * @return array<mixed, array<string|int, string>>
+     * Parses method elements from XML.
+     *
+     * @param SimpleXMLElement $methods The XML element containing methods.
+     * @return array<mixed, array<string|int, string>> List of method data arrays.
      */
     protected static function parseMethods(SimpleXMLElement $methods): array
     {
@@ -146,7 +178,10 @@ class XmlParser
     }
 
     /**
-     * @return string[]
+     * Parses metric attributes from the root XML element.
+     *
+     * @param SimpleXMLElement $xml The root XML element.
+     * @return string[] Associative array of metric names to values.
      */
     protected static function parseMetrics(SimpleXMLElement $xml): array
     {
@@ -160,7 +195,10 @@ class XmlParser
     }
 
     /**
-     * @return array<string|int, mixed>[]
+     * Parses package elements from XML.
+     *
+     * @param SimpleXMLElement $packages The XML element containing packages.
+     * @return array<string|int, mixed>[] List of package data arrays.
      */
     protected static function parsePackages(SimpleXMLElement $packages): array
     {

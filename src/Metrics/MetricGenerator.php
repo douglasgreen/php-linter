@@ -4,16 +4,41 @@ declare(strict_types=1);
 
 namespace DouglasGreen\PhpLinter\Metrics;
 
+/**
+ * Generates metrics by running PDepend on PHP files.
+ *
+ * Handles the caching of non-.php files and execution of the PDepend process
+ * to generate a summary XML file.
+ *
+ * @package DouglasGreen\PhpLinter\Metrics
+ * @since 1.0.0
+ * @internal
+ */
 class MetricGenerator
 {
     /**
-     * @param list<string> $phpFiles
+     * @param CacheManager $cacheManager Manages cache directories and file copying.
+     * @param list<string> $phpFiles List of PHP file paths to analyze.
      */
     public function __construct(
         protected readonly CacheManager $cacheManager,
         protected readonly array $phpFiles,
     ) {}
 
+    /**
+     * Generates the PDepend summary XML file.
+     *
+     * Copies non-.php files to the cache directory with a .php extension,
+     * constructs the PDepend command, and executes it.
+     *
+     * @return void
+     *
+     * @throws \RuntimeException If the PDepend command fails to execute (implied by process handling).
+     *
+     * @sideeffect Creates files in the cache directory.
+     * @sideeffect Executes a shell command (vendor/bin/pdepend).
+     * @sideeffect Writes output to stdout and stderr.
+     */
     public function generate(): void
     {
         $summaryCacheDir = $this->cacheManager->getCacheDir();
