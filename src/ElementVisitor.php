@@ -259,6 +259,7 @@ class ElementVisitor extends NodeVisitorAbstract
         }
 
         $this->nameVisitor->checkNode($node);
+        $this->magicNumberVisitor->enterNode($node);
         $this->magicNumberVisitor->checkNode($node);
         $this->superglobalUsageVisitor->enterNode($node);
 
@@ -304,6 +305,7 @@ class ElementVisitor extends NodeVisitorAbstract
             $this->isLocalScope = false;
         }
 
+        $this->magicNumberVisitor->leaveNode($node);
         $this->superglobalUsageVisitor->leaveNode($node);
 
         return null;
