@@ -261,6 +261,7 @@ class ElementVisitor extends NodeVisitorAbstract
         $this->nameVisitor->checkNode($node);
         $this->magicNumberVisitor->enterNode($node);
         $this->magicNumberVisitor->checkNode($node);
+
         $this->superglobalUsageVisitor->enterNode($node);
 
         if ($node instanceof Name && $node->isFullyQualified()) {

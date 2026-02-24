@@ -6,9 +6,10 @@ namespace DouglasGreen\PhpLinter\Visitor;
 
 use PhpParser\Node;
 use PhpParser\Node\Const_;
-use PhpParser\Node\Stmt\ClassConst;
 use PhpParser\Node\Scalar\Float_;
 use PhpParser\Node\Scalar\Int_;
+use PhpParser\Node\Stmt\ClassConst;
+use ReturnTypeWillChange;
 
 class MagicNumberVisitor extends VisitorChecker
 {
@@ -21,8 +22,8 @@ class MagicNumberVisitor extends VisitorChecker
     /** @var int */
     protected int $inConst = 0;
 
-    #[\ReturnTypeWillChange]
-    public function enterNode(Node $node)
+    #[ReturnTypeWillChange]
+    public function enterNode(Node $node): null
     {
         if ($node instanceof Const_ || $node instanceof ClassConst) {
             $this->inConst++;
@@ -31,8 +32,8 @@ class MagicNumberVisitor extends VisitorChecker
         return null;
     }
 
-    #[\ReturnTypeWillChange]
-    public function leaveNode(Node $node)
+    #[ReturnTypeWillChange]
+    public function leaveNode(Node $node): null
     {
         if ($node instanceof Const_ || $node instanceof ClassConst) {
             $this->inConst--;
