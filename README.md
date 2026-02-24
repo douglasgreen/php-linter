@@ -74,7 +74,6 @@ The linter analyzes your code for the following issues:
 - **PSR-4 compliance:** Verifies that the file path matches the class namespace and name based on `composer.json`.
 - **Visibility order:** Properties and methods must be ordered by visibility: `public`, then `protected`, then `private`.
 - **Member ordering:** Properties must be defined before methods.
-- **Namespace imports:** External classes must be imported via `use` statements rather than using fully qualified names inline.
 
 ### Best practices & Modernization
 - **DTO suggestions:** Identifies arrays accessed with string keys as parameters or return types and suggests using Data Transfer Objects (DTOs) instead.

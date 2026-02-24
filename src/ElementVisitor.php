@@ -14,7 +14,6 @@ use DouglasGreen\PhpLinter\Checker\TryCatchChecker;
 use DouglasGreen\PhpLinter\Visitor\ClassVisitor;
 use DouglasGreen\PhpLinter\Visitor\FunctionVisitor;
 use DouglasGreen\PhpLinter\Visitor\MagicNumberVisitor;
-use DouglasGreen\PhpLinter\Visitor\NameVisitor;
 use DouglasGreen\PhpLinter\Visitor\SuperglobalUsageVisitor;
 use PhpParser\Node;
 use PhpParser\Node\Expr\Closure;
@@ -30,15 +29,11 @@ use PhpParser\Node\Stmt\Function_;
 use PhpParser\Node\Stmt\Namespace_;
 use PhpParser\Node\Stmt\Trait_;
 use PhpParser\Node\Stmt\TryCatch;
-use PhpParser\Node\Stmt\Use_;
 use PhpParser\NodeVisitorAbstract;
 
 class ElementVisitor extends NodeVisitorAbstract
 {
     use IssueHolder;
-
-    /** @var bool[] */
-    public $qualifiedNames;
 
     protected ClassVisitor $classVisitor;
 
@@ -46,24 +41,7 @@ class ElementVisitor extends NodeVisitorAbstract
 
     protected MagicNumberVisitor $magicNumberVisitor;
 
-    protected NameVisitor $nameVisitor;
-
     protected SuperglobalUsageVisitor $superglobalUsageVisitor;
-
-    /** @var array<string, bool> */
-    protected array $classNames = [];
-
-    /** @var array<string, bool> */
-    protected array $constFetches = [];
-
-    /** @var array<string, bool> */
-    protected array $funcCalls = [];
-
-    /** @var array<string, bool> */
-    protected array $methodCalls = [];
-
-    /** @var array<string, bool> */
-    protected array $useStatements = [];
 
     protected ?string $currentNamespace = null;
 
@@ -83,7 +61,6 @@ class ElementVisitor extends NodeVisitorAbstract
 
     public function beforeTraverse(array $nodes): null
     {
-        $this->nameVisitor = new NameVisitor();
         $this->magicNumberVisitor = new MagicNumberVisitor();
         $this->superglobalUsageVisitor = new SuperglobalUsageVisitor();
 
@@ -92,32 +69,6 @@ class ElementVisitor extends NodeVisitorAbstract
 
     public function afterTraverse(array $nodes): null
     {
-        // We have to wait until after traverse until both qualified names and use statements are
-        // available.
-        $qualifiedNames = $this->nameVisitor->getQualifiedNames();
-        foreach (array_keys($qualifiedNames) as $qualifiedName) {
-            if (isset($this->useStatements[$qualifiedName])) {
-                continue;
-            }
-
-            if (isset($this->classNames[$qualifiedName])) {
-                continue;
-            }
-
-            if (isset($this->funcCalls[$qualifiedName])) {
-                continue;
-            }
-
-            if (isset($this->constFetches[$qualifiedName])) {
-                continue;
-            }
-
-            $this->addIssue(sprintf(
-                'Import the class "%s" with a "use" statement instead of using a fully qualified name to improve readability.',
-                $qualifiedName,
-            ));
-        }
-
         $this->magicNumberVisitor->checkDuplicates();
         $this->addIssues($this->magicNumberVisitor->getIssues());
 
@@ -132,19 +83,9 @@ class ElementVisitor extends NodeVisitorAbstract
             $this->currentNamespace = implode('\\', $node->name->getParts());
         }
 
-        if ($node instanceof Use_) {
-            foreach ($node->uses as $use) {
-                $name = (string) $use->name;
-                $this->useStatements[$name] = true;
-            }
-        }
-
         // Classes and traits share some of the same code.
         if ($node instanceof Class_ || $node instanceof Trait_) {
             $this->currentClassName = $node->name instanceof Identifier ? $node->name->name : null;
-            if ($this->currentClassName !== null) {
-                $this->classNames[$this->currentClassName] = true;
-            }
 
             if ($node instanceof Class_) {
                 $attribs = [
@@ -248,26 +189,10 @@ class ElementVisitor extends NodeVisitorAbstract
         $nameChecker = new NameChecker($node);
         $this->addIssues($nameChecker->check());
 
-        if ($node instanceof FuncCall && $node->name instanceof Name) {
-            $name = $node->name->toString();
-            $this->funcCalls[$name] = true;
-        }
-
-        if ($node instanceof ConstFetch) {
-            $name = $node->name->toString();
-            $this->constFetches[$name] = true;
-        }
-
-        $this->nameVisitor->checkNode($node);
         $this->magicNumberVisitor->enterNode($node);
         $this->magicNumberVisitor->checkNode($node);
 
         $this->superglobalUsageVisitor->enterNode($node);
-
-        if ($node instanceof Name && $node->isFullyQualified()) {
-            $name = $node->toString();
-            $this->qualifiedNames[$name] = true;
-        }
 
         $opChecker = new OperatorChecker($node);
         $this->addIssues($opChecker->check());
