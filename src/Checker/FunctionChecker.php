@@ -215,16 +215,6 @@ class FunctionChecker extends NodeChecker
             $paramType = null;
             if ($param->type instanceof Identifier) {
                 $paramType = $param->type->name;
-                if ($paramType === 'bool') {
-                    $this->addIssue(
-                        sprintf(
-                            'Replace the boolean parameter $%s in %s %s() with an integer flag or enum. Boolean parameters often indicate a violation of the Single Responsibility Principle.',
-                            $paramName,
-                            $funcType,
-                            $funcName,
-                        ),
-                    );
-                }
             }
 
             if ($paramType === 'array') {
