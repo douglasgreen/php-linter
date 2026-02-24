@@ -1,7 +1,7 @@
 {
   "_version": "1.1.0",
   "_modified": "2026-02-22",
-  "name": "douglasgreen/code-linter",
+  "name": "douglasgreen/php-linter",
   "description": "Code linter for PHP based on Nikic parser",
   "type": "library",
   "license": "MIT",
@@ -50,6 +50,6 @@
     ]
   },
   "bin": [
-    "bin/code-linter"
+    "bin/php-linter"
   ]
 }

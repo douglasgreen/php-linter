@@ -24,7 +24,7 @@ Unlike partial parsers, Code linter processes all PHP files in your repository, 
 Add the package to your project as a development dependency using Composer:
 
 ```bash
-composer require --dev douglasgreen/code-linter
+composer require --dev douglasgreen/php-linter
 ```
 
 ## Run the linter
@@ -32,7 +32,7 @@ composer require --dev douglasgreen/code-linter
 Execute the linter script from the root directory of your repository. 
 
 ```bash
-vendor/bin/code-linter
+vendor/bin/php-linter
 ```
 
 > **IMPORTANT:**
@@ -46,7 +46,7 @@ To integrate the linter into your continuous integration (CI) pipeline or daily 
 {
   "scripts": {
     "lint": [
-      "vendor/bin/code-linter"
+      "vendor/bin/php-linter"
     ]
   }
 }
