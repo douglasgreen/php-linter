@@ -14,7 +14,7 @@ class IgnoreList
     public function __construct(string $currentDir)
     {
         $ignoreFile = $currentDir . DIRECTORY_SEPARATOR . self::IGNORE_FILE;
-        $this->ignorePatterns = $this->loadIgnoreFile($ignoreFile);
+        $this->ignorePatterns = static::loadIgnoreFile($ignoreFile);
     }
 
     public function shouldIgnore(string $filePath): bool
@@ -40,7 +40,7 @@ class IgnoreList
     /**
      * @return list<string>
      */
-    protected function loadIgnoreFile(string $ignoreFile): array
+    protected static function loadIgnoreFile(string $ignoreFile): array
     {
         if (! file_exists($ignoreFile)) {
             return [];

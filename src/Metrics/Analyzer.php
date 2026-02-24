@@ -9,44 +9,77 @@ use Exception;
 class Analyzer
 {
     public const CLASS_SIZE_WARN = 25;
+
     public const CLASS_SIZE_ERROR = 60;
+
     public const CODE_RANK_WARN = 0.5;
+
     public const CODE_RANK_ERROR = 2.0;
+
     public const CLASS_LOC_WARN = 400;
+
     public const CLASS_LOC_ERROR = 1100;
+
     public const NON_PRIVATE_PROPS_WARN = 10;
+
     public const NON_PRIVATE_PROPS_ERROR = 30;
+
     public const PROPERTIES_WARN = 10;
+
     public const PROPERTIES_ERROR = 25;
+
     public const PUBLIC_METHODS_WARN = 15;
+
     public const PUBLIC_METHODS_ERROR = 40;
+
     public const AFFERENT_COUPLING_WARN = 15;
+
     public const AFFERENT_COUPLING_ERROR = 45;
+
     public const EFFERENT_COUPLING_WARN = 12;
+
     public const EFFERENT_COUPLING_ERROR = 24;
+
     public const INHERITANCE_DEPTH_WARN = 4;
+
     public const INHERITANCE_DEPTH_ERROR = 5;
+
     public const CHILD_CLASSES_WARN = 15;
+
     public const CHILD_CLASSES_ERROR = 35;
+
     public const OBJECT_COUPLING_WARN = 12;
+
     public const OBJECT_COUPLING_ERROR = 24;
+
     public const COMMENT_RATIO_WARN = 0.1;
+
     public const COMMENT_RATIO_ERROR = 0.05;
 
     public const CYCLOMATIC_COMPLEXITY_WARN = 10;
+
     public const CYCLOMATIC_COMPLEXITY_ERROR = 25;
+
     public const METHOD_LOC_WARN = 50;
+
     public const METHOD_LOC_ERROR = 130;
+
     public const NPATH_COMPLEXITY_WARN = 50;
+
     public const NPATH_COMPLEXITY_ERROR = 10000;
+
     public const HALSTEAD_EFFORT_WARN = 25000;
+
     public const HALSTEAD_EFFORT_ERROR = 135000;
+
     public const MAINTAINABILITY_INDEX_WARN = 40;
+
     public const MAINTAINABILITY_INDEX_ERROR = 25;
 
     public const FUNCTION_CYCLOMATIC_COMPLEXITY_WARN = 9;
 
     public const FILE_LOC_WARN = 100;
+
     public const FILE_LOC_ERROR = 200;
 
     public function __construct(
@@ -130,6 +163,7 @@ class Analyzer
                     if ($this->ignoreList->shouldIgnore($filename)) {
                         continue;
                     }
+
                     $functionChecker = new MetricChecker($function, null, $function['name']);
                     $functionChecker->checkMaxCyclomaticComplexity(self::FUNCTION_CYCLOMATIC_COMPLEXITY_WARN, self::CYCLOMATIC_COMPLEXITY_ERROR);
                     $functionChecker->checkMaxLinesOfCode(self::METHOD_LOC_WARN, self::METHOD_LOC_ERROR);
