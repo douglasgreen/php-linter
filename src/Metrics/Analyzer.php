@@ -242,6 +242,24 @@ class Analyzer
     }
 
     /**
+     * Checks method-level metrics.
+     *
+     * @param array $method Method data from parser.
+     * @param string $className Parent class name.
+     * @param string $filename File containing the method.
+     */
+    private function checkMethodMetrics(array $method, string $className, string $filename): void
+    {
+        $methodChecker = new MetricChecker($method, $className, $method['name']);
+        $methodChecker->checkMaxCyclomaticComplexity(self::CYCLOMATIC_COMPLEXITY_LIMIT);
+        $methodChecker->checkMaxLinesOfCode(self::METHOD_LOC_LIMIT);
+        $methodChecker->checkMaxNpathComplexity(self::NPATH_COMPLEXITY_LIMIT);
+        $methodChecker->checkMaxHalsteadEffort(self::HALSTEAD_EFFORT_LIMIT);
+        $methodChecker->checkMinMaintainabilityIndex(self::MAINTAINABILITY_INDEX_LIMIT);
+        $methodChecker->printIssues($filename);
+    }
+
+    /**
      * Checks file-level metrics.
      *
      * @param array $filesData File data from parser.
@@ -293,24 +311,6 @@ class Analyzer
         foreach ($class['methods'] as $method) {
             $this->checkMethodMetrics($method, $class['name'], $filename);
         }
-    }
-
-    /**
-     * Checks method-level metrics.
-     *
-     * @param array $method Method data from parser.
-     * @param string $className Parent class name.
-     * @param string $filename File containing the method.
-     */
-    private function checkMethodMetrics(array $method, string $className, string $filename): void
-    {
-        $methodChecker = new MetricChecker($method, $className, $method['name']);
-        $methodChecker->checkMaxCyclomaticComplexity(self::CYCLOMATIC_COMPLEXITY_LIMIT);
-        $methodChecker->checkMaxLinesOfCode(self::METHOD_LOC_LIMIT);
-        $methodChecker->checkMaxNpathComplexity(self::NPATH_COMPLEXITY_LIMIT);
-        $methodChecker->checkMaxHalsteadEffort(self::HALSTEAD_EFFORT_LIMIT);
-        $methodChecker->checkMinMaintainabilityIndex(self::MAINTAINABILITY_INDEX_LIMIT);
-        $methodChecker->printIssues($filename);
     }
 
     /**
@@ -377,7 +377,7 @@ class Analyzer
     private function extractFilename(string $path): string
     {
         return CacheManager::getOriginalFile(
-            str_replace($this->currentDir . DIRECTORY_SEPARATOR, '', $path)
+            str_replace($this->currentDir . DIRECTORY_SEPARATOR, '', $path),
         );
     }
 }

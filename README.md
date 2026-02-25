@@ -77,7 +77,6 @@ The linter analyzes your code for the following issues:
 
 ### Best practices & Modernization
 - **DTO suggestions:** Identifies arrays accessed with string keys as parameters or return types and suggests using Data Transfer Objects (DTOs) instead.
-- **Static vs Instance:** Suggests making methods `static` if they do not use `$this`.
 - **PHP 4 Constructors:** Flags old-style constructors (methods named after the class).
 - **Strict Loading:** Suggests `require_once` over `include` or `require`.
 - **Superglobals:** Flags use of superglobal variables outside of allowed classes.
