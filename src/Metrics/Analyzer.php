@@ -174,19 +174,8 @@ class Analyzer
     public function run(array $phpFiles): void
     {
         $summaryFile = $this->cache->getSummaryFile();
-        $shouldGenerate = !file_exists($summaryFile);
 
-        if (!$shouldGenerate) {
-            $summaryTimestamp = filemtime($summaryFile);
-            foreach ($phpFiles as $phpFile) {
-                if (filemtime($phpFile) > $summaryTimestamp) {
-                    $shouldGenerate = true;
-                    break;
-                }
-            }
-        }
-
-        if ($shouldGenerate) {
+        if ($this->shouldGenerateMetrics($phpFiles, $summaryFile)) {
             $metricGenerator = new MetricGenerator($this->cache, $phpFiles);
             $metricGenerator->generate();
         }
@@ -200,101 +189,195 @@ class Analyzer
             $parser = new XmlParser($summaryFile);
             $packages = $parser->getPackages();
             $filesData = $parser->getFiles();
+
             if ($packages === null) {
                 echo 'No packages found.' . PHP_EOL;
                 return;
             }
 
-            // Check file-level metrics
-            if ($filesData !== null) {
-                foreach ($filesData as $fileInfo) {
-                    $filename = CacheManager::getOriginalFile(str_replace($this->currentDir . DIRECTORY_SEPARATOR, '', $fileInfo['name']));
-                    if ($this->ignoreList->shouldIgnore($filename)) {
-                        continue;
-                    }
+            $filesChecked = [];
 
-                    $fileChecker = new MetricChecker($fileInfo);
-                    $fileChecker->checkMinCommentRatio(self::COMMENT_RATIO_LIMIT);
-                    $fileChecker->printIssues($filename);
-                }
+            if ($filesData !== null) {
+                $this->checkFileMetrics($filesData);
             }
 
-            $filesChecked = [];
             foreach ($packages as $package) {
                 foreach ($package['classes'] as $class) {
-                    $filename = CacheManager::getOriginalFile(str_replace($this->currentDir . DIRECTORY_SEPARATOR, '', $class['filename']));
-                    if ($this->ignoreList->shouldIgnore($filename)) {
-                        continue;
-                    }
-
-                    $classChecker = new MetricChecker($class, $class['name']);
-                    $classChecker->checkMaxClassSize(self::CLASS_SIZE_LIMIT);
-                    $classChecker->checkMaxCodeRank(self::CODE_RANK_LIMIT);
-                    $classChecker->checkMaxLinesOfCode(self::CLASS_LOC_LIMIT);
-                    $classChecker->checkMaxNonPrivateProperties(self::NON_PRIVATE_PROPS_LIMIT);
-                    $classChecker->checkMaxProperties(self::PROPERTIES_LIMIT);
-                    $classChecker->checkMaxPublicMethods(self::PUBLIC_METHODS_LIMIT);
-                    $classChecker->checkMaxAfferentCoupling(self::AFFERENT_COUPLING_LIMIT);
-                    $classChecker->checkMaxEfferentCoupling(self::EFFERENT_COUPLING_LIMIT);
-                    $classChecker->checkMaxInheritanceDepth(self::INHERITANCE_DEPTH_LIMIT);
-                    $classChecker->checkMaxNumberOfChildClasses(self::CHILD_CLASSES_LIMIT);
-                    $classChecker->checkMaxObjectCoupling(self::OBJECT_COUPLING_LIMIT);
-
-                    $loc = $class['loc'] ?? 0;
-                    $filesChecked[$filename] = ($filesChecked[$filename] ?? 0) + $loc;
-                    $classChecker->printIssues($filename);
-
-                    foreach ($class['methods'] as $method) {
-                        $methodChecker = new MetricChecker($method, $class['name'], $method['name']);
-                        $methodChecker->checkMaxCyclomaticComplexity(self::CYCLOMATIC_COMPLEXITY_LIMIT);
-                        $methodChecker->checkMaxLinesOfCode(self::METHOD_LOC_LIMIT);
-                        $methodChecker->checkMaxNpathComplexity(self::NPATH_COMPLEXITY_LIMIT);
-                        $methodChecker->checkMaxHalsteadEffort(self::HALSTEAD_EFFORT_LIMIT);
-                        $methodChecker->checkMinMaintainabilityIndex(self::MAINTAINABILITY_INDEX_LIMIT);
-                        $methodChecker->printIssues($filename);
-                    }
+                    $this->checkClassMetrics($class, $filesChecked);
                 }
 
                 foreach ($package['functions'] as $function) {
-                    $filename = CacheManager::getOriginalFile(str_replace($this->currentDir . DIRECTORY_SEPARATOR, '', $function['filename']));
-                    if ($this->ignoreList->shouldIgnore($filename)) {
-                        continue;
-                    }
-
-                    $functionChecker = new MetricChecker($function, null, $function['name']);
-                    $functionChecker->checkMaxCyclomaticComplexity(self::CYCLOMATIC_COMPLEXITY_LIMIT);
-                    $functionChecker->checkMaxLinesOfCode(self::METHOD_LOC_LIMIT);
-                    $functionChecker->checkMaxNpathComplexity(self::NPATH_COMPLEXITY_LIMIT);
-                    $functionChecker->checkMaxHalsteadEffort(self::HALSTEAD_EFFORT_LIMIT);
-                    $functionChecker->checkMinMaintainabilityIndex(self::MAINTAINABILITY_INDEX_LIMIT);
-
-                    $loc = $function['loc'] ?? 0;
-                    $filesChecked[$filename] = ($filesChecked[$filename] ?? 0) + $loc;
-                    $functionChecker->printIssues($filename);
+                    $this->checkFunctionMetrics($function, $filesChecked);
                 }
             }
 
-            foreach ($phpFiles as $phpFile) {
-                $filename = str_replace($this->currentDir . DIRECTORY_SEPARATOR, '', $phpFile);
-                if ($this->ignoreList->shouldIgnore($filename)) {
-                    continue;
-                }
-
-                $locChecked = $filesChecked[$filename] ?? 0;
-                if (!file_exists($phpFile)) {
-                    continue;
-                }
-
-                $lines = file($phpFile);
-                $totalLoc = $lines !== false ? count($lines) : 0;
-                $otherLoc = $totalLoc - $locChecked;
-
-                $fileChecker = new MetricChecker(['loc' => $otherLoc]);
-                $fileChecker->checkMaxLinesOfCode(self::FILE_LOC_LIMIT);
-                $fileChecker->printIssues($filename);
-            }
+            $this->checkRemainingFiles($phpFiles, $filesChecked);
         } catch (Exception $exception) {
             echo 'PDepend error: ' . $exception->getMessage() . PHP_EOL;
         }
+    }
+
+    /**
+     * Determines if metrics need to be regenerated.
+     *
+     * @param list<string> $phpFiles List of PHP file paths.
+     * @param string $summaryFile Path to the summary file.
+     *
+     * @return bool True if metrics should be generated.
+     */
+    private function shouldGenerateMetrics(array $phpFiles, string $summaryFile): bool
+    {
+        if (!file_exists($summaryFile)) {
+            return true;
+        }
+
+        $summaryTimestamp = filemtime($summaryFile);
+        foreach ($phpFiles as $phpFile) {
+            if (filemtime($phpFile) > $summaryTimestamp) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * Checks file-level metrics.
+     *
+     * @param array $filesData File data from parser.
+     */
+    private function checkFileMetrics(array $filesData): void
+    {
+        foreach ($filesData as $fileInfo) {
+            $filename = $this->extractFilename($fileInfo['name']);
+            if ($this->ignoreList->shouldIgnore($filename)) {
+                continue;
+            }
+
+            $fileChecker = new MetricChecker($fileInfo);
+            $fileChecker->checkMinCommentRatio(self::COMMENT_RATIO_LIMIT);
+            $fileChecker->printIssues($filename);
+        }
+    }
+
+    /**
+     * Checks class-level metrics and its methods.
+     *
+     * @param array $class Class data from parser.
+     * @param array<string, int> $filesChecked Tracks LOC checked per file.
+     */
+    private function checkClassMetrics(array $class, array &$filesChecked): void
+    {
+        $filename = $this->extractFilename($class['filename']);
+        if ($this->ignoreList->shouldIgnore($filename)) {
+            return;
+        }
+
+        $classChecker = new MetricChecker($class, $class['name']);
+        $classChecker->checkMaxClassSize(self::CLASS_SIZE_LIMIT);
+        $classChecker->checkMaxCodeRank(self::CODE_RANK_LIMIT);
+        $classChecker->checkMaxLinesOfCode(self::CLASS_LOC_LIMIT);
+        $classChecker->checkMaxNonPrivateProperties(self::NON_PRIVATE_PROPS_LIMIT);
+        $classChecker->checkMaxProperties(self::PROPERTIES_LIMIT);
+        $classChecker->checkMaxPublicMethods(self::PUBLIC_METHODS_LIMIT);
+        $classChecker->checkMaxAfferentCoupling(self::AFFERENT_COUPLING_LIMIT);
+        $classChecker->checkMaxEfferentCoupling(self::EFFERENT_COUPLING_LIMIT);
+        $classChecker->checkMaxInheritanceDepth(self::INHERITANCE_DEPTH_LIMIT);
+        $classChecker->checkMaxNumberOfChildClasses(self::CHILD_CLASSES_LIMIT);
+        $classChecker->checkMaxObjectCoupling(self::OBJECT_COUPLING_LIMIT);
+
+        $loc = $class['loc'] ?? 0;
+        $filesChecked[$filename] = ($filesChecked[$filename] ?? 0) + $loc;
+        $classChecker->printIssues($filename);
+
+        foreach ($class['methods'] as $method) {
+            $this->checkMethodMetrics($method, $class['name'], $filename);
+        }
+    }
+
+    /**
+     * Checks method-level metrics.
+     *
+     * @param array $method Method data from parser.
+     * @param string $className Parent class name.
+     * @param string $filename File containing the method.
+     */
+    private function checkMethodMetrics(array $method, string $className, string $filename): void
+    {
+        $methodChecker = new MetricChecker($method, $className, $method['name']);
+        $methodChecker->checkMaxCyclomaticComplexity(self::CYCLOMATIC_COMPLEXITY_LIMIT);
+        $methodChecker->checkMaxLinesOfCode(self::METHOD_LOC_LIMIT);
+        $methodChecker->checkMaxNpathComplexity(self::NPATH_COMPLEXITY_LIMIT);
+        $methodChecker->checkMaxHalsteadEffort(self::HALSTEAD_EFFORT_LIMIT);
+        $methodChecker->checkMinMaintainabilityIndex(self::MAINTAINABILITY_INDEX_LIMIT);
+        $methodChecker->printIssues($filename);
+    }
+
+    /**
+     * Checks function-level metrics.
+     *
+     * @param array $function Function data from parser.
+     * @param array<string, int> $filesChecked Tracks LOC checked per file.
+     */
+    private function checkFunctionMetrics(array $function, array &$filesChecked): void
+    {
+        $filename = $this->extractFilename($function['filename']);
+        if ($this->ignoreList->shouldIgnore($filename)) {
+            return;
+        }
+
+        $functionChecker = new MetricChecker($function, null, $function['name']);
+        $functionChecker->checkMaxCyclomaticComplexity(self::CYCLOMATIC_COMPLEXITY_LIMIT);
+        $functionChecker->checkMaxLinesOfCode(self::METHOD_LOC_LIMIT);
+        $functionChecker->checkMaxNpathComplexity(self::NPATH_COMPLEXITY_LIMIT);
+        $functionChecker->checkMaxHalsteadEffort(self::HALSTEAD_EFFORT_LIMIT);
+        $functionChecker->checkMinMaintainabilityIndex(self::MAINTAINABILITY_INDEX_LIMIT);
+
+        $loc = $function['loc'] ?? 0;
+        $filesChecked[$filename] = ($filesChecked[$filename] ?? 0) + $loc;
+        $functionChecker->printIssues($filename);
+    }
+
+    /**
+     * Checks remaining files for LOC outside classes/functions.
+     *
+     * @param list<string> $phpFiles List of PHP file paths.
+     * @param array<string, int> $filesChecked LOC already checked per file.
+     */
+    private function checkRemainingFiles(array $phpFiles, array $filesChecked): void
+    {
+        foreach ($phpFiles as $phpFile) {
+            $filename = str_replace($this->currentDir . DIRECTORY_SEPARATOR, '', $phpFile);
+            if ($this->ignoreList->shouldIgnore($filename)) {
+                continue;
+            }
+
+            if (!file_exists($phpFile)) {
+                continue;
+            }
+
+            $locChecked = $filesChecked[$filename] ?? 0;
+            $lines = file($phpFile);
+            $totalLoc = $lines !== false ? count($lines) : 0;
+            $otherLoc = $totalLoc - $locChecked;
+
+            $fileChecker = new MetricChecker(['loc' => $otherLoc]);
+            $fileChecker->checkMaxLinesOfCode(self::FILE_LOC_LIMIT);
+            $fileChecker->printIssues($filename);
+        }
+    }
+
+    /**
+     * Extracts filename from a path by removing current directory prefix.
+     *
+     * @param string $path Full path from parser.
+     *
+     * @return string Relative filename.
+     */
+    private function extractFilename(string $path): string
+    {
+        return CacheManager::getOriginalFile(
+            str_replace($this->currentDir . DIRECTORY_SEPARATOR, '', $path)
+        );
     }
 }
