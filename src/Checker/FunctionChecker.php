@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace DouglasGreen\PhpLinter\Checker;
 
-use PhpParser\Node;
 use PhpParser\Node\Expr\Array_;
 use PhpParser\Node\Expr\ArrayDimFetch;
 use PhpParser\Node\Expr\New_;
@@ -141,10 +140,6 @@ class FunctionChecker extends NodeChecker
             if ($returnType === 'array') {
                 $this->checkReturnArrayDto();
             }
-        }
-
-        if ($this->node instanceof ClassMethod) {
-            $this->checkStaticRecommendation($funcName);
         }
 
         return $this->getIssues();
@@ -305,51 +300,6 @@ class FunctionChecker extends NodeChecker
                     'Rename %s %s() to start with an imperative verb. Method names should describe the action being performed.',
                     $funcType,
                     $funcName,
-                ),
-            );
-        }
-    }
-
-    /**
-     * Checks if a method should be static if it does not use $this.
-     *
-     * @param string $methodName The name of the method.
-     */
-    protected function checkStaticRecommendation(string $methodName): void
-    {
-        // Fix for undefined method isStatic/isAbstract
-        if (!$this->node instanceof ClassMethod) {
-            return;
-        }
-
-        // Skip if already static
-        if ($this->node->isStatic()) {
-            return;
-        }
-
-        // Skip if abstract (no body)
-        if ($this->node->isAbstract()) {
-            return;
-        }
-
-        // Skip magic methods
-        if (str_starts_with($methodName, '__')) {
-            return;
-        }
-
-        // Check for $this usage
-        if ($this->node->stmts === null) {
-            return;
-        }
-
-        $nodeFinder = new NodeFinder();
-        $usesThis = $nodeFinder->findFirst($this->node->stmts, fn (Node $node): bool => $node instanceof Variable && $node->name === 'this');
-
-        if (!$usesThis instanceof Node) {
-            $this->addIssue(
-                sprintf(
-                    'Declare method %s() as static. It does not use $this and therefore does not belong to an object instance.',
-                    $methodName,
                 ),
             );
         }
