@@ -12,7 +12,6 @@
   "endOfLine": "lf",
   "htmlWhitespaceSensitivity": "css",
   "vueIndentScriptAndStyle": false,
-  "plugins": ["prettier-plugin-sh", "prettier-plugin-sql"],
   "overrides": [
     {
       "files": ["*.html", "*.htm"],
