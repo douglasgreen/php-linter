@@ -262,7 +262,7 @@ class Analyzer
     /**
      * Checks file-level metrics.
      *
-     * @param array<string, array<string, mixed>> $filesData File data from parser.
+     * @param array<int, array<string, mixed>> $filesData File data from parser.
      */
     private function checkFileMetrics(array $filesData): void
     {
