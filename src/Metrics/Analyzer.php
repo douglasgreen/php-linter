@@ -244,7 +244,7 @@ class Analyzer
     /**
      * Checks method-level metrics.
      *
-     * @param array $method Method data from parser.
+     * @param array<string, mixed> $method Method data from parser.
      * @param string $className Parent class name.
      * @param string $filename File containing the method.
      */
@@ -262,7 +262,7 @@ class Analyzer
     /**
      * Checks file-level metrics.
      *
-     * @param array $filesData File data from parser.
+     * @param array<string, array<string, mixed>> $filesData File data from parser.
      */
     private function checkFileMetrics(array $filesData): void
     {
@@ -281,7 +281,7 @@ class Analyzer
     /**
      * Checks class-level metrics and its methods.
      *
-     * @param array $class Class data from parser.
+     * @param array<string, mixed> $class Class data from parser.
      * @param array<string, int> $filesChecked Tracks LOC checked per file.
      */
     private function checkClassMetrics(array $class, array &$filesChecked): void
@@ -304,7 +304,7 @@ class Analyzer
         $classChecker->checkMaxNumberOfChildClasses(self::CHILD_CLASSES_LIMIT);
         $classChecker->checkMaxObjectCoupling(self::OBJECT_COUPLING_LIMIT);
 
-        $loc = $class['loc'] ?? 0;
+        $loc = (int) ($class['loc'] ?? 0);
         $filesChecked[$filename] = ($filesChecked[$filename] ?? 0) + $loc;
         $classChecker->printIssues($filename);
 
@@ -316,7 +316,7 @@ class Analyzer
     /**
      * Checks function-level metrics.
      *
-     * @param array $function Function data from parser.
+     * @param array<string, mixed> $function Function data from parser.
      * @param array<string, int> $filesChecked Tracks LOC checked per file.
      */
     private function checkFunctionMetrics(array $function, array &$filesChecked): void
@@ -333,7 +333,7 @@ class Analyzer
         $functionChecker->checkMaxHalsteadEffort(self::HALSTEAD_EFFORT_LIMIT);
         $functionChecker->checkMinMaintainabilityIndex(self::MAINTAINABILITY_INDEX_LIMIT);
 
-        $loc = $function['loc'] ?? 0;
+        $loc = (int) ($function['loc'] ?? 0);
         $filesChecked[$filename] = ($filesChecked[$filename] ?? 0) + $loc;
         $functionChecker->printIssues($filename);
     }
