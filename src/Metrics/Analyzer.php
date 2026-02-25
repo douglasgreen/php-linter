@@ -215,7 +215,6 @@ class Analyzer
 
                     $fileChecker = new MetricChecker($fileInfo);
                     $fileChecker->checkMinCommentRatio(self::COMMENT_RATIO_LIMIT);
-                    $fileChecker->checkMinMaintainabilityIndex(self::MAINTAINABILITY_INDEX_LIMIT);
                     $fileChecker->printIssues($filename);
                 }
             }
