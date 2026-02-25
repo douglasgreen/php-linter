@@ -199,9 +199,25 @@ class Analyzer
         try {
             $parser = new XmlParser($summaryFile);
             $packages = $parser->getPackages();
+            $filesData = $parser->getFiles();
             if ($packages === null) {
                 echo 'No packages found.' . PHP_EOL;
                 return;
+            }
+
+            // Check file-level metrics
+            if ($filesData !== null) {
+                foreach ($filesData as $fileInfo) {
+                    $filename = CacheManager::getOriginalFile(str_replace($this->currentDir . DIRECTORY_SEPARATOR, '', $fileInfo['name']));
+                    if ($this->ignoreList->shouldIgnore($filename)) {
+                        continue;
+                    }
+
+                    $fileChecker = new MetricChecker($fileInfo);
+                    $fileChecker->checkMinCommentRatio(self::COMMENT_RATIO_LIMIT);
+                    $fileChecker->checkMinMaintainabilityIndex(self::MAINTAINABILITY_INDEX_LIMIT);
+                    $fileChecker->printIssues($filename);
+                }
             }
 
             $filesChecked = [];
@@ -224,7 +240,6 @@ class Analyzer
                     $classChecker->checkMaxInheritanceDepth(self::INHERITANCE_DEPTH_LIMIT);
                     $classChecker->checkMaxNumberOfChildClasses(self::CHILD_CLASSES_LIMIT);
                     $classChecker->checkMaxObjectCoupling(self::OBJECT_COUPLING_LIMIT);
-                    $classChecker->checkMinCommentRatio(self::COMMENT_RATIO_LIMIT);
 
                     $loc = $class['loc'] ?? 0;
                     $filesChecked[$filename] = ($filesChecked[$filename] ?? 0) + $loc;
