@@ -7,8 +7,9 @@
   "type": "module",
   "scripts": {
     "lint": "npm run lint:md",
-    "lint:md": "markdownlint \"**/*.md\"",
-    "format": "prettier --write ."
+    "lint:md": "markdownlint '**/*.md'",
+    "format": "prettier --write . && markdownlint '**/*.md' --fix"
+
   },
   "devDependencies": {
     "markdownlint-cli": "^0.47.0",
