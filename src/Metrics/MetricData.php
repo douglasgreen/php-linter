@@ -13,7 +13,7 @@ namespace DouglasGreen\PhpLinter\Metrics;
  *
  * @since 1.0.0
  */
-class MetricData
+readonly class MetricData
 {
     /**
      * @param string|null $name The name of the element (class, method, function).
@@ -38,25 +38,25 @@ class MetricData
      * @param int|null $varsnp Number of non-private properties.
      */
     public function __construct(
-        public readonly ?string $name = null,
-        public readonly ?string $filename = null,
-        public readonly array $methods = [],
-        public readonly ?int $ca = null,
-        public readonly ?int $ce = null,
-        public readonly ?int $cbo = null,
-        public readonly ?int $ccn2 = null,
-        public readonly ?float $cr = null,
-        public readonly ?int $csz = null,
-        public readonly ?int $cloc = null,
-        public readonly ?int $dit = null,
-        public readonly ?int $eloc = null,
-        public readonly ?int $he = null,
-        public readonly ?int $loc = null,
-        public readonly ?float $mi = null,
-        public readonly ?int $nocc = null,
-        public readonly ?int $npm = null,
-        public readonly ?int $npath = null,
-        public readonly ?int $vars = null,
-        public readonly ?int $varsnp = null,
+        public ?string $name = null,
+        public ?string $filename = null,
+        public array $methods = [],
+        public ?int $ca = null,
+        public ?int $ce = null,
+        public ?int $cbo = null,
+        public ?int $ccn2 = null,
+        public ?float $cr = null,
+        public ?int $csz = null,
+        public ?int $cloc = null,
+        public ?int $dit = null,
+        public ?int $eloc = null,
+        public ?int $he = null,
+        public ?int $loc = null,
+        public ?float $mi = null,
+        public ?int $nocc = null,
+        public ?int $npm = null,
+        public ?int $npath = null,
+        public ?int $vars = null,
+        public ?int $varsnp = null,
     ) {}
 }
