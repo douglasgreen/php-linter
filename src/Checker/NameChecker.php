@@ -120,7 +120,8 @@ class NameChecker extends NodeChecker
             } elseif ($this->node instanceof Class_) {
                 $this->checkUpperName($name);
                 $this->checkGlobalNameLength($name, 'Class');
-                $this->checkSuffix($name, 'Class');
+                $isAbstract = $this->node->isAbstract();
+                $this->checkSuffix($name, 'Class', $isAbstract);
             } elseif ($this->node instanceof Interface_) {
                 $this->checkUpperName($name);
                 $this->checkGlobalNameLength($name, 'Interface');
@@ -304,17 +305,52 @@ class NameChecker extends NodeChecker
     }
 
     /**
-     * Checks for undesirable suffixes on class-like elements.
+     * Checks for PSR-compliant naming and undesirable suffixes on class-like elements.
+     *
+     * Per PSR conventions:
+     * - Abstract classes must be prefixed with "Abstract"
+     * - Traits must be suffixed with "Trait"
+     * - Interfaces must be suffixed with "Interface"
      *
      * @param string $name The name to check.
-     * @param string $type The type of element (e.g., 'Class', 'Interface').
+     * @param string $type The type of element (e.g., 'Class', 'Interface', 'Trait').
+     * @param bool $isAbstract Whether the class is abstract (only for 'Class' type).
      */
-    protected function checkSuffix(string $name, string $type): void
+    protected function checkSuffix(string $name, string $type, bool $isAbstract = false): void
     {
         if (! in_array($type, ['Namespace', 'Class', 'Interface', 'Trait'], true)) {
             return;
         }
 
+        // Check PSR-required suffixes/prefixes
+        if ($type === 'Interface' && ! str_ends_with($name, 'Interface')) {
+            $this->addIssue(
+                sprintf(
+                    "Rename interface '%s' to add 'Interface' suffix. PSR requires interfaces to be suffixed with 'Interface'.",
+                    $name,
+                ),
+            );
+        }
+
+        if ($type === 'Trait' && ! str_ends_with($name, 'Trait')) {
+            $this->addIssue(
+                sprintf(
+                    "Rename trait '%s' to add 'Trait' suffix. PSR requires traits to be suffixed with 'Trait'.",
+                    $name,
+                ),
+            );
+        }
+
+        if ($type === 'Class' && $isAbstract && ! str_starts_with($name, 'Abstract')) {
+            $this->addIssue(
+                sprintf(
+                    "Rename abstract class '%s' to add 'Abstract' prefix. PSR requires abstract classes to be prefixed with 'Abstract'.",
+                    $name,
+                ),
+            );
+        }
+
+        // Check for undesirable suffixes
         foreach (self::BAD_CLASS_SUFFIXES as $badSuffix => $reason) {
             if (preg_match('/' . $badSuffix . '$/i', $name)) {
                 $this->addIssue(
@@ -329,18 +365,6 @@ class NameChecker extends NodeChecker
                 );
                 return;
             }
-        }
-
-        if (str_ends_with($name, $type)) {
-            $this->addIssue(
-                sprintf(
-                    "Rename %s '%s' to remove the '%s' suffix. The suffix '%s' is redundant.",
-                    $type,
-                    $name,
-                    $type,
-                    $type,
-                ),
-            );
         }
     }
 
