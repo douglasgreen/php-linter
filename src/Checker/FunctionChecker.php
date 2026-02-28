@@ -108,11 +108,28 @@ class FunctionChecker extends AbstractNodeChecker
     ];
 
     /**
+     * Whether the containing class is readonly (for DTOs).
+     */
+    protected bool $isReadonly = false;
+
+    /**
      * Stores parameter metadata indexed by parameter name.
      *
      * @var array<string, array{type: ?string, promoted: bool}>
      */
     protected array $params = [];
+
+    /**
+     * Constructs a FunctionChecker with optional readonly class context.
+     *
+     * @param Node $node The function or method node to check.
+     * @param bool $isReadonly Whether the containing class is readonly.
+     */
+    public function __construct(Node $node, bool $isReadonly = false)
+    {
+        parent::__construct($node);
+        $this->isReadonly = $isReadonly;
+    }
 
     /**
      * Performs validation checks on function or method nodes.
@@ -223,7 +240,7 @@ class FunctionChecker extends AbstractNodeChecker
     protected function checkParams(array $params, string $funcName, string $funcType): void
     {
         $paramCount = count($params);
-        if ($paramCount > 9) {
+        if ($paramCount > 9 && !$this->isReadonly) {
             $this->addIssue(
                 sprintf(
                     'Reduce the parameter count of %s %s() from %d to 9 or fewer. Long parameter lists reduce readability and increase the chance of errors.',
