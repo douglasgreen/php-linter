@@ -244,13 +244,13 @@ class Analyzer
     /**
      * Checks method-level metrics.
      *
-     * @param array<string, mixed> $method Method data from parser.
+     * @param MetricData $method Method data from parser.
      * @param string $className Parent class name.
      * @param string $filename File containing the method.
      */
-    private function checkMethodMetrics(array $method, string $className, string $filename): void
+    private function checkMethodMetrics(MetricData $method, string $className, string $filename): void
     {
-        $methodChecker = new MetricChecker($method, $className, $method['name']);
+        $methodChecker = new MetricChecker($method, $className, $method->name);
         $methodChecker->checkMaxCyclomaticComplexity(self::CYCLOMATIC_COMPLEXITY_LIMIT);
         $methodChecker->checkMaxLinesOfCode(self::METHOD_LOC_LIMIT);
         $methodChecker->checkMaxNpathComplexity(self::NPATH_COMPLEXITY_LIMIT);
@@ -262,12 +262,12 @@ class Analyzer
     /**
      * Checks file-level metrics.
      *
-     * @param array<int, array<string, mixed>> $filesData File data from parser.
+     * @param list<MetricData> $filesData File data from parser.
      */
     private function checkFileMetrics(array $filesData): void
     {
         foreach ($filesData as $fileInfo) {
-            $filename = $this->extractFilename($fileInfo['name']);
+            $filename = $this->extractFilename($fileInfo->name ?? '');
             if ($this->ignoreList->shouldIgnore($filename)) {
                 continue;
             }
@@ -281,17 +281,17 @@ class Analyzer
     /**
      * Checks class-level metrics and its methods.
      *
-     * @param array<string, mixed> $class Class data from parser.
+     * @param MetricData $class Class data from parser.
      * @param array<string, int> $filesChecked Tracks LOC checked per file.
      */
-    private function checkClassMetrics(array $class, array &$filesChecked): void
+    private function checkClassMetrics(MetricData $class, array &$filesChecked): void
     {
-        $filename = $this->extractFilename($class['filename']);
+        $filename = $this->extractFilename($class->filename ?? '');
         if ($this->ignoreList->shouldIgnore($filename)) {
             return;
         }
 
-        $classChecker = new MetricChecker($class, $class['name']);
+        $classChecker = new MetricChecker($class, $class->name);
         $classChecker->checkMaxClassSize(self::CLASS_SIZE_LIMIT);
         $classChecker->checkMaxCodeRank(self::CODE_RANK_LIMIT);
         $classChecker->checkMaxLinesOfCode(self::CLASS_LOC_LIMIT);
@@ -304,36 +304,36 @@ class Analyzer
         $classChecker->checkMaxNumberOfChildClasses(self::CHILD_CLASSES_LIMIT);
         $classChecker->checkMaxObjectCoupling(self::OBJECT_COUPLING_LIMIT);
 
-        $loc = (int) ($class['loc'] ?? 0);
+        $loc = $class->loc ?? 0;
         $filesChecked[$filename] = ($filesChecked[$filename] ?? 0) + $loc;
         $classChecker->printIssues($filename);
 
-        foreach ($class['methods'] as $method) {
-            $this->checkMethodMetrics($method, $class['name'], $filename);
+        foreach ($class->methods as $method) {
+            $this->checkMethodMetrics($method, $class->name ?? '', $filename);
         }
     }
 
     /**
      * Checks function-level metrics.
      *
-     * @param array<string, mixed> $function Function data from parser.
+     * @param MetricData $function Function data from parser.
      * @param array<string, int> $filesChecked Tracks LOC checked per file.
      */
-    private function checkFunctionMetrics(array $function, array &$filesChecked): void
+    private function checkFunctionMetrics(MetricData $function, array &$filesChecked): void
     {
-        $filename = $this->extractFilename($function['filename']);
+        $filename = $this->extractFilename($function->filename ?? '');
         if ($this->ignoreList->shouldIgnore($filename)) {
             return;
         }
 
-        $functionChecker = new MetricChecker($function, null, $function['name']);
+        $functionChecker = new MetricChecker($function, null, $function->name);
         $functionChecker->checkMaxCyclomaticComplexity(self::CYCLOMATIC_COMPLEXITY_LIMIT);
         $functionChecker->checkMaxLinesOfCode(self::METHOD_LOC_LIMIT);
         $functionChecker->checkMaxNpathComplexity(self::NPATH_COMPLEXITY_LIMIT);
         $functionChecker->checkMaxHalsteadEffort(self::HALSTEAD_EFFORT_LIMIT);
         $functionChecker->checkMinMaintainabilityIndex(self::MAINTAINABILITY_INDEX_LIMIT);
 
-        $loc = (int) ($function['loc'] ?? 0);
+        $loc = $function->loc ?? 0;
         $filesChecked[$filename] = ($filesChecked[$filename] ?? 0) + $loc;
         $functionChecker->printIssues($filename);
     }
@@ -361,7 +361,7 @@ class Analyzer
             $totalLoc = $lines !== false ? count($lines) : 0;
             $otherLoc = $totalLoc - $locChecked;
 
-            $fileChecker = new MetricChecker(['loc' => $otherLoc]);
+            $fileChecker = new MetricChecker(new MetricData(loc: $otherLoc));
             $fileChecker->checkMaxLinesOfCode(self::FILE_LOC_LIMIT);
             $fileChecker->printIssues($filename);
         }

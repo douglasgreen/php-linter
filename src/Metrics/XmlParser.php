@@ -93,23 +93,37 @@ class XmlParser
      *
      * @param SimpleXMLElement $classes The XML element containing classes.
      *
-     * @return array<string|int, mixed>[] List of class data arrays.
+     * @return list<MetricData> List of class data objects.
      */
     protected static function parseClasses(SimpleXMLElement $classes): array
     {
         $classList = [];
         foreach ($classes as $class) {
-            $classData = [];
-            foreach ($class->attributes() as $key => $value) {
-                $classData[$key] = (string) $value;
-            }
-
             $fileAttribs = $class->file->attributes();
-            $classData['filename'] = (string) $fileAttribs['name'];
+            $filename = (string) $fileAttribs['name'];
 
-            $classData['methods'] = self::parseMethods($class->method);
-
-            $classList[] = $classData;
+            $classList[] = new MetricData(
+                name: self::extractString($class, 'name'),
+                filename: $filename,
+                methods: self::parseMethods($class->method),
+                ca: self::extractInt($class, 'ca'),
+                ce: self::extractInt($class, 'ce'),
+                cbo: self::extractInt($class, 'cbo'),
+                ccn2: self::extractInt($class, 'ccn2'),
+                cr: self::extractFloat($class, 'cr'),
+                csz: self::extractInt($class, 'csz'),
+                cloc: self::extractInt($class, 'cloc'),
+                dit: self::extractInt($class, 'dit'),
+                eloc: self::extractInt($class, 'eloc'),
+                he: self::extractInt($class, 'he'),
+                loc: self::extractInt($class, 'loc'),
+                mi: self::extractFloat($class, 'mi'),
+                nocc: self::extractInt($class, 'nocc'),
+                npm: self::extractInt($class, 'npm'),
+                npath: self::extractInt($class, 'npath'),
+                vars: self::extractInt($class, 'vars'),
+                varsnp: self::extractInt($class, 'varsnp'),
+            );
         }
 
         return $classList;
@@ -120,18 +134,18 @@ class XmlParser
      *
      * @param SimpleXMLElement $files The XML element containing files.
      *
-     * @return array<int<0, max>, array<string|int, string>> List of file data arrays.
+     * @return list<MetricData> List of file data objects.
      */
     protected static function parseFiles(SimpleXMLElement $files): array
     {
         $fileList = [];
         foreach ($files->file as $file) {
-            $fileData = [];
-            foreach ($file->attributes() as $key => $value) {
-                $fileData[$key] = (string) $value;
-            }
-
-            $fileList[] = $fileData;
+            $fileList[] = new MetricData(
+                name: self::extractString($file, 'name'),
+                cloc: self::extractInt($file, 'cloc'),
+                eloc: self::extractInt($file, 'eloc'),
+                loc: self::extractInt($file, 'loc'),
+            );
         }
 
         return $fileList;
@@ -142,21 +156,26 @@ class XmlParser
      *
      * @param SimpleXMLElement $functions The XML element containing functions.
      *
-     * @return array<mixed, array<string|int, string>> List of function data arrays.
+     * @return list<MetricData> List of function data objects.
      */
     protected static function parseFunctions(SimpleXMLElement $functions): array
     {
         $functionList = [];
         foreach ($functions as $function) {
-            $functionData = [];
-            foreach ($function->attributes() as $key => $value) {
-                $functionData[$key] = (string) $value;
-            }
-
             $fileAttribs = $function->file->attributes();
-            $functionData['filename'] = (string) $fileAttribs['name'];
+            $filename = (string) $fileAttribs['name'];
 
-            $functionList[] = $functionData;
+            $functionList[] = new MetricData(
+                name: self::extractString($function, 'name'),
+                filename: $filename,
+                ccn2: self::extractInt($function, 'ccn2'),
+                cloc: self::extractInt($function, 'cloc'),
+                eloc: self::extractInt($function, 'eloc'),
+                he: self::extractInt($function, 'he'),
+                loc: self::extractInt($function, 'loc'),
+                mi: self::extractFloat($function, 'mi'),
+                npath: self::extractInt($function, 'npath'),
+            );
         }
 
         return $functionList;
@@ -167,18 +186,22 @@ class XmlParser
      *
      * @param SimpleXMLElement $methods The XML element containing methods.
      *
-     * @return array<mixed, array<string|int, string>> List of method data arrays.
+     * @return list<MetricData> List of method data objects.
      */
     protected static function parseMethods(SimpleXMLElement $methods): array
     {
         $methodList = [];
         foreach ($methods as $method) {
-            $methodData = [];
-            foreach ($method->attributes() as $key => $value) {
-                $methodData[$key] = (string) $value;
-            }
-
-            $methodList[] = $methodData;
+            $methodList[] = new MetricData(
+                name: self::extractString($method, 'name'),
+                ccn2: self::extractInt($method, 'ccn2'),
+                cloc: self::extractInt($method, 'cloc'),
+                eloc: self::extractInt($method, 'eloc'),
+                he: self::extractInt($method, 'he'),
+                loc: self::extractInt($method, 'loc'),
+                mi: self::extractFloat($method, 'mi'),
+                npath: self::extractInt($method, 'npath'),
+            );
         }
 
         return $methodList;
@@ -224,5 +247,32 @@ class XmlParser
         }
 
         return $packageList;
+    }
+
+    /**
+     * Extracts a string attribute from an XML element.
+     */
+    protected static function extractString(SimpleXMLElement $element, string $attribute): ?string
+    {
+        $value = $element->attributes()[$attribute] ?? null;
+        return $value !== null ? (string) $value : null;
+    }
+
+    /**
+     * Extracts an integer attribute from an XML element.
+     */
+    protected static function extractInt(SimpleXMLElement $element, string $attribute): ?int
+    {
+        $value = $element->attributes()[$attribute] ?? null;
+        return $value !== null ? (int) $value : null;
+    }
+
+    /**
+     * Extracts a float attribute from an XML element.
+     */
+    protected static function extractFloat(SimpleXMLElement $element, string $attribute): ?float
+    {
+        $value = $element->attributes()[$attribute] ?? null;
+        return $value !== null ? (float) $value : null;
     }
 }

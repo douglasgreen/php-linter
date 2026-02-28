@@ -49,12 +49,12 @@ class MetricChecker
     /**
      * Initializes the MetricChecker with metric data and context.
      *
-     * @param array<string, mixed> $data Metric data array (e.g., from PDepend XML).
+     * @param MetricData $data Metric data object.
      * @param string|null $className The name of the class being checked, if applicable.
      * @param string|null $functionName The name of the function/method being checked, if applicable.
      */
     public function __construct(
-        protected readonly array $data,
+        protected readonly MetricData $data,
         protected readonly ?string $className = null,
         protected readonly ?string $functionName = null,
     ) {}
@@ -68,7 +68,7 @@ class MetricChecker
      */
     public function checkMaxAfferentCoupling(int $limit): int
     {
-        $afferentCoupling = (int) $this->data['ca'];
+        $afferentCoupling = $this->data->ca ?? 0;
         $message = 'Afferent coupling = %d > %d';
         $hint = 'Reduce incoming dependencies; consider interface segregation or decoupling.';
         return $this->checkMax($message, $afferentCoupling, $limit, $hint);
@@ -83,7 +83,7 @@ class MetricChecker
      */
     public function checkMaxClassSize(int $limit): int
     {
-        $csz = (int) $this->data['csz'];
+        $csz = $this->data->csz ?? 0;
         $message = 'Class size (# methods + # properties) = %d > %d';
         $hint = 'Reduce class size; extract classes or delegate responsibilities.';
         return $this->checkMax($message, $csz, $limit, $hint);
@@ -98,7 +98,7 @@ class MetricChecker
      */
     public function checkMaxCodeRank(float $limit): int
     {
-        $codeRank = (float) $this->data['cr'];
+        $codeRank = $this->data->cr ?? 0.0;
         $message = 'Code rank = %0.2f > %0.2f';
         $hint = 'High rank implies high responsibility/centrality; ensure stability and test coverage.';
         return $this->checkMax($message, $codeRank, $limit, $hint);
@@ -113,7 +113,7 @@ class MetricChecker
      */
     public function checkMaxCyclomaticComplexity(int $limit): int
     {
-        $ecc = (int) $this->data['ccn2'];
+        $ecc = $this->data->ccn2 ?? 0;
         $message = 'Extended cyclomatic complexity = %d > %d';
         $hint = 'Reduce complexity; extract methods or simplify conditional logic.';
         return $this->checkMax($message, $ecc, $limit, $hint);
@@ -128,7 +128,7 @@ class MetricChecker
      */
     public function checkMaxEfferentCoupling(int $limit): int
     {
-        $efferentCoupling = (int) $this->data['ce'];
+        $efferentCoupling = $this->data->ce ?? 0;
         $message = 'Efferent coupling = %d > %d';
         $hint = 'Reduce outgoing dependencies; use dependency injection or interfaces.';
         return $this->checkMax($message, $efferentCoupling, $limit, $hint);
@@ -143,7 +143,7 @@ class MetricChecker
      */
     public function checkMaxHalsteadEffort(int $limit): int
     {
-        $halsteadEffort = (int) $this->data['he'];
+        $halsteadEffort = $this->data->he ?? 0;
         $message = 'Halstead effort = %d > %d';
         $hint = 'Reduce code volume/complexity; simplify logic or break down methods.';
         return $this->checkMax($message, $halsteadEffort, $limit, $hint);
@@ -158,7 +158,7 @@ class MetricChecker
      */
     public function checkMaxInheritanceDepth(int $limit): int
     {
-        $dit = (int) $this->data['dit'];
+        $dit = $this->data->dit ?? 0;
         $message = 'Inheritance depth = %d > %d';
         $hint = 'Reduce inheritance depth; prefer composition over inheritance.';
         return $this->checkMax($message, $dit, $limit, $hint);
@@ -173,7 +173,7 @@ class MetricChecker
      */
     public function checkMaxLinesOfCode(int $limit): int
     {
-        $loc = (int) $this->data['loc'];
+        $loc = $this->data->loc ?? 0;
         $message = '# lines of code = %d > %d';
         $hint = 'Reduce lines of code; extract logic into smaller units.';
         return $this->checkMax($message, $loc, $limit, $hint);
@@ -188,7 +188,7 @@ class MetricChecker
      */
     public function checkMaxNonPrivateProperties(int $limit): int
     {
-        $varsnp = (int) $this->data['varsnp'];
+        $varsnp = $this->data->varsnp ?? 0;
         $message = '# non-private properties = %d > %d';
         $hint = 'Encapsulate fields; make properties private and use accessors.';
         return $this->checkMax($message, $varsnp, $limit, $hint);
@@ -203,7 +203,7 @@ class MetricChecker
      */
     public function checkMaxNpathComplexity(int $limit): int
     {
-        $npath = (int) $this->data['npath'];
+        $npath = $this->data->npath ?? 0;
         $message = 'NPath complexity = %d > %d';
         $hint = 'Reduce branching paths; simplify control structures or return early.';
         return $this->checkMax($message, $npath, $limit, $hint);
@@ -218,7 +218,7 @@ class MetricChecker
      */
     public function checkMaxNumberOfChildClasses(int $limit): int
     {
-        $nocc = (int) $this->data['nocc'];
+        $nocc = $this->data->nocc ?? 0;
         $message = '# child classes = %d > %d';
         $hint = 'Review hierarchy; base class may be too generic or complex.';
         return $this->checkMax($message, $nocc, $limit, $hint);
@@ -233,7 +233,7 @@ class MetricChecker
      */
     public function checkMaxObjectCoupling(int $limit): int
     {
-        $objectCoupling = (int) $this->data['cbo'];
+        $objectCoupling = $this->data->cbo ?? 0;
         $message = 'Coupling between objects = %d > %d';
         $hint = 'Reduce coupling; decouple from other objects or use events.';
         return $this->checkMax($message, $objectCoupling, $limit, $hint);
@@ -248,7 +248,7 @@ class MetricChecker
      */
     public function checkMaxProperties(int $limit): int
     {
-        $vars = (int) $this->data['vars'];
+        $vars = $this->data->vars ?? 0;
         $message = '# properties = %d > %d';
         $hint = 'Reduce state; extract value objects or services.';
         return $this->checkMax($message, $vars, $limit, $hint);
@@ -263,7 +263,7 @@ class MetricChecker
      */
     public function checkMaxPublicMethods(int $limit): int
     {
-        $npm = (int) $this->data['npm'];
+        $npm = $this->data->npm ?? 0;
         $message = '# public methods = %d > %d';
         $hint = 'Reduce public interface; hide internal methods.';
         return $this->checkMax($message, $npm, $limit, $hint);
@@ -278,12 +278,12 @@ class MetricChecker
      */
     public function checkMinCommentRatio(float $limit): int
     {
-        $eloc = (int) $this->data['eloc'];
+        $eloc = $this->data->eloc ?? 0;
         if ($eloc === 0) {
             return self::STATUS_OK;
         }
 
-        $cloc = (int) $this->data['cloc'];
+        $cloc = $this->data->cloc ?? 0;
         $ratio = $cloc / $eloc;
         $message = 'Comment to code ratio = %0.2f < %0.2f';
         $hint = 'Increase documentation; add comments for complex logic.';
@@ -299,7 +299,7 @@ class MetricChecker
      */
     public function checkMinMaintainabilityIndex(float $limit): int
     {
-        $maintainabilityIndex = (int) $this->data['mi'];
+        $maintainabilityIndex = $this->data->mi ?? 0;
         $message = 'Maintainability index = %0.2f < %0.2f';
         $hint = 'Improve maintainability; refactor complex code.';
         return $this->checkMin($message, $maintainabilityIndex, $limit, $hint);
