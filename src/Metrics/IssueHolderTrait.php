@@ -15,7 +15,7 @@ namespace DouglasGreen\PhpLinter\Metrics;
  *
  * @internal
  */
-trait IssueHolder
+trait IssueHolderTrait
 {
     /**
      * Internal storage for issues, keyed by issue string to ensure uniqueness.

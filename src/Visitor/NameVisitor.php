@@ -27,7 +27,7 @@ use PhpParser\Node\Stmt\ClassLike;
  *
  * @internal
  */
-class NameVisitor extends VisitorChecker
+class NameVisitor extends AbstractVisitorChecker
 {
     /**
      * Set of qualified names found in the code.

@@ -23,7 +23,7 @@ use ReturnTypeWillChange;
  *
  * @internal
  */
-class MagicNumberVisitor extends VisitorChecker
+class MagicNumberVisitor extends AbstractVisitorChecker
 {
     /**
      * Counts of occurrences for each magic number found.

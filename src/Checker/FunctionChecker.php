@@ -28,7 +28,7 @@ use PhpParser\NodeFinder;
  *
  * @internal
  */
-class FunctionChecker extends NodeChecker
+class FunctionChecker extends AbstractNodeChecker
 {
     /**
      * Common prefixes for boolean function names.

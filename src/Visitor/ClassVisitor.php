@@ -25,7 +25,7 @@ use PhpParser\Node\Stmt\Property;
  *
  * @internal
  */
-class ClassVisitor extends VisitorChecker
+class ClassVisitor extends AbstractVisitorChecker
 {
     /**
      * Defined methods with their metadata.

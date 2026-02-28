@@ -19,7 +19,7 @@ use Exception;
  */
 class Repository
 {
-    use IssueHolder;
+    use IssueHolderTrait;
 
     /**
      * List of files tracked by Git.

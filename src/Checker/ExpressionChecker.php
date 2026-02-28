@@ -23,7 +23,7 @@ use PhpParser\Node\Stmt\If_;
  *
  * @internal
  */
-class ExpressionChecker extends NodeChecker
+class ExpressionChecker extends AbstractNodeChecker
 {
     /**
      * Performs checks on expression and statement nodes.

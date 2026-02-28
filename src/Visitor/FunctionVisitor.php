@@ -17,7 +17,7 @@ use PhpParser\Node\Expr\Variable;
  *
  * @internal
  */
-class FunctionVisitor extends VisitorChecker
+class FunctionVisitor extends AbstractVisitorChecker
 {
     /**
      * Counts of variable references within the function.

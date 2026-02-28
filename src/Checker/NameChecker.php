@@ -29,7 +29,7 @@ use PhpParser\Node\Stmt\Trait_;
  *
  * @internal
  */
-class NameChecker extends NodeChecker
+class NameChecker extends AbstractNodeChecker
 {
 
     /**

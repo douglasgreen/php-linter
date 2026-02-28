@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace DouglasGreen\PhpLinter\Visitor;
 
-use DouglasGreen\PhpLinter\IssueHolder;
+use DouglasGreen\PhpLinter\IssueHolderTrait;
 use PhpParser\Node;
 use PhpParser\Node\Expr\Variable;
 use PhpParser\Node\FunctionLike;
@@ -26,7 +26,7 @@ use PhpParser\NodeVisitorAbstract;
  */
 class SuperglobalUsageVisitor extends NodeVisitorAbstract
 {
-    use IssueHolder;
+    use IssueHolderTrait;
 
     /**
      * Stack of class names currently being traversed.

@@ -11,7 +11,7 @@ namespace DouglasGreen\PhpLinter;
  *
  * @since 1.0.0
  */
-trait IssueHolder
+trait IssueHolderTrait
 {
     /**
      * List of unique issues encountered.

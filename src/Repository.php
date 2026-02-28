@@ -15,7 +15,7 @@ use Exception;
  */
 class Repository
 {
-    use IssueHolder;
+    use IssueHolderTrait;
 
     /**
      * List of issues found in the repository.

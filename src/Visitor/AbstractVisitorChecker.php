@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace DouglasGreen\PhpLinter\Visitor;
 
-use DouglasGreen\PhpLinter\IssueHolder;
+use DouglasGreen\PhpLinter\IssueHolderTrait;
 use PhpParser\Node;
 
 /**
@@ -19,9 +19,9 @@ use PhpParser\Node;
  *
  * @internal
  */
-abstract class VisitorChecker
+abstract class AbstractVisitorChecker
 {
-    use IssueHolder;
+    use IssueHolderTrait;
 
     /**
      * Check a node and store issues for later retrieval.

@@ -18,7 +18,7 @@ use PhpParser\Node\Name;
  *
  * @internal
  */
-class FunctionCallChecker extends NodeChecker
+class FunctionCallChecker extends AbstractNodeChecker
 {
     /**
      * List of debug functions that should be removed in production.

@@ -38,7 +38,7 @@ use PhpParser\NodeVisitorAbstract;
  */
 class ElementVisitor extends NodeVisitorAbstract
 {
-    use IssueHolder;
+    use IssueHolderTrait;
 
     /** Visitor for class-related checks. */
     protected ClassVisitor $classVisitor;

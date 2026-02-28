@@ -18,7 +18,7 @@ use PhpParser\Node\Stmt\TryCatch;
  *
  * @internal
  */
-class TryCatchChecker extends NodeChecker
+class TryCatchChecker extends AbstractNodeChecker
 {
     /**
      * Checks for empty catch blocks.

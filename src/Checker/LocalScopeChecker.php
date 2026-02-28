@@ -17,7 +17,7 @@ use PhpParser\Node\Expr\Exit_;
  *
  * @internal
  */
-class LocalScopeChecker extends NodeChecker
+class LocalScopeChecker extends AbstractNodeChecker
 {
     /**
      * Checks for exit or die expressions.

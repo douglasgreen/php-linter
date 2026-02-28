@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace DouglasGreen\PhpLinter\Checker;
 
-use DouglasGreen\PhpLinter\IssueHolder;
+use DouglasGreen\PhpLinter\IssueHolderTrait;
 use PhpParser\Node;
 
 /**
@@ -19,9 +19,9 @@ use PhpParser\Node;
  *
  * @api
  */
-abstract class NodeChecker
+abstract class AbstractNodeChecker
 {
-    use IssueHolder;
+    use IssueHolderTrait;
 
     /**
      * Initializes the checker with the target node.

@@ -17,7 +17,7 @@ use PhpParser\Node\Expr\ErrorSuppress;
  *
  * @internal
  */
-class OperatorChecker extends NodeChecker
+class OperatorChecker extends AbstractNodeChecker
 {
     /**
      * Checks for the error suppression operator (@).
