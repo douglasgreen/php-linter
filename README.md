@@ -102,7 +102,7 @@ The AST linter analyzes your code for the following stylistic and structural iss
 - **CamelCase usage:** Classes, interfaces, and traits must use `UpperCamelCase`. Methods, functions, and variables must use `lowerCamelCase`.
 - **Constants:** Must be in `ALL_CAPS`.
 - **Name length:** Global names (classes/methods) should be 3–32 characters. Local variables should be 1–24 characters.
-- **PSR suffixes/prefixes:** Abstract classes must be prefixed with `Abstract`, traits must be suffixed with `Trait`, and interfaces must be suffixed with `Interface`. Also identifies undesirable suffixes like `Impl`, `Manager`, or `Helper`.
+- **PSR suffixes/prefixes:** Abstract classes must be prefixed with `Abstract`, traits must be suffixed with `Trait`, and interfaces must be suffixed with `Interface`.
 - **Boolean naming:** Boolean return functions should start with declarative verbs (e.g., `is`, `has`, `can`).
 - **Verb-based naming:** Non-boolean functions should start with an imperative verb.
 

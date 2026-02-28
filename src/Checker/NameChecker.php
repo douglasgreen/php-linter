@@ -31,19 +31,6 @@ use PhpParser\Node\Stmt\Trait_;
  */
 class NameChecker extends NodeChecker
 {
-    /**
-     * Map of undesirable class suffixes to reasons why they are bad.
-     *
-     * @var array<string, string>
-     */
-    protected const BAD_CLASS_SUFFIXES = [
-        'Abstract' => 'violates standard PHP naming conventions; use as a prefix or let the "abstract" keyword handle it',
-        'Array' => 'classes are objects, not primitives; use "Collection" or a domain-specific plural name instead',
-        'Impl' => 'is a "Java-ism" that adds no value; name the class after its specific strategy (e.g., "S3Storage" vs "StorageImpl")',
-        'Implementation' => 'is redundant when using interfaces; describe *how* it implements it (e.g., "JsonParser" vs "ParserImplementation")',
-        'Instance' => 'is redundant; every class is a blueprint for an instance, so the suffix provides no additional context',
-        'Object' => 'is redundant; in an OOP language, the fact that a class defines an object is already implied',
-    ];
 
     /**
      * List of PHP magic methods.
