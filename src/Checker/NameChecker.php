@@ -336,23 +336,6 @@ class NameChecker extends NodeChecker
                 ),
             );
         }
-
-        // Check for undesirable suffixes
-        foreach (self::BAD_CLASS_SUFFIXES as $badSuffix => $reason) {
-            if (preg_match('/' . $badSuffix . '$/i', $name)) {
-                $this->addIssue(
-                    sprintf(
-                        "Rename %s '%s' to remove the '%s' suffix. The suffix '%s' %s.",
-                        $type,
-                        $name,
-                        $badSuffix,
-                        $badSuffix,
-                        $reason,
-                    ),
-                );
-                return;
-            }
-        }
     }
 
     /**
