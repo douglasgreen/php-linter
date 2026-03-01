@@ -13,7 +13,7 @@ Code linter is a static analysis and metrics evaluation tool for PHP codebases. 
 `nikic/php-parser` library to generate an Abstract Syntax Tree (AST) for deep stylistic analysis,
 and it wraps `pdepend/pdepend` to evaluate software metrics and code complexity.
 
-### Why Code linter
+## Why Code linter
 
 This project is being developed as a potential replacement for
 [PHP Mess Detector](https://phpmd.org/) (PHPMD). Compared to PHPMD, this project:
@@ -191,7 +191,3 @@ build/*.tmp.php
 ## Disclaimer
 
 This project is not affiliated with or endorsed by the PHP Group.
-
-```
-
-```
