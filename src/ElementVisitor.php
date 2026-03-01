@@ -74,6 +74,9 @@ class ElementVisitor extends NodeVisitorAbstract
     /** Indicates if currently inside a class, trait, method, function, or closure. */
     protected bool $isLocalScope = false;
 
+    /** Indicates if the current class is readonly. */
+    protected bool $isReadonlyClass = false;
+
     /**
      * Constructs a new ElementVisitor instance.
      *
@@ -160,6 +163,7 @@ class ElementVisitor extends NodeVisitorAbstract
             $this->addIssues($this->classVisitor->getIssues());
 
             $this->currentClassName = null;
+            $this->isReadonlyClass = false;
             $this->isLocalScope = false;
         }
 
@@ -223,6 +227,7 @@ class ElementVisitor extends NodeVisitorAbstract
     {
         if ($node instanceof Class_ || $node instanceof Trait_) {
             $this->currentClassName = $node->name instanceof Identifier ? $node->name->name : null;
+            $this->isReadonlyClass = $node instanceof Class_ && $node->isReadonly();
 
             if ($node instanceof Class_) {
                 $attribs = [
@@ -280,7 +285,7 @@ class ElementVisitor extends NodeVisitorAbstract
             $this->currentFunctionName = $node->name->name;
 
             // Run checks on function node.
-            $funcChecker = new FunctionChecker($node);
+            $funcChecker = new FunctionChecker($node, $this->isReadonlyClass);
             $this->addIssues($funcChecker->check());
 
             if ($node instanceof ClassMethod) {
