@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace DouglasGreen\PhpLinter\Metrics;
 
+use DouglasGreen\PhpLinter\IgnoreList;
 use Exception;
 
 /**

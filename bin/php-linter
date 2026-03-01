@@ -31,7 +31,6 @@ use DouglasGreen\PhpLinter\IgnoreList;
 use DouglasGreen\PhpLinter\Linter;
 use DouglasGreen\PhpLinter\Metrics\Analyzer;
 use DouglasGreen\PhpLinter\Metrics\CacheManager;
-use DouglasGreen\PhpLinter\Metrics\IgnoreList as MetricsIgnoreList;
 use DouglasGreen\PhpLinter\Repository;
 
 $currentDir = getcwd();
@@ -47,8 +46,8 @@ $repository->printIssues();
 
 // 1. Run Metrics
 $cache = new CacheManager($currentDir);
-$metricsIgnoreList = new MetricsIgnoreList($currentDir);
-$analyzer = new Analyzer($currentDir, $cache, $metricsIgnoreList);
+$ignoreList = new IgnoreList($currentDir);
+$analyzer = new Analyzer($currentDir, $cache, $ignoreList);
 $analyzer->run($phpFiles);
 
 // 2. Run Linter
