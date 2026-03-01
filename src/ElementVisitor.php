@@ -257,6 +257,14 @@ class ElementVisitor extends NodeVisitorAbstract
                             $expectedFile,
                         ),
                     );
+                } elseif ($expectedFile === null) {
+                    $this->addIssue(
+                        sprintf(
+                            'Class namespace "%s\\%s" does not match any PSR-4 autoload path in composer.json.',
+                            $this->currentNamespace,
+                            $this->currentClassName,
+                        ),
+                    );
                 }
             }
         }
