@@ -249,7 +249,7 @@ class ElementVisitor extends NodeVisitorAbstract
                 $expectedFile = $this->composerFile->convertClassNameToFileName(
                     $this->currentNamespace . '\\' . $this->currentClassName,
                 );
-                if ($expectedFile !== $this->phpFile) {
+                if ($expectedFile !== null && $expectedFile !== $this->phpFile) {
                     $this->addIssue(
                         sprintf(
                             'Rename the file "%s" to "%s" to match the class namespace according to PSR-4 autoloading standards.',
