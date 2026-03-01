@@ -31,7 +31,6 @@ use PhpParser\Node\Stmt\Trait_;
  */
 class NameChecker extends AbstractNodeChecker
 {
-
     /**
      * List of PHP magic methods.
      *

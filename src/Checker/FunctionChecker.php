@@ -109,11 +109,6 @@ class FunctionChecker extends AbstractNodeChecker
     ];
 
     /**
-     * Whether the containing class is readonly (for DTOs).
-     */
-    protected bool $isReadonly = false;
-
-    /**
      * Stores parameter metadata indexed by parameter name.
      *
      * @var array<string, array{type: ?string, promoted: bool}>
@@ -126,10 +121,9 @@ class FunctionChecker extends AbstractNodeChecker
      * @param Node $node The function or method node to check.
      * @param bool $isReadonly Whether the containing class is readonly.
      */
-    public function __construct(Node $node, bool $isReadonly = false)
+    public function __construct(Node $node, protected bool $isReadonly = false)
     {
         parent::__construct($node);
-        $this->isReadonly = $isReadonly;
     }
 
     /**
