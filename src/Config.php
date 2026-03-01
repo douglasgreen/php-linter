@@ -46,7 +46,7 @@ class Config
             return;
         }
 
-        $this->ignoreIssues = array_filter($data['ignoreIssues'], 'is_string');
+        $this->ignoreIssues = array_filter($data['ignoreIssues'], is_string(...));
     }
 
     /**

@@ -47,16 +47,6 @@ class MetricChecker
      */
     protected array $issues = [];
 
-    /**
-     * Sets the list of issues to ignore globally.
-     *
-     * @param list<string> $ignoreIssues List of issue strings to ignore.
-     */
-    public static function setIgnoreIssues(array $ignoreIssues): void
-    {
-        self::$ignoreIssues = $ignoreIssues;
-    }
-
     /** The current file being processed, used for formatting output. */
     protected ?string $currentFile = null;
 
@@ -75,6 +65,16 @@ class MetricChecker
         protected readonly ?string $className = null,
         protected readonly ?string $functionName = null,
     ) {}
+
+    /**
+     * Sets the list of issues to ignore globally.
+     *
+     * @param list<string> $ignoreIssues List of issue strings to ignore.
+     */
+    public static function setIgnoreIssues(array $ignoreIssues): void
+    {
+        self::$ignoreIssues = $ignoreIssues;
+    }
 
     /**
      * Checks if afferent coupling exceeds the limit.
