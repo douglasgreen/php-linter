@@ -71,7 +71,7 @@ class XmlParser
     /**
      * Returns the list of parsed files.
      *
-     * @return array<int, mixed>|null List of file data arrays or null if absent.
+     * @return list<MetricData>|null List of file data objects or null if absent.
      */
     public function getFiles(): ?array
     {
