@@ -27,10 +27,14 @@
 declare(strict_types=1);
 
 use DouglasGreen\PhpLinter\ComposerFile;
+use DouglasGreen\PhpLinter\Config;
 use DouglasGreen\PhpLinter\IgnoreList;
+use DouglasGreen\PhpLinter\IssueHolderTrait;
 use DouglasGreen\PhpLinter\Linter;
 use DouglasGreen\PhpLinter\Metrics\Analyzer;
 use DouglasGreen\PhpLinter\Metrics\CacheManager;
+use DouglasGreen\PhpLinter\Metrics\IssueHolderTrait as MetricsIssueHolderTrait;
+use DouglasGreen\PhpLinter\Metrics\MetricChecker;
 use DouglasGreen\PhpLinter\Repository;
 
 $currentDir = getcwd();
@@ -39,6 +43,15 @@ if ($currentDir === false) {
 }
 
 require_once $currentDir . '/vendor/autoload.php';
+
+// Load configuration
+$config = new Config($currentDir);
+$ignoreIssues = $config->getIgnoreIssues();
+
+// Set ignore issues globally for all IssueHolderTrait users
+IssueHolderTrait::setIgnoreIssues($ignoreIssues);
+MetricsIssueHolderTrait::setIgnoreIssues($ignoreIssues);
+MetricChecker::setIgnoreIssues($ignoreIssues);
 
 $repository = new Repository();
 $phpFiles = $repository->getPhpFiles();

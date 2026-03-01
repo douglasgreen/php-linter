@@ -34,11 +34,28 @@ class MetricChecker
     public const STATUS_ERROR = 1;
 
     /**
+     * Static list of issues to ignore (shared across all instances).
+     *
+     * @var list<string>
+     */
+    protected static array $ignoreIssues = [];
+
+    /**
      * List of issues found during checks.
      *
      * @var list<string>
      */
     protected array $issues = [];
+
+    /**
+     * Sets the list of issues to ignore globally.
+     *
+     * @param list<string> $ignoreIssues List of issue strings to ignore.
+     */
+    public static function setIgnoreIssues(array $ignoreIssues): void
+    {
+        self::$ignoreIssues = $ignoreIssues;
+    }
 
     /** The current file being processed, used for formatting output. */
     protected ?string $currentFile = null;
@@ -404,6 +421,27 @@ class MetricChecker
      */
     protected function report(string $issue, string $hint): void
     {
+        // Check if this issue should be ignored
+        $fullIssue = $this->formatIssue($issue, $hint);
+        foreach (self::$ignoreIssues as $ignorePattern) {
+            if ($fullIssue === $ignorePattern) {
+                return;
+            }
+        }
+
+        $this->issues[] = $fullIssue;
+    }
+
+    /**
+     * Formats an issue message with optional hint.
+     *
+     * @param string $issue The issue message.
+     * @param string $hint A hint for resolving the issue.
+     *
+     * @return string The formatted issue string.
+     */
+    protected function formatIssue(string $issue, string $hint): string
+    {
         if ($this->className !== null) {
             $name = $this->className;
             if ($this->functionName !== null) {
@@ -420,6 +458,6 @@ class MetricChecker
             $output .= PHP_EOL . '    Action: ' . $hint;
         }
 
-        $this->issues[] = $output;
+        return $output;
     }
 }

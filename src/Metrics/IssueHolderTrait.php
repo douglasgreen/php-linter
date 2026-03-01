@@ -18,11 +18,28 @@ namespace DouglasGreen\PhpLinter\Metrics;
 trait IssueHolderTrait
 {
     /**
+     * Static list of issues to ignore (shared across all instances).
+     *
+     * @var list<string>
+     */
+    protected static array $ignoreIssues = [];
+
+    /**
      * Internal storage for issues, keyed by issue string to ensure uniqueness.
      *
      * @var array<string, bool>
      */
     protected array $issues = [];
+
+    /**
+     * Sets the list of issues to ignore globally.
+     *
+     * @param list<string> $ignoreIssues List of issue strings to ignore.
+     */
+    public static function setIgnoreIssues(array $ignoreIssues): void
+    {
+        self::$ignoreIssues = $ignoreIssues;
+    }
 
     /**
      * Returns all unique issues found.
@@ -51,6 +68,13 @@ trait IssueHolderTrait
      */
     protected function addIssue(string $issue): void
     {
+        // Check if this issue should be ignored
+        foreach (self::$ignoreIssues as $ignorePattern) {
+            if ($issue === $ignorePattern) {
+                return;
+            }
+        }
+
         $this->issues[$issue] = true;
     }
 
