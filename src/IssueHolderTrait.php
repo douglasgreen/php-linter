@@ -13,12 +13,6 @@ namespace DouglasGreen\PhpLinter;
  */
 trait IssueHolderTrait
 {
-    /**
-     * Static list of issues to ignore (shared across all instances).
-     *
-     * @var list<string>
-     */
-    protected static array $ignoreIssues = [];
 
     /**
      * List of unique issues encountered.
@@ -28,13 +22,28 @@ trait IssueHolderTrait
     protected array $issues = [];
 
     /**
+     * Gets the static ignore issues list (shared across all instances).
+     *
+     * Uses a static variable inside a method to ensure the data is truly
+     * shared between all classes using this trait.
+     *
+     * @return list<string> List of issue strings to ignore.
+     */
+    protected static function &getIgnoreIssues(): array
+    {
+        static $ignoreIssues = [];
+        return $ignoreIssues;
+    }
+
+    /**
      * Sets the list of issues to ignore globally.
      *
      * @param list<string> $ignoreIssues List of issue strings to ignore.
      */
     public static function setIgnoreIssues(array $ignoreIssues): void
     {
-        self::$ignoreIssues = $ignoreIssues;
+        $staticIssues = &self::getIgnoreIssues();
+        $staticIssues = $ignoreIssues;
     }
 
     /**
@@ -65,7 +74,7 @@ trait IssueHolderTrait
     protected function addIssue(string $issue): void
     {
         // Check if this issue should be ignored
-        foreach (self::$ignoreIssues as $ignorePattern) {
+        foreach (self::getIgnoreIssues() as $ignorePattern) {
             if ($issue === $ignorePattern) {
                 return;
             }
@@ -81,6 +90,8 @@ trait IssueHolderTrait
      */
     protected function addIssues(array $issues): void
     {
-        $this->issues = array_merge($this->issues, $issues);
+        foreach (array_keys($issues) as $issue) {
+            $this->addIssue($issue);
+        }
     }
 }
