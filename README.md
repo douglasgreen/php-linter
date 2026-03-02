@@ -190,6 +190,26 @@ config/*.php
 build/*.tmp.php
 ```
 
+## Configure error ignoring
+
+Create a `php-linter.json` file in the root of your repository to ignore specific issue types. This is useful when you want to suppress certain categories of warnings across your entire codebase.
+
+### Configuration structure
+
+The configuration file contains an `ignoreIssues` array with issue strings to ignore:
+
+```json
+{
+  "ignoreIssues": [
+    "short_local_variable",
+    "unused_private_method",
+    "magic_number"
+  ]
+}
+```
+
+Issue strings correspond to the error types reported by the linter. When an issue type is listed in `ignoreIssues`, all instances of that issue will be suppressed from the output.
+
 ## Disclaimer
 
 This project is not affiliated with or endorsed by the PHP Group.
