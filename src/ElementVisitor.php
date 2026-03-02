@@ -81,6 +81,9 @@ class ElementVisitor extends NodeVisitorAbstract
     /** Indicates if the current class is readonly. */
     protected bool $isReadonlyClass = false;
 
+    /** Indicates if currently inside a class, interface, trait, or enum. */
+    protected bool $inClassLike = false;
+
     /**
      * Constructs a new ElementVisitor instance.
      *
