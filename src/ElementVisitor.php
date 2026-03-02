@@ -23,10 +23,14 @@ use PhpParser\Node\Identifier;
 use PhpParser\Node\Name;
 use PhpParser\Node\Stmt\Class_;
 use PhpParser\Node\Stmt\ClassMethod;
+use PhpParser\Node\Stmt\Const_;
+use PhpParser\Node\Stmt\Enum_;
 use PhpParser\Node\Stmt\Function_;
+use PhpParser\Node\Stmt\Interface_;
 use PhpParser\Node\Stmt\Namespace_;
 use PhpParser\Node\Stmt\Trait_;
 use PhpParser\Node\Stmt\TryCatch;
+use PhpParser\Node\Expr\FuncCall;
 use PhpParser\NodeVisitorAbstract;
 
 /**
@@ -133,6 +137,9 @@ class ElementVisitor extends NodeVisitorAbstract
         $this->trackMethodCalls($node);
         $this->checkTryCatch($node);
         $this->runGenericCheckers($node);
+        $this->checkTopLevelFunction($node);
+        $this->checkTopLevelConst($node);
+        $this->checkTopLevelDefine($node);
 
         return null;
     }
@@ -158,13 +165,14 @@ class ElementVisitor extends NodeVisitorAbstract
             $this->currentNamespace = null;
         }
 
-        if ($node instanceof Class_ || $node instanceof Trait_) {
+        if ($node instanceof Class_ || $node instanceof Trait_ || $node instanceof Interface_ || $node instanceof Enum_) {
             $this->classVisitor->checkClass();
             $this->addIssues($this->classVisitor->getIssues());
 
             $this->currentClassName = null;
             $this->isReadonlyClass = false;
             $this->isLocalScope = false;
+            $this->inClassLike = false;
         }
 
         if ($node instanceof Function_ || $node instanceof ClassMethod) {
@@ -225,7 +233,8 @@ class ElementVisitor extends NodeVisitorAbstract
      */
     private function handleClassOrTrait(Node $node): void
     {
-        if ($node instanceof Class_ || $node instanceof Trait_) {
+        if ($node instanceof Class_ || $node instanceof Trait_ || $node instanceof Interface_ || $node instanceof Enum_) {
+            $this->inClassLike = true;
             $this->currentClassName = $node->name instanceof Identifier ? $node->name->name : null;
             $this->isReadonlyClass = $node instanceof Class_ && $node->isReadonly();
 
@@ -408,5 +417,57 @@ class ElementVisitor extends NodeVisitorAbstract
 
         $opChecker = new OperatorChecker($node);
         $this->addIssues($opChecker->check());
+    }
+
+    /**
+     * Checks for top-level function definitions.
+     *
+     * @param Node $node The current node.
+     */
+    private function checkTopLevelFunction(Node $node): void
+    {
+        if ($node instanceof Function_ && !$this->inClassLike) {
+            $this->addIssue(
+                sprintf(
+                    'Function "%s" should be moved inside a class as a method according to PSR-1.',
+                    $node->name->name,
+                ),
+            );
+        }
+    }
+
+    /**
+     * Checks for top-level constant definitions.
+     *
+     * @param Node $node The current node.
+     */
+    private function checkTopLevelConst(Node $node): void
+    {
+        if ($node instanceof Const_ && !$this->inClassLike) {
+            foreach ($node->consts as $const) {
+                $this->addIssue(
+                    sprintf(
+                        'Constant "%s" should be moved inside a class as a class constant according to PSR-1.',
+                        $const->name->name,
+                    ),
+                );
+            }
+        }
+    }
+
+    /**
+     * Checks for top-level define() calls.
+     *
+     * @param Node $node The current node.
+     */
+    private function checkTopLevelDefine(Node $node): void
+    {
+        if ($node instanceof FuncCall && !$this->inClassLike) {
+            if ($node->name instanceof Name && $node->name->toString() === 'define') {
+                $this->addIssue(
+                    'Global define() call should be moved inside a class as a class constant according to PSR-1.',
+                );
+            }
+        }
     }
 }
