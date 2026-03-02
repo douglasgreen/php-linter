@@ -129,6 +129,8 @@ The AST linter analyzes your code for the following stylistic and structural iss
 
 ### Code structure & PSR standards
 
+- **PSR-1 compliance:** Checks for constants and functions that should be moved from the top-level
+  namespace to a class namespace.
 - **PSR-4 compliance:** Verifies that the file path matches the class namespace and name based on
   `composer.json`.
 - **Visibility order:** Properties and methods must be ordered by visibility: `public`, then
