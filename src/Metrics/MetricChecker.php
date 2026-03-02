@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace DouglasGreen\PhpLinter\Metrics;
 
+use DouglasGreen\PhpLinter\IssueHolder;
+
 /**
  * Checks software metrics against defined limits.
  *
@@ -33,19 +35,7 @@ class MetricChecker
      */
     public const STATUS_ERROR = 1;
 
-    /**
-     * Static list of issues to ignore (shared across all instances).
-     *
-     * @var list<string>
-     */
-    protected static array $ignoreIssues = [];
-
-    /**
-     * List of issues found during checks.
-     *
-     * @var list<string>
-     */
-    protected array $issues = [];
+    protected IssueHolder $issueHolder;
 
     /** The current file being processed, used for formatting output. */
     protected ?string $currentFile = null;
@@ -64,7 +54,9 @@ class MetricChecker
         protected readonly MetricData $data,
         protected readonly ?string $className = null,
         protected readonly ?string $functionName = null,
-    ) {}
+    ) {
+        $this->issueHolder = IssueHolder::getInstance();
+    }
 
     /**
      * Sets the list of issues to ignore globally.
@@ -73,7 +65,7 @@ class MetricChecker
      */
     public static function setIgnoreIssues(array $ignoreIssues): void
     {
-        self::$ignoreIssues = $ignoreIssues;
+        IssueHolder::getInstance()->setIgnoreIssues($ignoreIssues);
     }
 
     /**
@@ -329,7 +321,7 @@ class MetricChecker
      */
     public function getIssues(): array
     {
-        return $this->issues;
+        return array_keys($this->issueHolder->getIssues());
     }
 
     /**
@@ -339,7 +331,7 @@ class MetricChecker
      */
     public function hasIssues(): bool
     {
-        return $this->issues !== [];
+        return $this->issueHolder->hasIssues();
     }
 
     /**
@@ -361,6 +353,8 @@ class MetricChecker
         foreach ($this->getIssues() as $issue) {
             echo $issue . PHP_EOL;
         }
+        
+        $this->issueHolder->clearIssues();
     }
 
     /**
@@ -421,15 +415,8 @@ class MetricChecker
      */
     protected function report(string $issue, string $hint): void
     {
-        // Check if this issue should be ignored
         $fullIssue = $this->formatIssue($issue, $hint);
-        foreach (self::$ignoreIssues as $ignorePattern) {
-            if ($fullIssue === $ignorePattern) {
-                return;
-            }
-        }
-
-        $this->issues[] = $fullIssue;
+        $this->issueHolder->addIssue($fullIssue);
     }
 
     /**

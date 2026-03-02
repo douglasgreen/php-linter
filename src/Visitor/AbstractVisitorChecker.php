@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace DouglasGreen\PhpLinter\Visitor;
 
-use DouglasGreen\PhpLinter\IssueHolderTrait;
+use DouglasGreen\PhpLinter\IssueHolder;
 use PhpParser\Node;
 
 /**
@@ -21,7 +21,52 @@ use PhpParser\Node;
  */
 abstract class AbstractVisitorChecker
 {
-    use IssueHolderTrait;
+    protected IssueHolder $issueHolder;
+
+    public function __construct()
+    {
+        $this->issueHolder = IssueHolder::getInstance();
+    }
+
+    /**
+     * Gets the list of issues.
+     *
+     * @return array<string, bool> The list of issues.
+     */
+    public function getIssues(): array
+    {
+        return $this->issueHolder->getIssues();
+    }
+
+    /**
+     * Checks if there are any issues.
+     *
+     * @return bool True if there are issues, false otherwise.
+     */
+    public function hasIssues(): bool
+    {
+        return $this->issueHolder->hasIssues();
+    }
+
+    /**
+     * Adds a single issue to the list.
+     *
+     * @param string $issue The issue description.
+     */
+    protected function addIssue(string $issue): void
+    {
+        $this->issueHolder->addIssue($issue);
+    }
+
+    /**
+     * Adds multiple issues to the list.
+     *
+     * @param array<string, bool> $issues The issues to add.
+     */
+    protected function addIssues(array $issues): void
+    {
+        $this->issueHolder->addIssues($issues);
+    }
 
     /**
      * Check a node and store issues for later retrieval.

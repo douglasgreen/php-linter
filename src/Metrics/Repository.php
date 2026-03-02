@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace DouglasGreen\PhpLinter\Metrics;
 
-use DouglasGreen\PhpLinter\IssueHolderTrait;
+use DouglasGreen\PhpLinter\IssueHolder;
 use Exception;
 
 /**
@@ -20,7 +20,7 @@ use Exception;
  */
 class Repository
 {
-    use IssueHolderTrait;
+    protected IssueHolder $issueHolder;
 
     /**
      * List of files tracked by Git.
@@ -41,6 +41,8 @@ class Repository
      */
     public function __construct()
     {
+        $this->issueHolder = IssueHolder::getInstance();
+        
         $output = [];
         $returnVar = 0;
         exec('git ls-files', $output, $returnVar);
@@ -79,7 +81,7 @@ class Repository
     {
         // Check if the default branch is 'main'
         if ($this->defaultBranch !== 'main') {
-            $this->addIssue(
+            $this->issueHolder->addIssue(
                 sprintf('The default branch is "%s" but should be "main"', $this->defaultBranch),
             );
         }
@@ -107,14 +109,16 @@ class Repository
      */
     public function printIssues(): void
     {
-        if (! $this->hasIssues()) {
+        if (! $this->issueHolder->hasIssues()) {
             return;
         }
 
         echo '==> Git repository' . PHP_EOL;
 
-        foreach (array_keys($this->issues) as $issue) {
+        foreach (array_keys($this->issueHolder->getIssues()) as $issue) {
             echo $issue . PHP_EOL;
         }
+        
+        $this->issueHolder->clearIssues();
     }
 }

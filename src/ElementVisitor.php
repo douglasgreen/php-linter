@@ -42,7 +42,7 @@ use PhpParser\NodeVisitorAbstract;
  */
 class ElementVisitor extends NodeVisitorAbstract
 {
-    use IssueHolderTrait;
+    protected IssueHolder $issueHolder;
 
     /** Visitor for class-related checks. */
     protected ClassVisitor $classVisitor;
@@ -93,7 +93,9 @@ class ElementVisitor extends NodeVisitorAbstract
     public function __construct(
         protected readonly ComposerFile $composerFile,
         protected readonly string $phpFile,
-    ) {}
+    ) {
+        $this->issueHolder = IssueHolder::getInstance();
+    }
 
     /**
      * Initializes visitors before traversal.
@@ -116,9 +118,6 @@ class ElementVisitor extends NodeVisitorAbstract
     public function afterTraverse(array $nodes): null
     {
         $this->magicNumberVisitor->checkDuplicates();
-        $this->addIssues($this->magicNumberVisitor->getIssues());
-
-        $this->addIssues($this->superglobalUsageVisitor->getIssues());
 
         return null;
     }
@@ -170,7 +169,6 @@ class ElementVisitor extends NodeVisitorAbstract
 
         if ($node instanceof Class_ || $node instanceof Trait_ || $node instanceof Interface_ || $node instanceof Enum_) {
             $this->classVisitor->checkClass();
-            $this->addIssues($this->classVisitor->getIssues());
 
             $this->currentClassName = null;
             $this->isReadonlyClass = false;
@@ -180,7 +178,6 @@ class ElementVisitor extends NodeVisitorAbstract
 
         if ($node instanceof Function_ || $node instanceof ClassMethod) {
             $this->functionVisitor->checkFunction();
-            $this->addIssues($this->functionVisitor->getIssues());
 
             $this->currentFunctionName = null;
             $this->isLocalScope = false;
@@ -203,7 +200,7 @@ class ElementVisitor extends NodeVisitorAbstract
      */
     public function printIssues(string $filename): void
     {
-        if (! $this->hasIssues()) {
+        if (! $this->issueHolder->hasIssues()) {
             return;
         }
 
@@ -212,9 +209,11 @@ class ElementVisitor extends NodeVisitorAbstract
             $this->currentFile = $filename;
         }
 
-        foreach (array_keys($this->issues) as $issue) {
+        foreach (array_keys($this->issueHolder->getIssues()) as $issue) {
             echo $issue . PHP_EOL;
         }
+        
+        $this->issueHolder->clearIssues();
     }
 
     /**

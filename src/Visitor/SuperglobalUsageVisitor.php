@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace DouglasGreen\PhpLinter\Visitor;
 
-use DouglasGreen\PhpLinter\IssueHolderTrait;
+use DouglasGreen\PhpLinter\IssueHolder;
 use PhpParser\Node;
 use PhpParser\Node\Expr\Variable;
 use PhpParser\Node\FunctionLike;
@@ -26,7 +26,7 @@ use PhpParser\NodeVisitorAbstract;
  */
 class SuperglobalUsageVisitor extends NodeVisitorAbstract
 {
-    use IssueHolderTrait;
+    protected IssueHolder $issueHolder;
 
     /**
      * Stack of class names currently being traversed.
@@ -64,6 +64,11 @@ class SuperglobalUsageVisitor extends NodeVisitorAbstract
         'Middleware',
     ];
 
+    public function __construct()
+    {
+        $this->issueHolder = IssueHolder::getInstance();
+    }
+
     /**
      * Enters a node to track class/function context and check for superglobals.
      *
@@ -85,7 +90,7 @@ class SuperglobalUsageVisitor extends NodeVisitorAbstract
         // 3. Detect superglobal usage
         if ($node instanceof Variable && is_string($node->name) && in_array($node->name, $this->superglobals, true) && ! $this->isAllowedContext()) {
             $context = $this->getContextName();
-            $this->addIssue(
+            $this->issueHolder->addIssue(
                 sprintf(
                     'Move superglobal $%s access out of %s. Superglobals should only be accessed in the global scope or within classes ending in Controller or Middleware to ensure proper encapsulation.',
                     $node->name,

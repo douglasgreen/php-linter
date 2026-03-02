@@ -47,8 +47,8 @@ require_once $currentDir . '/vendor/autoload.php';
 $config = new Config($currentDir);
 $ignoreIssues = $config->getIgnoreIssues();
 
-// Set ignore issues globally for all IssueHolderTrait users
-IssueHolderTrait::setIgnoreIssues($ignoreIssues);
+// Set ignore issues globally for all IssueHolder users
+IssueHolder::getInstance()->setIgnoreIssues($ignoreIssues);
 MetricChecker::setIgnoreIssues($ignoreIssues);
 
 $repository = new Repository();
