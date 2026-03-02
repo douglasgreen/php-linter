@@ -196,19 +196,19 @@ Create a `php-linter.json` file in the root of your repository to ignore specifi
 
 ### Configuration structure
 
-The configuration file contains an `ignoreIssues` array with issue strings to ignore:
+The configuration file contains an `ignoreIssues` array with issue strings to ignore. The strings must match the exact issue text reported by the linter:
 
 ```json
 {
   "ignoreIssues": [
-    "short_local_variable",
-    "unused_private_method",
-    "magic_number"
+    "Remove unused private non-static method MyClass::unusedMethod() to reduce dead code.",
+    "Remove unused parameter \"paramName\" from function \"myFunction()\"; it is defined but not used in the function body.",
+    "Replace the magic number 42 with a named constant. It appears 3 times on lines 10, 25, 30. Centralizing this value improves maintainability and readability."
   ]
 }
 ```
 
-Issue strings correspond to the error types reported by the linter. When an issue type is listed in `ignoreIssues`, all instances of that issue will be suppressed from the output.
+**Note:** The ignore list matches the complete issue message text, not short codes. To find the exact strings to ignore, run the linter first and copy the issue messages you want to suppress into the `ignoreIssues` array. When an issue message is listed in `ignoreIssues`, all instances of that exact issue will be suppressed from the output.
 
 ## Disclaimer
 

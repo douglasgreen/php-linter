@@ -70,7 +70,7 @@ class FunctionVisitor extends AbstractVisitorChecker
                 $paramName,
                 $this->functionName,
             );
-            $this->issues[$issue] = true;
+            $this->addIssue($issue);
         }
 
         // Check that each variable is used more than once.
@@ -81,7 +81,7 @@ class FunctionVisitor extends AbstractVisitorChecker
                     $variable,
                     $this->functionName,
                 );
-                $this->issues[$issue] = true;
+                $this->addIssue($issue);
             }
         }
     }

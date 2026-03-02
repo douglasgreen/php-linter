@@ -101,10 +101,10 @@ class ClassVisitor extends AbstractVisitorChecker
                     $type,
                     $propName,
                 );
-                $this->issues[$issue] = true;
+                $this->addIssue($issue);
             } elseif ($prop['visibility'] === 'public') {
                 $issue = sprintf('Change public property %s to private or protected to improve encapsulation.', $propName);
-                $this->issues[$issue] = true;
+                $this->addIssue($issue);
             }
         }
 
@@ -121,7 +121,7 @@ class ClassVisitor extends AbstractVisitorChecker
                     $className,
                     $methodName,
                 );
-                $this->issues[$issue] = true;
+                $this->addIssue($issue);
             }
         }
 
