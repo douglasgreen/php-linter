@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace DouglasGreen\PhpLinter\Checker;
 
+use PhpParser\Comment\Doc;
 use DouglasGreen\PhpLinter\IssueHolder;
 use PhpParser\Node;
 use PhpParser\Node\Identifier;
@@ -30,10 +31,8 @@ use PHPStan\PhpDocParser\Parser\TokenIterator;
  */
 class DocBlockChecker extends AbstractNodeChecker
 {
-    /**
-     * Order priority for PHPDoc tags.
-     */
-    private const TAG_ORDER = [
+    /** Order priority for PHPDoc tags. */
+    private const array TAG_ORDER = [
         '@package' => 1,
         '@api' => 1, '@internal' => 1,
         '@template' => 2, '@template-covariant' => 2, '@phpstan-type' => 2,
@@ -55,7 +54,7 @@ class DocBlockChecker extends AbstractNodeChecker
         Node $node,
         IssueHolder $issueHolder,
         private readonly Lexer $lexer,
-        private readonly PhpDocParser $phpDocParser
+        private readonly PhpDocParser $phpDocParser,
     ) {
         parent::__construct($node, $issueHolder);
     }
@@ -69,7 +68,7 @@ class DocBlockChecker extends AbstractNodeChecker
     {
         $docComment = $this->node->getDocComment();
 
-        if ($docComment === null) {
+        if (!$docComment instanceof Doc) {
             $this->checkMissingDocBlock();
             return $this->getIssues();
         }
@@ -133,9 +132,11 @@ class DocBlockChecker extends AbstractNodeChecker
         if (strlen($summary) > 80) {
             $this->addIssue('DocBlock summary MUST be under 80 characters.');
         }
+
         if (!preg_match('/^[A-Z]/', $summary)) {
             $this->addIssue('DocBlock summary MUST start with a capital letter.');
         }
+
         if (!str_ends_with($summary, '.')) {
             $this->addIssue('DocBlock summary MUST end with a period.');
         }
@@ -167,9 +168,11 @@ class DocBlockChecker extends AbstractNodeChecker
         if ($phpDocNode->getTagsByName('@package') === []) {
             $this->addIssue('Class-like structures MUST have a @package tag.');
         }
+
         if ($phpDocNode->getTagsByName('@since') === []) {
             $this->addIssue('Class-like structures MUST have a @since tag.');
         }
+
         if ($phpDocNode->getTagsByName('@api') === [] && $phpDocNode->getTagsByName('@internal') === []) {
             $this->addIssue('Class-like structures MUST have an @api or @internal tag.');
         }
@@ -185,7 +188,7 @@ class DocBlockChecker extends AbstractNodeChecker
         // Check @param tags match parameters
         $params = $this->node->getParams();
         $paramTags = $phpDocNode->getTagsByName('@param');
-        
+
         if (count($params) !== count($paramTags)) {
             $this->addIssue('Method parameters and @param tags count mismatch.');
         }
@@ -193,7 +196,7 @@ class DocBlockChecker extends AbstractNodeChecker
         // Check @return
         $returnType = $this->node->getReturnType();
         $returnTags = $phpDocNode->getTagsByName('@return');
-        
+
         // Rule 4.1: @return required for non-void, optional for void but recommended
         $isVoid = $returnType instanceof Identifier && $returnType->name === 'void';
         if ($returnType !== null && !$isVoid && $returnTags === []) {
@@ -226,7 +229,7 @@ class DocBlockChecker extends AbstractNodeChecker
             if (!$child instanceof PhpDocTagNode) {
                 continue;
             }
-            
+
             $tagName = $child->name;
             // Normalize tag name (remove variable part for params like @param $var)
             $baseTagName = strtok($tagName, ' ');
@@ -241,6 +244,7 @@ class DocBlockChecker extends AbstractNodeChecker
                 // We report once per block to avoid noise
                 return;
             }
+
             $lastPriority = $priority;
         }
     }
@@ -255,14 +259,14 @@ class DocBlockChecker extends AbstractNodeChecker
         $typeTags = array_merge(
             $phpDocNode->getTagsByName('@param'),
             $phpDocNode->getTagsByName('@return'),
-            $phpDocNode->getTagsByName('@var')
+            $phpDocNode->getTagsByName('@var'),
         );
 
         foreach ($typeTags as $tag) {
             // Accessing the type string is tricky without deep inspection of the AST.
             // We check the raw text of the tag value for simplicity.
             $typeString = (string) $tag->value;
-            
+
             // Rule 4.4: No bare 'array'
             if (preg_match('/\barray\b/', $typeString) && !preg_match('/array[<\{]/', $typeString)) {
                 $this->addIssue('Use typed generics syntax (e.g., list<Foo>) instead of bare "array".');

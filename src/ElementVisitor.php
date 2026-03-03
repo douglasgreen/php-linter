@@ -4,21 +4,19 @@ declare(strict_types=1);
 
 namespace DouglasGreen\PhpLinter;
 
+use DouglasGreen\PhpLinter\Checker\DocBlockChecker;
 use DouglasGreen\PhpLinter\Checker\ExpressionChecker;
 use DouglasGreen\PhpLinter\Checker\FunctionCallChecker;
 use DouglasGreen\PhpLinter\Checker\FunctionChecker;
 use DouglasGreen\PhpLinter\Checker\LocalScopeChecker;
 use DouglasGreen\PhpLinter\Checker\NameChecker;
 use DouglasGreen\PhpLinter\Checker\OperatorChecker;
-use DouglasGreen\PhpLinter\Checker\DocBlockChecker;
 use DouglasGreen\PhpLinter\Checker\TryCatchChecker;
 use DouglasGreen\PhpLinter\PhpDoc\ParserFactory;
 use DouglasGreen\PhpLinter\Visitor\ClassVisitor;
 use DouglasGreen\PhpLinter\Visitor\FunctionVisitor;
 use DouglasGreen\PhpLinter\Visitor\MagicNumberVisitor;
 use DouglasGreen\PhpLinter\Visitor\SuperglobalUsageVisitor;
-use PHPStan\PhpDocParser\Lexer\Lexer;
-use PHPStan\PhpDocParser\Parser\PhpDocParser;
 use PhpParser\Node;
 use PhpParser\Node\Expr\Closure;
 use PhpParser\Node\Expr\FuncCall;
@@ -37,6 +35,8 @@ use PhpParser\Node\Stmt\Property;
 use PhpParser\Node\Stmt\Trait_;
 use PhpParser\Node\Stmt\TryCatch;
 use PhpParser\NodeVisitorAbstract;
+use PHPStan\PhpDocParser\Lexer\Lexer;
+use PHPStan\PhpDocParser\Parser\PhpDocParser;
 
 /**
  * Visitor for traversing PHP AST nodes to detect linting issues.
