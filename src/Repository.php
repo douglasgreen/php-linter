@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace DouglasGreen\PhpLinter;
 
+use DouglasGreen\PhpLinter\IssueHolder;
 use Exception;
 
 /**
@@ -32,7 +33,7 @@ class Repository
     public function __construct()
     {
         $this->issueHolder = IssueHolder::getInstance();
-        
+
         $gitMessage = "Failed to execute Git command. Make sure Git is installed and you're in a Git repository.";
 
         exec('git ls-files', $files, $returnCode);
@@ -74,7 +75,7 @@ class Repository
         foreach (array_keys($this->issueHolder->getIssues()) as $issue) {
             echo $issue . PHP_EOL;
         }
-        
+
         $this->issueHolder->clearIssues();
     }
 

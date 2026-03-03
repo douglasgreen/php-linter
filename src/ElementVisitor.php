@@ -11,12 +11,14 @@ use DouglasGreen\PhpLinter\Checker\LocalScopeChecker;
 use DouglasGreen\PhpLinter\Checker\NameChecker;
 use DouglasGreen\PhpLinter\Checker\OperatorChecker;
 use DouglasGreen\PhpLinter\Checker\TryCatchChecker;
+use DouglasGreen\PhpLinter\IssueHolder;
 use DouglasGreen\PhpLinter\Visitor\ClassVisitor;
 use DouglasGreen\PhpLinter\Visitor\FunctionVisitor;
 use DouglasGreen\PhpLinter\Visitor\MagicNumberVisitor;
 use DouglasGreen\PhpLinter\Visitor\SuperglobalUsageVisitor;
 use PhpParser\Node;
 use PhpParser\Node\Expr\Closure;
+use PhpParser\Node\Expr\FuncCall;
 use PhpParser\Node\Expr\MethodCall;
 use PhpParser\Node\Expr\StaticCall;
 use PhpParser\Node\Identifier;
@@ -30,7 +32,6 @@ use PhpParser\Node\Stmt\Interface_;
 use PhpParser\Node\Stmt\Namespace_;
 use PhpParser\Node\Stmt\Trait_;
 use PhpParser\Node\Stmt\TryCatch;
-use PhpParser\Node\Expr\FuncCall;
 use PhpParser\NodeVisitorAbstract;
 
 /**
@@ -212,7 +213,7 @@ class ElementVisitor extends NodeVisitorAbstract
         foreach (array_keys($this->issueHolder->getIssues()) as $issue) {
             echo $issue . PHP_EOL;
         }
-        
+
         $this->issueHolder->clearIssues();
     }
 
