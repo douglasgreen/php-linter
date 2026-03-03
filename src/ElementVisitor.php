@@ -42,8 +42,6 @@ use PhpParser\NodeVisitorAbstract;
  */
 class ElementVisitor extends NodeVisitorAbstract
 {
-    protected IssueHolder $issueHolder;
-
     /** Visitor for class-related checks. */
     protected ClassVisitor $classVisitor;
 
@@ -61,9 +59,6 @@ class ElementVisitor extends NodeVisitorAbstract
 
     /** Current class name. */
     protected ?string $currentClassName = null;
-
-    /** Current file being processed. */
-    protected ?string $currentFile = null;
 
     /** Current function or method name. */
     protected ?string $currentFunctionName = null;
@@ -94,7 +89,7 @@ class ElementVisitor extends NodeVisitorAbstract
         protected readonly ComposerFile $composerFile,
         protected readonly string $phpFile,
     ) {
-        $this->issueHolder = IssueHolder::getInstance();
+        IssueHolder::setCurrentFile($phpFile);
     }
 
     /**
@@ -106,6 +101,7 @@ class ElementVisitor extends NodeVisitorAbstract
     {
         $this->magicNumberVisitor = new MagicNumberVisitor();
         $this->superglobalUsageVisitor = new SuperglobalUsageVisitor();
+        IssueHolder::setCurrentFile($this->phpFile);
 
         return null;
     }
@@ -174,6 +170,7 @@ class ElementVisitor extends NodeVisitorAbstract
             $this->isReadonlyClass = false;
             $this->isLocalScope = false;
             $this->inClassLike = false;
+            IssueHolder::setCurrentClass(null);
         }
 
         if ($node instanceof Function_ || $node instanceof ClassMethod) {
@@ -181,6 +178,7 @@ class ElementVisitor extends NodeVisitorAbstract
 
             $this->currentFunctionName = null;
             $this->isLocalScope = false;
+            IssueHolder::setCurrentFunction(null);
         }
 
         if ($node instanceof Closure) {
@@ -194,36 +192,13 @@ class ElementVisitor extends NodeVisitorAbstract
     }
 
     /**
-     * Prints the issues found for a specific file.
-     *
-     * @param string $filename The file name.
-     */
-    public function printIssues(string $filename): void
-    {
-        if (! $this->issueHolder->hasIssues()) {
-            return;
-        }
-
-        if ($this->currentFile !== $filename) {
-            echo PHP_EOL . '==> ' . $filename . PHP_EOL;
-            $this->currentFile = $filename;
-        }
-
-        foreach (array_keys($this->issueHolder->getIssues()) as $issue) {
-            echo $issue . PHP_EOL;
-        }
-
-        $this->issueHolder->clearIssues();
-    }
-
-    /**
      * Adds a single issue.
      *
      * @param string $issue The issue to add.
      */
     protected function addIssue(string $issue): void
     {
-        $this->issueHolder->addIssue($issue);
+        IssueHolder::addIssue($issue);
     }
 
     /**
@@ -233,7 +208,7 @@ class ElementVisitor extends NodeVisitorAbstract
      */
     protected function addIssues(array $issues): void
     {
-        $this->issueHolder->addIssues($issues);
+        IssueHolder::addIssues($issues);
     }
 
     /**
@@ -259,6 +234,7 @@ class ElementVisitor extends NodeVisitorAbstract
             $this->inClassLike = true;
             $this->currentClassName = $node->name instanceof Identifier ? $node->name->name : null;
             $this->isReadonlyClass = $node instanceof Class_ && $node->isReadonly();
+            IssueHolder::setCurrentClass($this->currentClassName);
 
             if ($node instanceof Class_) {
                 $attribs = [
@@ -322,6 +298,7 @@ class ElementVisitor extends NodeVisitorAbstract
     {
         if ($node instanceof Function_ || $node instanceof ClassMethod) {
             $this->currentFunctionName = $node->name->name;
+            IssueHolder::setCurrentFunction($this->currentFunctionName);
 
             // Run checks on function node.
             $funcChecker = new FunctionChecker($node, $this->isReadonlyClass);

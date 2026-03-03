@@ -48,12 +48,10 @@ $config = new Config($currentDir);
 $ignoreIssues = $config->getIgnoreIssues();
 
 // Set ignore issues globally for all IssueHolder users
-IssueHolder::getInstance()->setIgnoreIssues($ignoreIssues);
-MetricChecker::setIgnoreIssues($ignoreIssues);
+IssueHolder::setIgnoreIssues($ignoreIssues);
 
 $repository = new Repository();
 $phpFiles = $repository->getPhpFiles();
-$repository->printIssues();
 
 // 1. Run Metrics
 $cache = new CacheManager($currentDir);
@@ -66,4 +64,7 @@ $composerFile = new ComposerFile($currentDir . '/composer.json');
 $ignoreList = new IgnoreList($currentDir);
 $linter = new Linter($composerFile, $ignoreList);
 $linter->run($phpFiles);
+
+// Print all collected issues
+IssueHolder::printIssues();
 

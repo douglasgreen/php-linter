@@ -21,8 +21,6 @@ use PhpParser\Node;
  */
 abstract class AbstractNodeChecker
 {
-    protected IssueHolder $issueHolder;
-
     /**
      * Initializes the checker with the target node.
      *
@@ -30,9 +28,7 @@ abstract class AbstractNodeChecker
      */
     public function __construct(
         protected readonly Node $node,
-    ) {
-        $this->issueHolder = IssueHolder::getInstance();
-    }
+    ) {}
 
     /**
      * Performs validation checks on the associated node.
@@ -48,7 +44,7 @@ abstract class AbstractNodeChecker
      */
     protected function getIssues(): array
     {
-        return $this->issueHolder->getIssues();
+        return IssueHolder::getIssues();
     }
 
     /**
@@ -58,7 +54,7 @@ abstract class AbstractNodeChecker
      */
     protected function hasIssues(): bool
     {
-        return $this->issueHolder->hasIssues();
+        return IssueHolder::hasIssues();
     }
 
     /**
@@ -68,7 +64,7 @@ abstract class AbstractNodeChecker
      */
     protected function addIssue(string $issue): void
     {
-        $this->issueHolder->addIssue($issue);
+        IssueHolder::addIssue($issue);
     }
 
     /**
@@ -78,6 +74,6 @@ abstract class AbstractNodeChecker
      */
     protected function addIssues(array $issues): void
     {
-        $this->issueHolder->addIssues($issues);
+        IssueHolder::addIssues($issues);
     }
 }

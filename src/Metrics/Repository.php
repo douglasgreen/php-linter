@@ -20,8 +20,6 @@ use Exception;
  */
 class Repository
 {
-    protected IssueHolder $issueHolder;
-
     /**
      * List of files tracked by Git.
      *
@@ -41,8 +39,6 @@ class Repository
      */
     public function __construct()
     {
-        $this->issueHolder = IssueHolder::getInstance();
-
         $output = [];
         $returnVar = 0;
         exec('git ls-files', $output, $returnVar);
@@ -81,7 +77,7 @@ class Repository
     {
         // Check if the default branch is 'main'
         if ($this->defaultBranch !== 'main') {
-            $this->issueHolder->addIssue(
+            IssueHolder::addIssue(
                 sprintf('The default branch is "%s" but should be "main"', $this->defaultBranch),
             );
         }
@@ -104,21 +100,4 @@ class Repository
         return $matches;
     }
 
-    /**
-     * Prints any issues found during checks.
-     */
-    public function printIssues(): void
-    {
-        if (! $this->issueHolder->hasIssues()) {
-            return;
-        }
-
-        echo '==> Git repository' . PHP_EOL;
-
-        foreach (array_keys($this->issueHolder->getIssues()) as $issue) {
-            echo $issue . PHP_EOL;
-        }
-
-        $this->issueHolder->clearIssues();
-    }
 }

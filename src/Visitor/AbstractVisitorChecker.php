@@ -21,13 +21,6 @@ use PhpParser\Node;
  */
 abstract class AbstractVisitorChecker
 {
-    protected ?IssueHolder $issueHolder = null;
-
-    public function __construct()
-    {
-        $this->issueHolder = IssueHolder::getInstance();
-    }
-
     /**
      * Gets the list of issues.
      *
@@ -35,7 +28,7 @@ abstract class AbstractVisitorChecker
      */
     public function getIssues(): array
     {
-        return $this->getIssueHolder()->getIssues();
+        return IssueHolder::getIssues();
     }
 
     /**
@@ -45,7 +38,7 @@ abstract class AbstractVisitorChecker
      */
     public function hasIssues(): bool
     {
-        return $this->getIssueHolder()->hasIssues();
+        return IssueHolder::hasIssues();
     }
 
     /**
@@ -55,15 +48,6 @@ abstract class AbstractVisitorChecker
      */
     abstract public function checkNode(Node $node): void;
 
-    protected function getIssueHolder(): IssueHolder
-    {
-        if (!$this->issueHolder instanceof IssueHolder) {
-            $this->issueHolder = IssueHolder::getInstance();
-        }
-
-        return $this->issueHolder;
-    }
-
     /**
      * Adds a single issue to the list.
      *
@@ -71,7 +55,7 @@ abstract class AbstractVisitorChecker
      */
     protected function addIssue(string $issue): void
     {
-        $this->getIssueHolder()->addIssue($issue);
+        IssueHolder::addIssue($issue);
     }
 
     /**
@@ -81,6 +65,6 @@ abstract class AbstractVisitorChecker
      */
     protected function addIssues(array $issues): void
     {
-        $this->getIssueHolder()->addIssues($issues);
+        IssueHolder::addIssues($issues);
     }
 }

@@ -15,8 +15,6 @@ use Exception;
  */
 class Repository
 {
-    protected IssueHolder $issueHolder;
-
     /**
      * List of files in the repository.
      *
@@ -31,8 +29,6 @@ class Repository
      */
     public function __construct()
     {
-        $this->issueHolder = IssueHolder::getInstance();
-
         $gitMessage = "Failed to execute Git command. Make sure Git is installed and you're in a Git repository.";
 
         exec('git ls-files', $files, $returnCode);
@@ -60,23 +56,6 @@ class Repository
         return $matches;
     }
 
-    /**
-     * Prints the list of issues found in the repository.
-     */
-    public function printIssues(): void
-    {
-        if (! $this->issueHolder->hasIssues()) {
-            return;
-        }
-
-        echo '==> Git repository' . PHP_EOL;
-
-        foreach (array_keys($this->issueHolder->getIssues()) as $issue) {
-            echo $issue . PHP_EOL;
-        }
-
-        $this->issueHolder->clearIssues();
-    }
 
     /**
      * Determines the file type based on the extension.

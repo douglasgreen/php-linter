@@ -35,14 +35,6 @@ class MetricChecker
      */
     public const STATUS_ERROR = 1;
 
-    protected IssueHolder $issueHolder;
-
-    /** The current file being processed, used for formatting output. */
-    protected ?string $currentFile = null;
-
-    /** Count of errors encountered. */
-    protected int $errorCount = 0;
-
     /**
      * Initializes the MetricChecker with metric data and context.
      *
@@ -55,17 +47,8 @@ class MetricChecker
         protected readonly ?string $className = null,
         protected readonly ?string $functionName = null,
     ) {
-        $this->issueHolder = IssueHolder::getInstance();
-    }
-
-    /**
-     * Sets the list of issues to ignore globally.
-     *
-     * @param list<string> $ignoreIssues List of issue strings to ignore.
-     */
-    public static function setIgnoreIssues(array $ignoreIssues): void
-    {
-        IssueHolder::getInstance()->setIgnoreIssues($ignoreIssues);
+        IssueHolder::setCurrentClass($className);
+        IssueHolder::setCurrentFunction($functionName);
     }
 
     /**
@@ -314,48 +297,6 @@ class MetricChecker
         return $this->checkMin($message, $maintainabilityIndex, $limit, $hint);
     }
 
-    /**
-     * Returns the list of issues found.
-     *
-     * @return list<string> List of issue messages.
-     */
-    public function getIssues(): array
-    {
-        return array_keys($this->issueHolder->getIssues());
-    }
-
-    /**
-     * Checks if any issues were found.
-     *
-     * @return bool True if issues exist, false otherwise.
-     */
-    public function hasIssues(): bool
-    {
-        return $this->issueHolder->hasIssues();
-    }
-
-    /**
-     * Prints the collected issues for a specific file.
-     *
-     * @param string $filename The file name to print issues for.
-     */
-    public function printIssues(string $filename): void
-    {
-        if (! $this->hasIssues()) {
-            return;
-        }
-
-        if ($this->currentFile !== $filename) {
-            echo PHP_EOL . '==> ' . $filename . PHP_EOL;
-            $this->currentFile = $filename;
-        }
-
-        foreach ($this->getIssues() as $issue) {
-            echo $issue . PHP_EOL;
-        }
-
-        $this->issueHolder->clearIssues();
-    }
 
     /**
      * Checks if a value exceeds a maximum limit.
@@ -374,8 +315,7 @@ class MetricChecker
         string $hint = '',
     ): int {
         if ($value > $limit) {
-            $this->report(sprintf($message, $value, $limit), $hint);
-            $this->errorCount++;
+            IssueHolder::addIssue(sprintf($message, $value, $limit), $hint);
             return self::STATUS_ERROR;
         }
 
@@ -399,52 +339,10 @@ class MetricChecker
         string $hint = '',
     ): int {
         if ($value < $limit) {
-            $this->report(sprintf($message, $value, $limit), $hint);
-            $this->errorCount++;
+            IssueHolder::addIssue(sprintf($message, $value, $limit), $hint);
             return self::STATUS_ERROR;
         }
 
         return self::STATUS_OK;
-    }
-
-    /**
-     * Formats and records an issue.
-     *
-     * @param string $issue The issue message.
-     * @param string $hint A hint for resolving the issue.
-     */
-    protected function report(string $issue, string $hint): void
-    {
-        $fullIssue = $this->formatIssue($issue, $hint);
-        $this->issueHolder->addIssue($fullIssue);
-    }
-
-    /**
-     * Formats an issue message with optional hint.
-     *
-     * @param string $issue The issue message.
-     * @param string $hint A hint for resolving the issue.
-     *
-     * @return string The formatted issue string.
-     */
-    protected function formatIssue(string $issue, string $hint): string
-    {
-        if ($this->className !== null) {
-            $name = $this->className;
-            if ($this->functionName !== null) {
-                $name .= '::' . $this->functionName . '()';
-            }
-        } elseif ($this->functionName !== null) {
-            $name = $this->functionName . '()';
-        } else {
-            $name = 'File';
-        }
-
-        $output = sprintf('%s - %s', $name, $issue);
-        if ($hint !== '') {
-            $output .= PHP_EOL . '    Action: ' . $hint;
-        }
-
-        return $output;
     }
 }
