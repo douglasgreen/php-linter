@@ -21,14 +21,11 @@ use PHPUnit\Framework\TestCase;
 #[Small]
 final class NameCheckerTest extends TestCase
 {
+    private IssueHolder $issueHolder;
+
     protected function setUp(): void
     {
-        IssueHolder::getInstance()->clearIssues();
-    }
-
-    protected function tearDown(): void
-    {
-        IssueHolder::getInstance()->clearIssues();
+        $this->issueHolder = new IssueHolder();
     }
 
     #[Test]
@@ -38,10 +35,10 @@ final class NameCheckerTest extends TestCase
         // Arrange
         $node = new Class_(new Identifier($className));
         // Act
-        $checker = new NameChecker($node);
+        $checker = new NameChecker($node, $this->issueHolder);
         $checker->check();
         // Assert
-        $this->assertFalse(IssueHolder::getInstance()->hasIssues());
+        $this->assertFalse($this->issueHolder->hasIssues());
     }
 
     #[Test]
@@ -52,11 +49,11 @@ final class NameCheckerTest extends TestCase
         $node = new Class_(new Identifier($className));
 
         // Act
-        $checker = new NameChecker($node);
+        $checker = new NameChecker($node, $this->issueHolder);
         $checker->check();
 
         // Assert
-        $this->assertTrue(IssueHolder::getInstance()->hasIssues());
+        $this->assertTrue($this->issueHolder->hasIssues());
     }
 
     #[Test]
@@ -65,10 +62,10 @@ final class NameCheckerTest extends TestCase
         // Arrange
         $node = new Interface_(new Identifier('UserRepository'));
         // Act
-        $checker = new NameChecker($node);
+        $checker = new NameChecker($node, $this->issueHolder);
         $checker->check();
         // Assert
-        $this->assertTrue(IssueHolder::getInstance()->hasIssues());
+        $this->assertTrue($this->issueHolder->hasIssues());
     }
 
     #[Test]
@@ -77,10 +74,10 @@ final class NameCheckerTest extends TestCase
         // Arrange
         $node = new Trait_(new Identifier('Loggable'));
         // Act
-        $checker = new NameChecker($node);
+        $checker = new NameChecker($node, $this->issueHolder);
         $checker->check();
         // Assert
-        $this->assertTrue(IssueHolder::getInstance()->hasIssues());
+        $this->assertTrue($this->issueHolder->hasIssues());
     }
 
     #[Test]
@@ -90,11 +87,11 @@ final class NameCheckerTest extends TestCase
         $node = new Variable('validVariableName');
 
         // Act
-        $checker = new NameChecker($node);
+        $checker = new NameChecker($node, $this->issueHolder);
         $checker->check();
 
         // Assert
-        $this->assertFalse(IssueHolder::getInstance()->hasIssues());
+        $this->assertFalse($this->issueHolder->hasIssues());
     }
 
     public static function validClassNameProvider(): iterable

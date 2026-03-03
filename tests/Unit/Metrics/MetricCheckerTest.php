@@ -14,14 +14,11 @@ use PHPUnit\Framework\TestCase;
 #[Small]
 final class MetricCheckerTest extends TestCase
 {
+    private IssueHolder $issueHolder;
+
     protected function setUp(): void
     {
-        IssueHolder::getInstance()->clearIssues();
-    }
-
-    protected function tearDown(): void
-    {
-        IssueHolder::getInstance()->clearIssues();
+        $this->issueHolder = new IssueHolder();
     }
 
     #[Test]
@@ -29,7 +26,7 @@ final class MetricCheckerTest extends TestCase
     {
         // Arrange
         $data = new MetricData(loc: 50);
-        $checker = new MetricChecker($data);
+        $checker = new MetricChecker($data, $this->issueHolder);
         // Act
         $result = $checker->checkMaxLinesOfCode(100);
         // Assert
@@ -42,7 +39,7 @@ final class MetricCheckerTest extends TestCase
     {
         // Arrange
         $data = new MetricData(loc: 150);
-        $checker = new MetricChecker($data);
+        $checker = new MetricChecker($data, $this->issueHolder);
         // Act
         $result = $checker->checkMaxLinesOfCode(100);
         // Assert
@@ -54,7 +51,7 @@ final class MetricCheckerTest extends TestCase
     {
         // Arrange
         $data = new MetricData(ccn2: 30);
-        $checker = new MetricChecker($data);
+        $checker = new MetricChecker($data, $this->issueHolder);
         // Act
         $result = $checker->checkMaxCyclomaticComplexity(25);
 
@@ -67,7 +64,7 @@ final class MetricCheckerTest extends TestCase
     {
         // Arrange
         $data = new MetricData(mi: 20.0);
-        $checker = new MetricChecker($data);
+        $checker = new MetricChecker($data, $this->issueHolder);
 
         // Act
         $result = $checker->checkMinMaintainabilityIndex(25.0);
@@ -81,7 +78,7 @@ final class MetricCheckerTest extends TestCase
     {
         // Arrange
         $data = new MetricData(eloc: 0, cloc: 0);
-        $checker = new MetricChecker($data);
+        $checker = new MetricChecker($data, $this->issueHolder);
         // Act
         $result = $checker->checkMinCommentRatio(0.05);
 
@@ -94,7 +91,7 @@ final class MetricCheckerTest extends TestCase
     {
         // Arrange
         $data = new MetricData(loc: 150);
-        $checker = new MetricChecker($data, 'TestClass', 'testMethod');
+        $checker = new MetricChecker($data, $this->issueHolder, 'TestClass', 'testMethod');
 
         // Act
         $checker->checkMaxLinesOfCode(100);
@@ -110,7 +107,7 @@ final class MetricCheckerTest extends TestCase
     {
         // Arrange
         $data = new MetricData(loc: 150);
-        $checker = new MetricChecker($data, null, 'testFunction');
+        $checker = new MetricChecker($data, $this->issueHolder, null, 'testFunction');
 
         // Act
         $checker->checkMaxLinesOfCode(100);
@@ -126,7 +123,7 @@ final class MetricCheckerTest extends TestCase
     {
         // Arrange
         $data = new MetricData(loc: 150);
-        $checker = new MetricChecker($data);
+        $checker = new MetricChecker($data, $this->issueHolder);
 
         // Act
         $checker->checkMaxLinesOfCode(100);

@@ -15,21 +15,18 @@ use PHPUnit\Framework\TestCase;
 #[Small]
 final class AbstractVisitorCheckerTest extends TestCase
 {
+    private IssueHolder $issueHolder;
+
     protected function setUp(): void
     {
-        IssueHolder::getInstance()->clearIssues();
-    }
-
-    protected function tearDown(): void
-    {
-        IssueHolder::getInstance()->clearIssues();
+        $this->issueHolder = new IssueHolder();
     }
 
     #[Test]
     public function testItAddsIssuesThroughProtectedMethod(): void
     {
         // Arrange
-        $visitor = new class extends AbstractVisitorChecker {
+        $visitor = new class($this->issueHolder) extends AbstractVisitorChecker {
             public function checkNode(Node $node): void
             {
                 $this->addIssue('Test issue');
@@ -46,7 +43,7 @@ final class AbstractVisitorCheckerTest extends TestCase
     public function testItAddsMultipleIssues(): void
     {
         // Arrange
-        $visitor = new class extends AbstractVisitorChecker {
+        $visitor = new class($this->issueHolder) extends AbstractVisitorChecker {
             public function checkNode(Node $node): void
             {
                 $this->addIssues(['Issue 1' => true, 'Issue 2' => true]);

@@ -19,14 +19,11 @@ use PHPUnit\Framework\TestCase;
 #[Small]
 final class FunctionCheckerTest extends TestCase
 {
+    private IssueHolder $issueHolder;
+
     protected function setUp(): void
     {
-        IssueHolder::getInstance()->clearIssues();
-    }
-
-    protected function tearDown(): void
-    {
-        IssueHolder::getInstance()->clearIssues();
+        $this->issueHolder = new IssueHolder();
     }
 
     #[Test]
@@ -39,10 +36,10 @@ final class FunctionCheckerTest extends TestCase
         }
         $node = new Function_(new Identifier('testFunction'), ['params' => $params]);
         // Act
-        $checker = new FunctionChecker($node);
+        $checker = new FunctionChecker($node, $this->issueHolder);
         $checker->check();
         // Assert
-        $this->assertTrue(IssueHolder::getInstance()->hasIssues());
+        $this->assertTrue($this->issueHolder->hasIssues());
     }
 
     #[Test]
@@ -56,11 +53,11 @@ final class FunctionCheckerTest extends TestCase
         $node = new Function_(new Identifier('testFunction'), ['params' => $params]);
 
         // Act
-        $checker = new FunctionChecker($node);
+        $checker = new FunctionChecker($node, $this->issueHolder);
         $checker->check();
 
         // Assert
-        $this->assertFalse(IssueHolder::getInstance()->hasIssues());
+        $this->assertFalse($this->issueHolder->hasIssues());
     }
 
     #[Test]
@@ -72,10 +69,10 @@ final class FunctionCheckerTest extends TestCase
             ['returnType' => new Identifier('bool')]
         );
         // Act
-        $checker = new FunctionChecker($node);
+        $checker = new FunctionChecker($node, $this->issueHolder);
         $checker->check();
         // Assert
-        $this->assertTrue(IssueHolder::getInstance()->hasIssues());
+        $this->assertTrue($this->issueHolder->hasIssues());
     }
 
     #[Test]
@@ -88,11 +85,11 @@ final class FunctionCheckerTest extends TestCase
         );
 
         // Act
-        $checker = new FunctionChecker($node);
+        $checker = new FunctionChecker($node, $this->issueHolder);
         $checker->check();
 
         // Assert
-        $this->assertFalse(IssueHolder::getInstance()->hasIssues());
+        $this->assertFalse($this->issueHolder->hasIssues());
     }
 
     #[Test]
@@ -109,7 +106,7 @@ final class FunctionCheckerTest extends TestCase
         );
 
         // Act
-        $checker = new FunctionChecker($node);
+        $checker = new FunctionChecker($node, $this->issueHolder);
         $checker->check();
         $params = $checker->getParams();
 

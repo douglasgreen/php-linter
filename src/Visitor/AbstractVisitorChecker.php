@@ -22,13 +22,22 @@ use PhpParser\Node;
 abstract class AbstractVisitorChecker
 {
     /**
+     * Initializes the visitor checker with an issue holder.
+     *
+     * @param IssueHolder $issueHolder The issue holder for collecting issues.
+     */
+    public function __construct(
+        protected readonly IssueHolder $issueHolder,
+    ) {}
+
+    /**
      * Gets the list of issues.
      *
      * @return array<string, bool> The list of issues.
      */
     public function getIssues(): array
     {
-        return IssueHolder::getIssues();
+        return $this->issueHolder->getIssues();
     }
 
     /**
@@ -38,7 +47,7 @@ abstract class AbstractVisitorChecker
      */
     public function hasIssues(): bool
     {
-        return IssueHolder::hasIssues();
+        return $this->issueHolder->hasIssues();
     }
 
     /**
@@ -55,7 +64,7 @@ abstract class AbstractVisitorChecker
      */
     protected function addIssue(string $issue): void
     {
-        IssueHolder::addIssue($issue);
+        $this->issueHolder->addIssue($issue);
     }
 
     /**
@@ -65,6 +74,6 @@ abstract class AbstractVisitorChecker
      */
     protected function addIssues(array $issues): void
     {
-        IssueHolder::addIssues($issues);
+        $this->issueHolder->addIssues($issues);
     }
 }

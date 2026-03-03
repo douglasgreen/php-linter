@@ -47,8 +47,9 @@ require_once $currentDir . '/vendor/autoload.php';
 $config = new Config($currentDir);
 $ignoreIssues = $config->getIgnoreIssues();
 
-// Set ignore issues globally for all IssueHolder users
-IssueHolder::setIgnoreIssues($ignoreIssues);
+// Create issue holder for collecting issues
+$issueHolder = new IssueHolder();
+$issueHolder->setIgnoreIssues($ignoreIssues);
 
 $repository = new Repository();
 $phpFiles = $repository->getPhpFiles();
@@ -56,15 +57,15 @@ $phpFiles = $repository->getPhpFiles();
 // 1. Run Metrics
 $cache = new CacheManager($currentDir);
 $ignoreList = new IgnoreList($currentDir);
-$analyzer = new Analyzer($currentDir, $cache, $ignoreList, $config);
+$analyzer = new Analyzer($currentDir, $cache, $ignoreList, $config, $issueHolder);
 $analyzer->run($phpFiles);
 
 // 2. Run Linter
 $composerFile = new ComposerFile($currentDir . '/composer.json');
 $ignoreList = new IgnoreList($currentDir);
-$linter = new Linter($composerFile, $ignoreList);
+$linter = new Linter($composerFile, $ignoreList, $issueHolder);
 $linter->run($phpFiles);
 
 // Print all collected issues
-IssueHolder::printIssues();
+$issueHolder->printIssues();
 

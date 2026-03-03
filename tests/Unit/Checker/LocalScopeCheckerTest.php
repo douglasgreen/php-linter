@@ -17,14 +17,11 @@ use PHPUnit\Framework\TestCase;
 #[Small]
 final class LocalScopeCheckerTest extends TestCase
 {
+    private IssueHolder $issueHolder;
+
     protected function setUp(): void
     {
-        IssueHolder::getInstance()->clearIssues();
-    }
-
-    protected function tearDown(): void
-    {
-        IssueHolder::getInstance()->clearIssues();
+        $this->issueHolder = new IssueHolder();
     }
 
     #[Test]
@@ -33,11 +30,11 @@ final class LocalScopeCheckerTest extends TestCase
         // Arrange
         $node = new Exit_(null, ['kind' => Exit_::KIND_EXIT]);
         // Act
-        $checker = new LocalScopeChecker($node);
+        $checker = new LocalScopeChecker($node, $this->issueHolder);
         $checker->check();
 
         // Assert
-        $this->assertTrue(IssueHolder::getInstance()->hasIssues());
+        $this->assertTrue($this->issueHolder->hasIssues());
     }
 
     #[Test]
@@ -46,11 +43,11 @@ final class LocalScopeCheckerTest extends TestCase
         // Arrange
         $node = new Exit_(null, ['kind' => Exit_::KIND_DIE]);
         // Act
-        $checker = new LocalScopeChecker($node);
+        $checker = new LocalScopeChecker($node, $this->issueHolder);
         $checker->check();
 
         // Assert
-        $this->assertTrue(IssueHolder::getInstance()->hasIssues());
+        $this->assertTrue($this->issueHolder->hasIssues());
     }
 
     #[Test]
@@ -60,10 +57,10 @@ final class LocalScopeCheckerTest extends TestCase
         $node = new Variable('var');
 
         // Act
-        $checker = new LocalScopeChecker($node);
+        $checker = new LocalScopeChecker($node, $this->issueHolder);
         $checker->check();
 
         // Assert
-        $this->assertFalse(IssueHolder::getInstance()->hasIssues());
+        $this->assertFalse($this->issueHolder->hasIssues());
     }
 }

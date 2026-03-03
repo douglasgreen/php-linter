@@ -17,14 +17,11 @@ use PHPUnit\Framework\TestCase;
 #[Small]
 final class OperatorCheckerTest extends TestCase
 {
+    private IssueHolder $issueHolder;
+
     protected function setUp(): void
     {
-        IssueHolder::getInstance()->clearIssues();
-    }
-
-    protected function tearDown(): void
-    {
-        IssueHolder::getInstance()->clearIssues();
+        $this->issueHolder = new IssueHolder();
     }
 
     #[Test]
@@ -33,10 +30,10 @@ final class OperatorCheckerTest extends TestCase
         // Arrange
         $node = new ErrorSuppress(new Variable('var'));
         // Act
-        $checker = new OperatorChecker($node);
+        $checker = new OperatorChecker($node, $this->issueHolder);
         $checker->check();
         // Assert
-        $this->assertTrue(IssueHolder::getInstance()->hasIssues());
+        $this->assertTrue($this->issueHolder->hasIssues());
     }
 
     #[Test]
@@ -46,10 +43,10 @@ final class OperatorCheckerTest extends TestCase
         $node = new Variable('var');
 
         // Act
-        $checker = new OperatorChecker($node);
+        $checker = new OperatorChecker($node, $this->issueHolder);
         $checker->check();
 
         // Assert
-        $this->assertFalse(IssueHolder::getInstance()->hasIssues());
+        $this->assertFalse($this->issueHolder->hasIssues());
     }
 }

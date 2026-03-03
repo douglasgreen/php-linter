@@ -16,14 +16,11 @@ use PHPUnit\Framework\TestCase;
 #[Small]
 final class AbstractNodeCheckerTest extends TestCase
 {
+    private IssueHolder $issueHolder;
+
     protected function setUp(): void
     {
-        IssueHolder::getInstance()->clearIssues();
-    }
-
-    protected function tearDown(): void
-    {
-        IssueHolder::getInstance()->clearIssues();
+        $this->issueHolder = new IssueHolder();
     }
 
     #[Test]
@@ -31,7 +28,7 @@ final class AbstractNodeCheckerTest extends TestCase
     {
         // Arrange
         $node = new \PhpParser\Node\Stmt\Nop();
-        $checker = new class($node) extends AbstractNodeChecker {
+        $checker = new class($node, $this->issueHolder) extends AbstractNodeChecker {
             public function check(): array
             {
                 $this->addIssue('Test issue');
@@ -49,7 +46,7 @@ final class AbstractNodeCheckerTest extends TestCase
     {
         // Arrange
         $node = new \PhpParser\Node\Stmt\Nop();
-        $checker = new class($node) extends AbstractNodeChecker {
+        $checker = new class($node, $this->issueHolder) extends AbstractNodeChecker {
             public function check(): array
             {
                 $this->addIssues(['Issue 1' => true, 'Issue 2' => true]);

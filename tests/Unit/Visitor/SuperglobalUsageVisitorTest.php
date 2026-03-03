@@ -19,14 +19,11 @@ use PHPUnit\Framework\TestCase;
 #[Small]
 final class SuperglobalUsageVisitorTest extends TestCase
 {
+    private IssueHolder $issueHolder;
+
     protected function setUp(): void
     {
-        IssueHolder::getInstance()->clearIssues();
-    }
-
-    protected function tearDown(): void
-    {
-        IssueHolder::getInstance()->clearIssues();
+        $this->issueHolder = new IssueHolder();
     }
 
     #[Test]
@@ -34,12 +31,12 @@ final class SuperglobalUsageVisitorTest extends TestCase
     public function testItAllowsSuperglobalInGlobalScope(string $superglobal): void
     {
         // Arrange
-        $visitor = new SuperglobalUsageVisitor();
+        $visitor = new SuperglobalUsageVisitor($this->issueHolder);
         $varNode = new Variable($superglobal);
         // Act
         $visitor->enterNode($varNode);
         // Assert
-        $this->assertFalse(IssueHolder::getInstance()->hasIssues());
+        $this->assertFalse($this->issueHolder->hasIssues());
     }
 
     #[Test]
@@ -47,7 +44,7 @@ final class SuperglobalUsageVisitorTest extends TestCase
     public function testItFlagsSuperglobalInFunctionScope(string $superglobal): void
     {
         // Arrange
-        $visitor = new SuperglobalUsageVisitor();
+        $visitor = new SuperglobalUsageVisitor($this->issueHolder);
         $function = new Function_(new Identifier('testFunction'), [], null);
         $varNode = new Variable($superglobal);
 
@@ -55,14 +52,14 @@ final class SuperglobalUsageVisitorTest extends TestCase
         $visitor->enterNode($function);
         $visitor->enterNode($varNode);
         // Assert
-        $this->assertTrue(IssueHolder::getInstance()->hasIssues());
+        $this->assertTrue($this->issueHolder->hasIssues());
     }
 
     #[Test]
     public function testItAllowsSuperglobalInControllerClass(): void
     {
         // Arrange
-        $visitor = new SuperglobalUsageVisitor();
+        $visitor = new SuperglobalUsageVisitor($this->issueHolder);
         $class = new Class_(new Identifier('UserController'));
         $varNode = new Variable('_POST');
 
@@ -70,14 +67,14 @@ final class SuperglobalUsageVisitorTest extends TestCase
         $visitor->enterNode($class);
         $visitor->enterNode($varNode);
         // Assert
-        $this->assertFalse(IssueHolder::getInstance()->hasIssues());
+        $this->assertFalse($this->issueHolder->hasIssues());
     }
 
     #[Test]
     public function testItAllowsSuperglobalInMiddlewareClass(): void
     {
         // Arrange
-        $visitor = new SuperglobalUsageVisitor();
+        $visitor = new SuperglobalUsageVisitor($this->issueHolder);
         $class = new Class_(new Identifier('AuthMiddleware'));
         $varNode = new Variable('_GET');
 
@@ -86,7 +83,7 @@ final class SuperglobalUsageVisitorTest extends TestCase
         $visitor->enterNode($varNode);
 
         // Assert
-        $this->assertFalse(IssueHolder::getInstance()->hasIssues());
+        $this->assertFalse($this->issueHolder->hasIssues());
     }
 
     public static function superglobalProvider(): iterable

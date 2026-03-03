@@ -22,12 +22,14 @@ use PhpParser\Node;
 abstract class AbstractNodeChecker
 {
     /**
-     * Initializes the checker with the target node.
+     * Initializes the checker with the target node and issue holder.
      *
      * @param Node $node The PHP AST node to inspect.
+     * @param IssueHolder $issueHolder The issue holder for collecting issues.
      */
     public function __construct(
         protected readonly Node $node,
+        protected readonly IssueHolder $issueHolder,
     ) {}
 
     /**
@@ -44,7 +46,7 @@ abstract class AbstractNodeChecker
      */
     protected function getIssues(): array
     {
-        return IssueHolder::getIssues();
+        return $this->issueHolder->getIssues();
     }
 
     /**
@@ -54,7 +56,7 @@ abstract class AbstractNodeChecker
      */
     protected function hasIssues(): bool
     {
-        return IssueHolder::hasIssues();
+        return $this->issueHolder->hasIssues();
     }
 
     /**
@@ -64,7 +66,7 @@ abstract class AbstractNodeChecker
      */
     protected function addIssue(string $issue): void
     {
-        IssueHolder::addIssue($issue);
+        $this->issueHolder->addIssue($issue);
     }
 
     /**
@@ -74,6 +76,6 @@ abstract class AbstractNodeChecker
      */
     protected function addIssues(array $issues): void
     {
-        IssueHolder::addIssues($issues);
+        $this->issueHolder->addIssues($issues);
     }
 }

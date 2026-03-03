@@ -13,77 +13,56 @@ use PHPUnit\Framework\TestCase;
 #[Small]
 final class IssueHolderTest extends TestCase
 {
+    private IssueHolder $issueHolder;
+
     protected function setUp(): void
     {
-        IssueHolder::getInstance()->clearIssues();
-    }
-
-    protected function tearDown(): void
-    {
-        IssueHolder::getInstance()->clearIssues();
-    }
-
-    #[Test]
-    public function testItReturnsSingletonInstance(): void
-    {
-        // Act
-        $instance1 = IssueHolder::getInstance();
-        $instance2 = IssueHolder::getInstance();
-        // Assert
-        $this->assertSame($instance1, $instance2);
+        $this->issueHolder = new IssueHolder();
     }
 
     #[Test]
     public function testItAddsAndRetrievesIssues(): void
     {
-        // Arrange
-        $holder = IssueHolder::getInstance();
-
         // Act
-        $holder->addIssue('Test issue');
+        $this->issueHolder->addIssue('Test issue');
         // Assert
-        $this->assertTrue($holder->hasIssues());
-        $this->assertArrayHasKey('Test issue', $holder->getIssues());
+        $this->assertTrue($this->issueHolder->hasIssues());
+        $this->assertArrayHasKey('Test issue', $this->issueHolder->getIssues());
     }
 
     #[Test]
     public function testItClearsIssues(): void
     {
         // Arrange
-        $holder = IssueHolder::getInstance();
-        $holder->addIssue('Test issue');
+        $this->issueHolder->addIssue('Test issue');
 
         // Act
-        $holder->clearIssues();
+        $this->issueHolder->clearIssues();
 
         // Assert
-        $this->assertFalse($holder->hasIssues());
-        $this->assertSame([], $holder->getIssues());
+        $this->assertFalse($this->issueHolder->hasIssues());
+        $this->assertSame([], $this->issueHolder->getIssues());
     }
 
     #[Test]
     public function testItSetsIgnoreIssues(): void
     {
-        // Arrange
-        $holder = IssueHolder::getInstance();
         // Act
-        $holder->setIgnoreIssues(['Ignored issue']);
+        $this->issueHolder->setIgnoreIssues(['Ignored issue']);
         // Assert
         // Issue should be ignored when added
-        $holder->addIssue('Ignored issue');
-        $this->assertFalse($holder->hasIssues());
+        $this->issueHolder->addIssue('Ignored issue');
+        $this->assertFalse($this->issueHolder->hasIssues());
     }
+
     #[Test]
     public function testItAddsMultipleIssues(): void
     {
-        // Arrange
-        $holder = IssueHolder::getInstance();
-
         // Act
-        $holder->addIssues(['Issue 1' => true, 'Issue 2' => true]);
+        $this->issueHolder->addIssues(['Issue 1' => true, 'Issue 2' => true]);
 
         // Assert
-        $issues = $holder->getIssues();
+        $issues = $this->issueHolder->getIssues();
         $this->assertArrayHasKey('Issue 1', $issues);
         $this->assertArrayHasKey('Issue 2', $issues);
     }

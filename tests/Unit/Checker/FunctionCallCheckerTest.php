@@ -18,14 +18,11 @@ use PHPUnit\Framework\TestCase;
 #[Small]
 final class FunctionCallCheckerTest extends TestCase
 {
+    private IssueHolder $issueHolder;
+
     protected function setUp(): void
     {
-        IssueHolder::getInstance()->clearIssues();
-    }
-
-    protected function tearDown(): void
-    {
-        IssueHolder::getInstance()->clearIssues();
+        $this->issueHolder = new IssueHolder();
     }
 
     #[Test]
@@ -35,10 +32,10 @@ final class FunctionCallCheckerTest extends TestCase
         // Arrange
         $node = new FuncCall(new Name($functionName));
         // Act
-        $checker = new FunctionCallChecker($node);
+        $checker = new FunctionCallChecker($node, $this->issueHolder);
         $checker->check();
         // Assert
-        $this->assertTrue(IssueHolder::getInstance()->hasIssues());
+        $this->assertTrue($this->issueHolder->hasIssues());
     }
 
     #[Test]
@@ -47,11 +44,11 @@ final class FunctionCallCheckerTest extends TestCase
         // Arrange
         $node = new FuncCall(new Name('strlen'));
         // Act
-        $checker = new FunctionCallChecker($node);
+        $checker = new FunctionCallChecker($node, $this->issueHolder);
         $checker->check();
 
         // Assert
-        $this->assertFalse(IssueHolder::getInstance()->hasIssues());
+        $this->assertFalse($this->issueHolder->hasIssues());
     }
 
     #[Test]
@@ -60,11 +57,11 @@ final class FunctionCallCheckerTest extends TestCase
         // Arrange
         $node = new FuncCall(new Name('variableFunction'));
         // Act
-        $checker = new FunctionCallChecker($node);
+        $checker = new FunctionCallChecker($node, $this->issueHolder);
         $checker->check();
 
         // Assert
-        $this->assertFalse(IssueHolder::getInstance()->hasIssues());
+        $this->assertFalse($this->issueHolder->hasIssues());
     }
 
     public static function debugFunctionProvider(): iterable

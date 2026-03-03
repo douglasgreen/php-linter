@@ -39,19 +39,21 @@ class MetricChecker
      * Initializes the MetricChecker with metric data and context.
      *
      * @param MetricData $data Metric data object.
+     * @param IssueHolder $issueHolder The issue holder for collecting issues.
      * @param string|null $file The file path being checked.
      * @param string|null $className The name of the class being checked, if applicable.
      * @param string|null $functionName The name of the function/method being checked, if applicable.
      */
     public function __construct(
         protected readonly MetricData $data,
+        protected readonly IssueHolder $issueHolder,
         protected readonly ?string $file = null,
         protected readonly ?string $className = null,
         protected readonly ?string $functionName = null,
     ) {
-        IssueHolder::setCurrentFile($file);
-        IssueHolder::setCurrentClass($className);
-        IssueHolder::setCurrentFunction($functionName);
+        $this->issueHolder->setCurrentFile($file);
+        $this->issueHolder->setCurrentClass($className);
+        $this->issueHolder->setCurrentFunction($functionName);
     }
 
     /**
@@ -318,7 +320,7 @@ class MetricChecker
         string $hint = '',
     ): int {
         if ($value > $limit) {
-            IssueHolder::addIssue(sprintf($message, $value, $limit), $hint);
+            $this->issueHolder->addIssue(sprintf($message, $value, $limit), $hint);
             return self::STATUS_ERROR;
         }
 
@@ -342,7 +344,7 @@ class MetricChecker
         string $hint = '',
     ): int {
         if ($value < $limit) {
-            IssueHolder::addIssue(sprintf($message, $value, $limit), $hint);
+            $this->issueHolder->addIssue(sprintf($message, $value, $limit), $hint);
             return self::STATUS_ERROR;
         }
 

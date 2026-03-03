@@ -63,6 +63,15 @@ class SuperglobalUsageVisitor extends NodeVisitorAbstract
     ];
 
     /**
+     * Initializes the visitor with an issue holder.
+     *
+     * @param IssueHolder $issueHolder The issue holder for collecting issues.
+     */
+    public function __construct(
+        protected readonly IssueHolder $issueHolder,
+    ) {}
+
+    /**
      * Enters a node to track class/function context and check for superglobals.
      *
      * @param Node $node The node being entered.
@@ -83,7 +92,7 @@ class SuperglobalUsageVisitor extends NodeVisitorAbstract
         // 3. Detect superglobal usage
         if ($node instanceof Variable && is_string($node->name) && in_array($node->name, $this->superglobals, true) && ! $this->isAllowedContext()) {
             $context = $this->getContextName();
-            IssueHolder::addIssue(
+            $this->issueHolder->addIssue(
                 sprintf(
                     'Move superglobal $%s access out of %s. Superglobals should only be accessed in the global scope or within classes ending in Controller or Middleware to ensure proper encapsulation.',
                     $node->name,

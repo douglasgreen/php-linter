@@ -84,12 +84,14 @@ class ElementVisitor extends NodeVisitorAbstract
      *
      * @param ComposerFile $composerFile The composer file handler.
      * @param string $phpFile The PHP file path being processed.
+     * @param IssueHolder $issueHolder The issue holder for collecting issues.
      */
     public function __construct(
         protected readonly ComposerFile $composerFile,
         protected readonly string $phpFile,
+        protected readonly IssueHolder $issueHolder,
     ) {
-        IssueHolder::setCurrentFile($phpFile);
+        $this->issueHolder->setCurrentFile($phpFile);
     }
 
     /**
@@ -99,9 +101,9 @@ class ElementVisitor extends NodeVisitorAbstract
      */
     public function beforeTraverse(array $nodes): null
     {
-        $this->magicNumberVisitor = new MagicNumberVisitor();
-        $this->superglobalUsageVisitor = new SuperglobalUsageVisitor();
-        IssueHolder::setCurrentFile($this->phpFile);
+        $this->magicNumberVisitor = new MagicNumberVisitor($this->issueHolder);
+        $this->superglobalUsageVisitor = new SuperglobalUsageVisitor($this->issueHolder);
+        $this->issueHolder->setCurrentFile($this->phpFile);
 
         return null;
     }
@@ -170,7 +172,7 @@ class ElementVisitor extends NodeVisitorAbstract
             $this->isReadonlyClass = false;
             $this->isLocalScope = false;
             $this->inClassLike = false;
-            IssueHolder::setCurrentClass(null);
+            $this->issueHolder->setCurrentClass(null);
         }
 
         if ($node instanceof Function_ || $node instanceof ClassMethod) {
@@ -178,7 +180,7 @@ class ElementVisitor extends NodeVisitorAbstract
 
             $this->currentFunctionName = null;
             $this->isLocalScope = false;
-            IssueHolder::setCurrentFunction(null);
+            $this->issueHolder->setCurrentFunction(null);
         }
 
         if ($node instanceof Closure) {
@@ -191,25 +193,6 @@ class ElementVisitor extends NodeVisitorAbstract
         return null;
     }
 
-    /**
-     * Adds a single issue.
-     *
-     * @param string $issue The issue to add.
-     */
-    protected function addIssue(string $issue): void
-    {
-        IssueHolder::addIssue($issue);
-    }
-
-    /**
-     * Adds multiple issues.
-     *
-     * @param array<string> $issues The issues to add.
-     */
-    protected function addIssues(array $issues): void
-    {
-        IssueHolder::addIssues($issues);
-    }
 
     /**
      * Handles namespace nodes.
@@ -234,7 +217,7 @@ class ElementVisitor extends NodeVisitorAbstract
             $this->inClassLike = true;
             $this->currentClassName = $node->name instanceof Identifier ? $node->name->name : null;
             $this->isReadonlyClass = $node instanceof Class_ && $node->isReadonly();
-            IssueHolder::setCurrentClass($this->currentClassName);
+            $this->issueHolder->setCurrentClass($this->currentClassName);
 
             if ($node instanceof Class_) {
                 $attribs = [
@@ -248,7 +231,7 @@ class ElementVisitor extends NodeVisitorAbstract
             }
 
             // Start class visitor to examine nodes within class.
-            $this->classVisitor = new ClassVisitor($this->currentClassName, $attribs);
+            $this->classVisitor = new ClassVisitor($this->issueHolder, $this->currentClassName, $attribs);
             $this->isLocalScope = true;
 
             // Check namespace name, class name, and file path.
@@ -257,7 +240,7 @@ class ElementVisitor extends NodeVisitorAbstract
                     $this->currentNamespace . '\\' . $this->currentClassName,
                 );
                 if ($expectedFile !== null && $expectedFile !== $this->phpFile) {
-                    $this->addIssue(
+                    $this->issueHolder->addIssue(
                         sprintf(
                             'Rename the file "%s" to "%s" to match the class namespace according to PSR-4 autoloading standards.',
                             $this->phpFile,
@@ -265,7 +248,7 @@ class ElementVisitor extends NodeVisitorAbstract
                         ),
                     );
                 } elseif ($expectedFile === null) {
-                    $this->addIssue(
+                    $this->issueHolder->addIssue(
                         sprintf(
                             'Class namespace "%s\\%s" does not match any PSR-4 autoload path in composer.json.',
                             $this->currentNamespace,
@@ -298,10 +281,10 @@ class ElementVisitor extends NodeVisitorAbstract
     {
         if ($node instanceof Function_ || $node instanceof ClassMethod) {
             $this->currentFunctionName = $node->name->name;
-            IssueHolder::setCurrentFunction($this->currentFunctionName);
+            $this->issueHolder->setCurrentFunction($this->currentFunctionName);
 
             // Run checks on function node.
-            $funcChecker = new FunctionChecker($node, $this->isReadonlyClass);
+            $funcChecker = new FunctionChecker($node, $this->issueHolder, $this->isReadonlyClass);
             $this->addIssues($funcChecker->check());
 
             if ($node instanceof ClassMethod) {
@@ -322,6 +305,7 @@ class ElementVisitor extends NodeVisitorAbstract
 
             // Start function visitor to examine nodes within function.
             $this->functionVisitor = new FunctionVisitor(
+                $this->issueHolder,
                 $this->currentFunctionName,
                 $attribs,
                 $params,
@@ -362,8 +346,8 @@ class ElementVisitor extends NodeVisitorAbstract
     private function checkLocalScope(Node $node): void
     {
         if ($this->isLocalScope) {
-            $localScopeChecker = new LocalScopeChecker($node);
-            $this->addIssues($localScopeChecker->check());
+            $localScopeChecker = new LocalScopeChecker($node, $this->issueHolder);
+            $this->issueHolder->addIssues($localScopeChecker->check());
         }
     }
 
@@ -388,8 +372,8 @@ class ElementVisitor extends NodeVisitorAbstract
     private function checkTryCatch(Node $node): void
     {
         if ($node instanceof TryCatch) {
-            $tryCatchChecker = new TryCatchChecker($node);
-            $this->addIssues($tryCatchChecker->check());
+            $tryCatchChecker = new TryCatchChecker($node, $this->issueHolder);
+            $this->issueHolder->addIssues($tryCatchChecker->check());
         }
     }
 
@@ -400,22 +384,22 @@ class ElementVisitor extends NodeVisitorAbstract
      */
     private function runGenericCheckers(Node $node): void
     {
-        $funcCallChecker = new FunctionCallChecker($node);
-        $this->addIssues($funcCallChecker->check());
+        $funcCallChecker = new FunctionCallChecker($node, $this->issueHolder);
+        $this->issueHolder->addIssues($funcCallChecker->check());
 
-        $exprChecker = new ExpressionChecker($node);
-        $this->addIssues($exprChecker->check());
+        $exprChecker = new ExpressionChecker($node, $this->issueHolder);
+        $this->issueHolder->addIssues($exprChecker->check());
 
-        $nameChecker = new NameChecker($node);
-        $this->addIssues($nameChecker->check());
+        $nameChecker = new NameChecker($node, $this->issueHolder);
+        $this->issueHolder->addIssues($nameChecker->check());
 
         $this->magicNumberVisitor->enterNode($node);
         $this->magicNumberVisitor->checkNode($node);
 
         $this->superglobalUsageVisitor->enterNode($node);
 
-        $opChecker = new OperatorChecker($node);
-        $this->addIssues($opChecker->check());
+        $opChecker = new OperatorChecker($node, $this->issueHolder);
+        $this->issueHolder->addIssues($opChecker->check());
     }
 
     /**
@@ -426,7 +410,7 @@ class ElementVisitor extends NodeVisitorAbstract
     private function checkTopLevelFunction(Node $node): void
     {
         if ($node instanceof Function_ && !$this->inClassLike) {
-            $this->addIssue(
+            $this->issueHolder->addIssue(
                 sprintf(
                     'Function "%s" should be moved inside a class as a method according to PSR-1.',
                     $node->name->name,
@@ -444,7 +428,7 @@ class ElementVisitor extends NodeVisitorAbstract
     {
         if ($node instanceof Const_ && !$this->inClassLike) {
             foreach ($node->consts as $const) {
-                $this->addIssue(
+                $this->issueHolder->addIssue(
                     sprintf(
                         'Constant "%s" should be moved inside a class as a class constant according to PSR-1.',
                         $const->name->name,
@@ -462,7 +446,7 @@ class ElementVisitor extends NodeVisitorAbstract
     private function checkTopLevelDefine(Node $node): void
     {
         if ($node instanceof FuncCall && !$this->inClassLike && ($node->name instanceof Name && $node->name->toString() === 'define')) {
-            $this->addIssue(
+            $this->issueHolder->addIssue(
                 'Global define() call should be moved inside a class as a class constant according to PSR-1.',
             );
         }

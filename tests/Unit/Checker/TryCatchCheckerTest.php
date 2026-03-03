@@ -16,14 +16,11 @@ use PHPUnit\Framework\TestCase;
 #[Small]
 final class TryCatchCheckerTest extends TestCase
 {
+    private IssueHolder $issueHolder;
+
     protected function setUp(): void
     {
-        IssueHolder::getInstance()->clearIssues();
-    }
-
-    protected function tearDown(): void
-    {
-        IssueHolder::getInstance()->clearIssues();
+        $this->issueHolder = new IssueHolder();
     }
 
     #[Test]
@@ -34,11 +31,11 @@ final class TryCatchCheckerTest extends TestCase
         $node = new TryCatch([], [$catch]);
 
         // Act
-        $checker = new TryCatchChecker($node);
+        $checker = new TryCatchChecker($node, $this->issueHolder);
         $checker->check();
 
         // Assert
-        $this->assertTrue(IssueHolder::getInstance()->hasIssues());
+        $this->assertTrue($this->issueHolder->hasIssues());
     }
 
     #[Test]
@@ -48,11 +45,11 @@ final class TryCatchCheckerTest extends TestCase
         $catch = new Catch_([], null, );
         $node = new TryCatch([], [$catch]);
         // Act
-        $checker = new TryCatchChecker($node);
+        $checker = new TryCatchChecker($node, $this->issueHolder);
         $checker->check();
 
         // Assert
-        $this->assertTrue(IssueHolder::getInstance()->hasIssues());
+        $this->assertTrue($this->issueHolder->hasIssues());
     }
 
     #[Test]
@@ -63,10 +60,10 @@ final class TryCatchCheckerTest extends TestCase
         $node = new TryCatch([], [$catch]);
 
         // Act
-        $checker = new TryCatchChecker($node);
+        $checker = new TryCatchChecker($node, $this->issueHolder);
         $checker->check();
         // Assert
-        $this->assertFalse(IssueHolder::getInstance()->hasIssues());
+        $this->assertFalse($this->issueHolder->hasIssues());
     }
 
     #[Test]
@@ -76,11 +73,11 @@ final class TryCatchCheckerTest extends TestCase
         $node = new \PhpParser\Node\Stmt\If_(null);
 
         // Act
-        $checker = new TryCatchChecker($node);
+        $checker = new TryCatchChecker($node, $this->issueHolder);
         $issues = $checker->check();
 
         // Assert
         $this->assertSame([], $issues);
-        $this->assertFalse(IssueHolder::getInstance()->hasIssues());
+        $this->assertFalse($this->issueHolder->hasIssues());
     }
 }
