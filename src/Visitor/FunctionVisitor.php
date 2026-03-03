@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace DouglasGreen\PhpLinter\Visitor;
 
+use DouglasGreen\PhpLinter\IssueHolder;
 use PhpParser\Node;
 use PhpParser\Node\Expr\PropertyFetch;
 use PhpParser\Node\Expr\Variable;
@@ -29,15 +30,19 @@ class FunctionVisitor extends AbstractVisitorChecker
     /**
      * Initializes a new instance of the FunctionVisitor.
      *
+     * @param IssueHolder $issueHolder The issue holder for collecting issues.
      * @param string $functionName The name of the function or method being analyzed.
      * @param array<string, bool> $attribs Attributes of the function (e.g., 'abstract').
      * @param array<string, array{type: string|null, promoted: bool}> $params Parameter definitions.
      */
     public function __construct(
+        IssueHolder $issueHolder,
         protected string $functionName,
         protected array $attribs,
         protected array $params,
-    ) {}
+    ) {
+        parent::__construct($issueHolder);
+    }
 
     /**
      * Performs final checks after the function has been fully traversed.
@@ -110,6 +115,16 @@ class FunctionVisitor extends AbstractVisitorChecker
     public function getVariableCounts(): array
     {
         return $this->variableCounts;
+    }
+
+    /**
+     * Returns the parameter definitions.
+     *
+     * @return array<string, array{type: string|null, promoted: bool}>
+     */
+    public function getParams(): array
+    {
+        return $this->params;
     }
 
     /**

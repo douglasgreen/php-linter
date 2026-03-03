@@ -56,4 +56,14 @@ abstract class AbstractVisitorChecker
     {
         $this->issueHolder->addIssues($issues);
     }
+
+    /**
+     * Returns the list of issues found.
+     *
+     * @return array<string, bool> The list of issues.
+     */
+    protected function getIssues(): array
+    {
+        return [];
+    }
 }

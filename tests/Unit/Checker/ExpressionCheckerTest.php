@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace Tests\Unit\Checker;
 
 use DouglasGreen\PhpLinter\Checker\ExpressionChecker;
-use DouglasParser\Node\Expr\Assign;
 use DouglasGreen\PhpLinter\IssueHolder;
+use PhpParser\Node\Expr\Assign;
 use PhpParser\Node\Expr\Eval_;
 use PhpParser\Node\Expr\Include_;
 use PhpParser\Node\Stmt\Global_;
@@ -46,7 +46,7 @@ final class ExpressionCheckerTest extends TestCase
     public function testItDetectsGlobalKeyword(): void
     {
         // Arrange
-        $node = new Global_();
+        $node = new Global_([new Variable('testVar')]);
 
         // Act
         $checker = new ExpressionChecker($node, $this->issueHolder);

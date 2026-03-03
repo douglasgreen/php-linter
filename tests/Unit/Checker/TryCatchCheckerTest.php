@@ -70,7 +70,7 @@ final class TryCatchCheckerTest extends TestCase
     public function testItIgnoresNonTryCatchNodes(): void
     {
         // Arrange
-        $node = new \PhpParser\Node\Stmt\If_(null);
+        $node = new \PhpParser\Node\Stmt\If_(new \PhpParser\Node\Expr\ConstFetch(new \PhpParser\Node\Name('true')));
 
         // Act
         $checker = new TryCatchChecker($node, $this->issueHolder);

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace DouglasGreen\PhpLinter\Visitor;
 
+use DouglasGreen\PhpLinter\IssueHolder;
 use PhpParser\Node;
 use PhpParser\Node\Expr\MethodCall;
 use PhpParser\Node\Expr\PropertyFetch;
@@ -58,13 +59,17 @@ class ClassVisitor extends AbstractVisitorChecker
     /**
      * Initializes a new instance of the ClassVisitor.
      *
+     * @param IssueHolder $issueHolder The issue holder for collecting issues.
      * @param string|null $className The name of the class being visited, or null for anonymous classes.
      * @param array<string, bool> $attribs Attributes of the class (e.g., 'abstract').
      */
     public function __construct(
+        protected readonly IssueHolder $issueHolder,
         protected readonly ?string $className,
         protected readonly array $attribs = [],
-    ) {}
+    ) {
+        parent::__construct($issueHolder);
+    }
 
     /**
      * Performs final checks after the class/traverse has been fully traversed.

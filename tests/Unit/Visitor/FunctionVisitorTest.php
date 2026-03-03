@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Visitor;
 
+use DouglasGreen\PhpLinter\IssueHolder;
 use DouglasGreen\PhpLinter\Visitor\FunctionVisitor;
 use PhpParser\Node\Expr\Variable;
 use PHPUnit\Framework\Attributes\CoversClass;
@@ -14,6 +15,13 @@ use PHPUnit\Framework\TestCase;
 #[Small]
 final class FunctionVisitorTest extends TestCase
 {
+    private IssueHolder $issueHolder;
+
+    protected function setUp(): void
+    {
+        $this->issueHolder = new IssueHolder();
+    }
+
     #[Test]
     public function testItCreatesFunctionVisitorWithParameters(): void
     {
@@ -23,7 +31,7 @@ final class FunctionVisitorTest extends TestCase
             'param2' => ['type' => null, 'promoted' => true],
         ];
         // Act
-        $visitor = new FunctionVisitor('testFunction', [], $params);
+        $visitor = new FunctionVisitor($this->issueHolder, 'testFunction', [], $params);
         // Assert
         $this->assertSame($params, $visitor->getParams());
     }
@@ -32,7 +40,7 @@ final class FunctionVisitorTest extends TestCase
     public function testItCountsVariableReferences(): void
     {
         // Arrange
-        $visitor = new FunctionVisitor('testFunction', [], []);
+        $visitor = new FunctionVisitor($this->issueHolder, 'testFunction', [], []);
         $varNode = new Variable('testVar');
 
         // Act
@@ -48,7 +56,7 @@ final class FunctionVisitorTest extends TestCase
     public function testItIgnoresThisVariable(): void
     {
         // Arrange
-        $visitor = new FunctionVisitor('testFunction', [], []);
+        $visitor = new FunctionVisitor($this->issueHolder, 'testFunction', [], []);
         $varNode = new Variable('this');
 
         // Act

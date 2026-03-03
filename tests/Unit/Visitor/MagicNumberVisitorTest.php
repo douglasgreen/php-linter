@@ -3,6 +3,7 @@
 declare(strict_types=1);
 namespace Tests\Unit\Visitor;
 
+use DouglasGreen\PhpLinter\IssueHolder;
 use DouglasGreen\PhpLinter\Visitor\MagicNumberVisitor;
 use PhpParser\Node\Scalar\Int_;
 use PhpParser\Node\Scalar\Float_;
@@ -16,11 +17,13 @@ use PHPUnit\Framework\TestCase;
 #[Small]
 final class MagicNumberVisitorTest extends TestCase
 {
+    private IssueHolder $issueHolder;
     private MagicNumberVisitor $visitor;
 
     protected function setUp(): void
     {
-        $this->visitor = new MagicNumberVisitor();
+        $this->issueHolder = new IssueHolder();
+        $this->visitor = new MagicNumberVisitor($this->issueHolder);
     }
 
     #[Test]

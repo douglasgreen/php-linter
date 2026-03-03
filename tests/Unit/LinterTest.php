@@ -33,8 +33,9 @@ final class LinterTest extends TestCase
         // Arrange
         $composerFile = $this->createMock(ComposerFile::class);
         $ignoreList = $this->createMock(IgnoreList::class);
+        $issueHolder = $this->createMock(IssueHolder::class);
         // Act
-        $linter = new Linter($composerFile, $ignoreList);
+        $linter = new Linter($composerFile, $ignoreList, $issueHolder);
 
         // Assert
         $this->assertInstanceOf(Linter::class, $linter);
