@@ -23,14 +23,11 @@ use PHPUnit\Framework\TestCase;
 #[Small]
 final class ExpressionCheckerTest extends TestCase
 {
+    private IssueHolder $issueHolder;
+
     protected function setUp(): void
     {
-        IssueHolder::getInstance()->clearIssues();
-    }
-
-    protected function tearDown(): void
-    {
-        IssueHolder::getInstance()->clearIssues();
+        $this->issueHolder = new IssueHolder();
     }
 
     #[Test]
@@ -39,10 +36,10 @@ final class ExpressionCheckerTest extends TestCase
         // Arrange
         $node = new Eval_(new Variable('code'));
         // Act
-        $checker = new ExpressionChecker($node);
+        $checker = new ExpressionChecker($node, $this->issueHolder);
         $checker->check();
         // Assert
-        $this->assertTrue(IssueHolder::getInstance()->hasIssues());
+        $this->assertTrue($this->issueHolder->hasIssues());
     }
 
     #[Test]
@@ -52,11 +49,11 @@ final class ExpressionCheckerTest extends TestCase
         $node = new Global_();
 
         // Act
-        $checker = new ExpressionChecker($node);
+        $checker = new ExpressionChecker($node, $this->issueHolder);
         $checker->check();
 
         // Assert
-        $this->assertTrue(IssueHolder::getInstance()->hasIssues());
+        $this->assertTrue($this->issueHolder->hasIssues());
     }
 
     #[Test]
@@ -65,10 +62,10 @@ final class ExpressionCheckerTest extends TestCase
         // Arrange
         $node = new Goto_(new \PhpParser\Node\Identifier('label'));
         // Act
-        $checker = new ExpressionChecker($node);
+        $checker = new ExpressionChecker($node, $this->issueHolder);
         $checker->check();
         // Assert
-        $this->assertTrue(IssueHolder::getInstance()->hasIssues());
+        $this->assertTrue($this->issueHolder->hasIssues());
     }
 
     #[Test]
@@ -78,11 +75,11 @@ final class ExpressionCheckerTest extends TestCase
         $node = new Include_(new \PhpParser\Node\Scalar\String_('file.php'), Include_::TYPE_INCLUDE);
 
         // Act
-        $checker = new ExpressionChecker($node);
+        $checker = new ExpressionChecker($node, $this->issueHolder);
         $checker->check();
 
         // Assert
-        $this->assertTrue(IssueHolder::getInstance()->hasIssues());
+        $this->assertTrue($this->issueHolder->hasIssues());
     }
 
     #[Test]
@@ -92,11 +89,11 @@ final class ExpressionCheckerTest extends TestCase
         $node = new Include_(new \PhpParser\Node\Scalar\String_('file.php'), Include_::TYPE_REQUIRE_ONCE);
 
         // Act
-        $checker = new ExpressionChecker($node);
+        $checker = new ExpressionChecker($node, $this->issueHolder);
         $checker->check();
 
         // Assert
-        $this->assertFalse(IssueHolder::getInstance()->hasIssues());
+        $this->assertFalse($this->issueHolder->hasIssues());
     }
 
     #[Test]
@@ -107,10 +104,10 @@ final class ExpressionCheckerTest extends TestCase
         $node = new If_($assign);
 
         // Act
-        $checker = new ExpressionChecker($node);
+        $checker = new ExpressionChecker($node, $this->issueHolder);
         $checker->check();
 
         // Assert
-        $this->assertTrue(IssueHolder::getInstance()->hasIssues());
+        $this->assertTrue($this->issueHolder->hasIssues());
     }
 }
