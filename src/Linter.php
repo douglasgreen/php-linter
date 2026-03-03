@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace DouglasGreen\PhpLinter;
 
+use DouglasGreen\PhpLinter\IssueHolder;
 use Exception;
 use PhpParser\Error;
 use PhpParser\NodeTraverser;
@@ -23,10 +24,12 @@ class Linter
      *
      * @param ComposerFile $composerFile The composer file handler.
      * @param IgnoreList $ignoreList The ignore list handler.
+     * @param IssueHolder $issueHolder The issue holder for collecting issues.
      */
     public function __construct(
         protected readonly ComposerFile $composerFile,
         protected readonly IgnoreList $ignoreList,
+        protected readonly IssueHolder $issueHolder,
     ) {}
 
     /**
