@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace DouglasGreen\PhpLinter\Metrics;
 
-use DouglasGreen\PhpLinter\IssueHolder;
 use Exception;
 
 /**
@@ -98,5 +97,4 @@ class Repository
 
         return $matches;
     }
-
 }

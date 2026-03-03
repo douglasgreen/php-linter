@@ -56,7 +56,6 @@ class Repository
         return $matches;
     }
 
-
     /**
      * Determines the file type based on the extension.
      *

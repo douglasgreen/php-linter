@@ -87,7 +87,7 @@ class IssueHolder
         }
 
         $file = $this->currentFile ?? 'Unknown';
-        
+
         if (!isset($this->issues[$file])) {
             $this->issues[$file] = [];
         }
@@ -120,11 +120,12 @@ class IssueHolder
     public function getIssues(): array
     {
         $result = [];
-        foreach ($this->issues as $file => $fileIssues) {
+        foreach ($this->issues as $fileIssues) {
             foreach ($fileIssues as $issue) {
                 $result[$issue['message']] = true;
             }
         }
+
         return $result;
     }
 
@@ -162,7 +163,7 @@ class IssueHolder
             foreach ($fileIssues as $issue) {
                 $name = $this->formatContextName($issue['class'], $issue['function']);
                 echo $name . ' - ' . $issue['message'] . PHP_EOL;
-                
+
                 if ($issue['hint'] !== '') {
                     echo '    Action: ' . $issue['hint'] . PHP_EOL;
                 }

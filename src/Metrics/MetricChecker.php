@@ -302,7 +302,6 @@ class MetricChecker
         return $this->checkMin($message, $maintainabilityIndex, $limit, $hint);
     }
 
-
     /**
      * Checks if a value exceeds a maximum limit.
      *

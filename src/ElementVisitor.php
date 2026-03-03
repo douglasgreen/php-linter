@@ -193,7 +193,6 @@ class ElementVisitor extends NodeVisitorAbstract
         return null;
     }
 
-
     /**
      * Handles namespace nodes.
      *
