@@ -39,14 +39,17 @@ class MetricChecker
      * Initializes the MetricChecker with metric data and context.
      *
      * @param MetricData $data Metric data object.
+     * @param string|null $file The file path being checked.
      * @param string|null $className The name of the class being checked, if applicable.
      * @param string|null $functionName The name of the function/method being checked, if applicable.
      */
     public function __construct(
         protected readonly MetricData $data,
+        protected readonly ?string $file = null,
         protected readonly ?string $className = null,
         protected readonly ?string $functionName = null,
     ) {
+        IssueHolder::setCurrentFile($file);
         IssueHolder::setCurrentClass($className);
         IssueHolder::setCurrentFunction($functionName);
     }
