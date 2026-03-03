@@ -59,7 +59,7 @@ class Linter
                 }
 
                 $traverser = new NodeTraverser();
-                $visitor = new ElementVisitor($this->composerFile, $phpFile);
+                $visitor = new ElementVisitor($this->composerFile, $phpFile, $this->issueHolder);
                 $traverser->addVisitor($visitor);
                 $traverser->traverse($stmts);
             } catch (Error $error) {
