@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Visitor;
 
+use DouglasGreen\PhpLinter\IssueHolder;
 use DouglasGreen\PhpLinter\Visitor\NameVisitor;
 use PhpParser\Node\Expr\New_;
 use PhpParser\Node\Name;
@@ -22,7 +23,7 @@ final class NameVisitorTest extends TestCase
 
     protected function setUp(): void
     {
-        $this->visitor = new NameVisitor();
+        $this->visitor = new NameVisitor(new IssueHolder());
     }
     #[Test]
     public function testItCollectsFullyQualifiedNames(): void
