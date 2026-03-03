@@ -5,6 +5,7 @@ namespace Tests\Unit;
 
 use DouglasGreen\PhpLinter\ComposerFile;
 use DouglasGreen\PhpLinter\ElementVisitor;
+use DouglasGreen\PhpLinter\IssueHolder;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\Small;
 use PHPUnit\Framework\Attributes\Test;
@@ -19,8 +20,10 @@ final class ElementVisitorTest extends TestCase
     {
         // Arrange
         $composerFile = $this->createMock(ComposerFile::class);
+        $issueHolder = $this->createMock(IssueHolder::class);
+
         // Act
-        $visitor = new ElementVisitor($composerFile, 'test.php');
+        $visitor = new ElementVisitor($composerFile, 'test.php', $issueHolder);
 
         // Assert
         $this->assertInstanceOf(ElementVisitor::class, $visitor);
@@ -31,7 +34,8 @@ final class ElementVisitorTest extends TestCase
     {
         // Arrange
         $composerFile = $this->createMock(ComposerFile::class);
-        $visitor = new ElementVisitor($composerFile, 'test.php');
+        $issueHolder = $this->createMock(IssueHolder::class);
+        $visitor = new ElementVisitor($composerFile, 'test.php', $issueHolder);
 
         // Assert
         $this->assertFalse($visitor->isLocalScope());
