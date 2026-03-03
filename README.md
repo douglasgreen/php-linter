@@ -192,11 +192,14 @@ build/*.tmp.php
 
 ## Configure error ignoring
 
-Create a `php-linter.json` file in the root of your repository to ignore specific issue types. This is useful when you want to suppress certain categories of warnings across your entire codebase.
+Create a `php-linter.json` file in the root of your repository to configure the linter. This file supports two main configuration options: ignoring specific issue types and customizing metric limits.
 
 ### Configuration structure
 
-The configuration file contains an `ignoreIssues` array with issue strings to ignore. The strings must match the exact issue text reported by the linter:
+The configuration file contains two optional arrays:
+
+- **`ignoreIssues`**: An array of issue strings to ignore. The strings must match the exact issue text reported by the linter.
+- **`metricLimits`**: An object mapping metric names to custom limit values. These override the default constants defined in the Analyzer class.
 
 ```json
 {
@@ -204,11 +207,47 @@ The configuration file contains an `ignoreIssues` array with issue strings to ig
     "Remove unused private non-static method MyClass::unusedMethod() to reduce dead code.",
     "Remove unused parameter \"paramName\" from function \"myFunction()\"; it is defined but not used in the function body.",
     "Replace the magic number 42 with a named constant. It appears 3 times on lines 10, 25, 30. Centralizing this value improves maintainability and readability."
-  ]
+  ],
+  "metricLimits": {
+    "classSize": 80,
+    "classLoc": 1500,
+    "methodLoc": 200,
+    "cyclomaticComplexity": 30,
+    "npathComplexity": 15000,
+    "halsteadEffort": 200000,
+    "maintainabilityIndex": 20,
+    "commentRatio": 0.03,
+    "properties": 30,
+    "nonPrivateProps": 35,
+    "publicMethods": 50,
+    "afferentCoupling": 60,
+    "efferentCoupling": 30,
+    "objectCoupling": 30,
+    "inheritanceDepth": 6,
+    "childClasses": 50,
+    "codeRank": 3.0,
+    "fileLoc": 300
+  }
 }
 ```
 
-**Note:** The ignore list matches the complete issue message text, not short codes. To find the exact strings to ignore, run the linter first and copy the issue messages you want to suppress into the `ignoreIssues` array. When an issue message is listed in `ignoreIssues`, all instances of that exact issue will be suppressed from the output.
+**Note on ignoreIssues:** The ignore list matches the complete issue message text, not short codes. To find the exact strings to ignore, run the linter first and copy the issue messages you want to suppress into the `ignoreIssues` array. When an issue message is listed in `ignoreIssues`, all instances of that exact issue will be suppressed from the output.
+
+**Note on metricLimits:** All metric limit keys are optional. If a key is not specified, the linter uses its default value (the class constant defined in the Analyzer). The example above shows all available metric limit keys with their default values.
+
+### Custom configuration file path
+
+When using the linter programmatically, you can specify a custom path to the configuration file:
+
+```php
+use DouglasGreen\PhpLinter\Config;
+
+// Use default php-linter.json in current directory
+$config = new Config($currentDir);
+
+// Use a custom configuration file
+$config = new Config($currentDir, '/path/to/custom-config.json');
+```
 
 ## Disclaimer
 
