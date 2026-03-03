@@ -39,12 +39,14 @@ class Config
 
         if (! file_exists($configFile)) {
             $this->ignoreIssues = [];
+            $this->metricLimits = [];
             return;
         }
 
         $content = file_get_contents($configFile);
         if ($content === false) {
             $this->ignoreIssues = [];
+            $this->metricLimits = [];
             return;
         }
 
