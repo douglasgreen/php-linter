@@ -44,7 +44,7 @@ final class ClassVisitorTest extends TestCase
         // Arrange
         $visitor = new ClassVisitor($this->issueHolder, 'TestClass');
         $property = new Property(
-            props: [new \PhpParser\Node\PropertyItem(new Identifier('testProp'))],
+            props: [new \PhpParser\Node\PropertyItem(new \PhpParser\Node\VarLikeIdentifier('testProp'))],
             flags: Class_::MODIFIER_PUBLIC,
         );
         // Act
