@@ -64,7 +64,7 @@ class ClassVisitor extends AbstractVisitorChecker
      * @param array<string, bool> $attribs Attributes of the class (e.g., 'abstract').
      */
     public function __construct(
-        protected readonly IssueHolder $issueHolder,
+        IssueHolder $issueHolder,
         protected readonly ?string $className,
         protected readonly array $attribs = [],
     ) {
