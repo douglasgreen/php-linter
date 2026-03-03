@@ -156,28 +156,22 @@ class Analyzer
     protected readonly array $metricLimits;
 
     /**
-     * Issue holder for collecting issues.
-     */
-    protected readonly IssueHolder $issueHolder;
-
-    /**
      * Initializes the Analyzer.
      *
      * @param string $currentDir The current working directory.
      * @param CacheManager $cache The cache manager instance.
      * @param IgnoreList $ignoreList The ignore list for filtering files.
      * @param Config $config The configuration instance.
-     * @param IssueHolder|null $issueHolder The issue holder for collecting issues.
+     * @param IssueHolder $issueHolder The issue holder for collecting issues.
      */
     public function __construct(
         protected readonly string $currentDir,
         protected readonly CacheManager $cache,
         protected readonly IgnoreList $ignoreList,
         Config $config,
-        ?IssueHolder $issueHolder = null,
+        protected readonly IssueHolder $issueHolder,
     ) {
         $this->metricLimits = $config->getMetricLimits();
-        $this->issueHolder = $issueHolder ?? new IssueHolder();
     }
 
     /**
