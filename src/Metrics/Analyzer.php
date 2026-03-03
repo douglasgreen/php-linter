@@ -276,7 +276,7 @@ class Analyzer
      */
     private function checkMethodMetrics(MetricData $method, string $className, string $filename): void
     {
-        $methodChecker = new MetricChecker($method, $className, $method->name);
+        $methodChecker = new MetricChecker($method, $filename, $className, $method->name);
         $methodChecker->checkMaxCyclomaticComplexity($this->getLimit('cyclomaticComplexity', self::CYCLOMATIC_COMPLEXITY_LIMIT));
         $methodChecker->checkMaxLinesOfCode($this->getLimit('methodLoc', self::METHOD_LOC_LIMIT));
         $methodChecker->checkMaxNpathComplexity($this->getLimit('npathComplexity', self::NPATH_COMPLEXITY_LIMIT));
@@ -297,7 +297,7 @@ class Analyzer
                 continue;
             }
 
-            $fileChecker = new MetricChecker($fileInfo);
+            $fileChecker = new MetricChecker($fileInfo, $filename);
             $fileChecker->checkMinCommentRatio($this->getLimit('commentRatio', self::COMMENT_RATIO_LIMIT));
         }
     }
@@ -315,7 +315,7 @@ class Analyzer
             return;
         }
 
-        $classChecker = new MetricChecker($class, $class->name);
+        $classChecker = new MetricChecker($class, $filename, $class->name);
         $classChecker->checkMaxClassSize($this->getLimit('classSize', self::CLASS_SIZE_LIMIT));
         $classChecker->checkMaxCodeRank($this->getLimit('codeRank', self::CODE_RANK_LIMIT));
         $classChecker->checkMaxLinesOfCode($this->getLimit('classLoc', self::CLASS_LOC_LIMIT));
@@ -349,7 +349,7 @@ class Analyzer
             return;
         }
 
-        $functionChecker = new MetricChecker($function, null, $function->name);
+        $functionChecker = new MetricChecker($function, $filename, null, $function->name);
         $functionChecker->checkMaxCyclomaticComplexity($this->getLimit('cyclomaticComplexity', self::CYCLOMATIC_COMPLEXITY_LIMIT));
         $functionChecker->checkMaxLinesOfCode($this->getLimit('methodLoc', self::METHOD_LOC_LIMIT));
         $functionChecker->checkMaxNpathComplexity($this->getLimit('npathComplexity', self::NPATH_COMPLEXITY_LIMIT));
@@ -383,7 +383,7 @@ class Analyzer
             $totalLoc = $lines !== false ? count($lines) : 0;
             $otherLoc = $totalLoc - $locChecked;
 
-            $fileChecker = new MetricChecker(new MetricData(loc: $otherLoc));
+            $fileChecker = new MetricChecker(new MetricData(loc: $otherLoc), $filename);
             $fileChecker->checkMaxLinesOfCode($this->getLimit('fileLoc', self::FILE_LOC_LIMIT));
         }
     }
