@@ -31,26 +31,6 @@ abstract class AbstractVisitorChecker
     ) {}
 
     /**
-     * Gets the list of issues.
-     *
-     * @return array<string, bool> The list of issues.
-     */
-    public function getIssues(): array
-    {
-        return $this->issueHolder->getIssues();
-    }
-
-    /**
-     * Checks if there are any issues.
-     *
-     * @return bool True if there are issues, false otherwise.
-     */
-    public function hasIssues(): bool
-    {
-        return $this->issueHolder->hasIssues();
-    }
-
-    /**
      * Check a node and store issues for later retrieval.
      *
      * @param Node $node The node to check.

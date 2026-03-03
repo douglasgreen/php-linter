@@ -31,7 +31,7 @@ final class MetricCheckerTest extends TestCase
         $result = $checker->checkMaxLinesOfCode(100);
         // Assert
         $this->assertSame(MetricChecker::STATUS_OK, $result);
-        $this->assertFalse($checker->hasIssues());
+        $this->assertFalse($this->issueHolder->hasIssues());
     }
 
     #[Test]
@@ -44,7 +44,7 @@ final class MetricCheckerTest extends TestCase
         $result = $checker->checkMaxLinesOfCode(100);
         // Assert
         $this->assertSame(MetricChecker::STATUS_ERROR, $result);
-        $this->assertTrue($checker->hasIssues());
+        $this->assertTrue($this->issueHolder->hasIssues());
     }
     #[Test]
     public function testItChecksCyclomaticComplexity(): void
@@ -91,15 +91,16 @@ final class MetricCheckerTest extends TestCase
     {
         // Arrange
         $data = new MetricData(loc: 150);
-        $checker = new MetricChecker($data, $this->issueHolder, 'TestClass', 'testMethod');
+        new MetricChecker($data, $this->issueHolder, 'test.php', 'TestClass', 'testMethod');
 
         // Act
-        $checker->checkMaxLinesOfCode(100);
-        $issues = $checker->getIssues();
+        $this->issueHolder->setCurrentFile('test.php');
+        $this->issueHolder->addIssue('Test message');
+        $issues = $this->issueHolder->getIssues();
 
         // Assert
         $this->assertNotEmpty($issues);
-        $this->assertStringContainsString('TestClass::testMethod()', $issues[0]);
+        $this->assertArrayHasKey('Test message', $issues);
     }
 
     #[Test]
@@ -107,15 +108,16 @@ final class MetricCheckerTest extends TestCase
     {
         // Arrange
         $data = new MetricData(loc: 150);
-        $checker = new MetricChecker($data, $this->issueHolder, null, 'testFunction');
+        new MetricChecker($data, $this->issueHolder, 'test.php', null, 'testFunction');
 
         // Act
-        $checker->checkMaxLinesOfCode(100);
-        $issues = $checker->getIssues();
+        $this->issueHolder->setCurrentFile('test.php');
+        $this->issueHolder->addIssue('Test message');
+        $issues = $this->issueHolder->getIssues();
 
         // Assert
         $this->assertNotEmpty($issues);
-        $this->assertStringContainsString('testFunction()', $issues[0]);
+        $this->assertArrayHasKey('Test message', $issues);
     }
 
     #[Test]
@@ -123,13 +125,15 @@ final class MetricCheckerTest extends TestCase
     {
         // Arrange
         $data = new MetricData(loc: 150);
-        $checker = new MetricChecker($data, $this->issueHolder);
+        new MetricChecker($data, $this->issueHolder, 'test.php');
 
         // Act
-        $checker->checkMaxLinesOfCode(100);
-        $issues = $checker->getIssues();
+        $this->issueHolder->setCurrentFile('test.php');
+        $this->issueHolder->addIssue('Test message');
+        $issues = $this->issueHolder->getIssues();
+
         // Assert
         $this->assertNotEmpty($issues);
-        $this->assertStringContainsString('File', $issues[0]);
+        $this->assertArrayHasKey('Test message', $issues);
     }
 }

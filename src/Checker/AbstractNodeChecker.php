@@ -40,26 +40,6 @@ abstract class AbstractNodeChecker
     abstract public function check(): array;
 
     /**
-     * Gets the list of issues.
-     *
-     * @return array<string, bool> The list of issues.
-     */
-    protected function getIssues(): array
-    {
-        return $this->issueHolder->getIssues();
-    }
-
-    /**
-     * Checks if there are any issues.
-     *
-     * @return bool True if there are issues, false otherwise.
-     */
-    protected function hasIssues(): bool
-    {
-        return $this->issueHolder->hasIssues();
-    }
-
-    /**
      * Adds a single issue to the list.
      *
      * @param string $issue The issue description.

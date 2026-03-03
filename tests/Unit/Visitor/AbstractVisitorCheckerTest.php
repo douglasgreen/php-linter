@@ -36,8 +36,8 @@ final class AbstractVisitorCheckerTest extends TestCase
         $visitor->checkNode(new \PhpParser\Node\Stmt\Nop());
 
         // Assert
-        $this->assertTrue($visitor->hasIssues());
-        $this->assertSame(['Test issue' => true], $visitor->getIssues());
+        $this->assertTrue($this->issueHolder->hasIssues());
+        $this->assertSame(['Test issue' => true], $this->issueHolder->getIssues());
     }
     #[Test]
     public function testItAddsMultipleIssues(): void
@@ -52,7 +52,7 @@ final class AbstractVisitorCheckerTest extends TestCase
         // Act
         $visitor->checkNode(new \PhpParser\Node\Stmt\Nop());
         // Assert
-        $issues = $visitor->getIssues();
+        $issues = $this->issueHolder->getIssues();
         $this->assertArrayHasKey('Issue 1', $issues);
         $this->assertArrayHasKey('Issue 2', $issues);
     }

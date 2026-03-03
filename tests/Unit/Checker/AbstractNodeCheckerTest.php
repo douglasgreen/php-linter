@@ -32,7 +32,7 @@ final class AbstractNodeCheckerTest extends TestCase
             public function check(): array
             {
                 $this->addIssue('Test issue');
-                return $this->getIssues();
+                return [];
             }
         };
         // Act
@@ -50,7 +50,7 @@ final class AbstractNodeCheckerTest extends TestCase
             public function check(): array
             {
                 $this->addIssues(['Issue 1' => true, 'Issue 2' => true]);
-                return $this->getIssues();
+                return [];
             }
         };
 
