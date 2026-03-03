@@ -6,6 +6,7 @@ namespace Tests\Unit\Metrics;
 
 use DouglasGreen\PhpLinter\Config;
 use DouglasGreen\PhpLinter\IgnoreList;
+use DouglasGreen\PhpLinter\IssueHolder;
 use DouglasGreen\PhpLinter\Metrics\Analyzer;
 use DouglasGreen\PhpLinter\Metrics\CacheManager;
 use PHPUnit\Framework\Attributes\CoversClass;
@@ -36,8 +37,11 @@ final class AnalyzerTest extends TestCase
         $cache = $this->createMock(CacheManager::class);
         $ignoreList = $this->createMock(IgnoreList::class);
         $config = $this->createMock(Config::class);
+        $issueHolder = $this->createMock(IssueHolder::class);
+
         // Act
-        $analyzer = new Analyzer($this->tempDir, $cache, $ignoreList, $config);
+        $analyzer = new Analyzer($this->tempDir, $cache, $ignoreList, $config, $issueHolder);
+
         // Assert
         $this->assertInstanceOf(Analyzer::class, $analyzer);
     }
