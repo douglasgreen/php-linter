@@ -172,19 +172,6 @@ class Analyzer
     }
 
     /**
-     * Gets a metric limit value, falling back to the class constant if not configured.
-     *
-     * @param string $key The configuration key.
-     * @param int|float $default The default value (class constant).
-     *
-     * @return int|float The limit value.
-     */
-    protected function getLimit(string $key, int|float $default): int|float
-    {
-        return $this->metricLimits[$key] ?? $default;
-    }
-
-    /**
      * Runs the metric analysis on the provided PHP files.
      *
      * Checks cache validity, generates metrics if needed, parses results,
@@ -241,6 +228,19 @@ class Analyzer
         } catch (Exception $exception) {
             echo 'PDepend error: ' . $exception->getMessage() . PHP_EOL;
         }
+    }
+
+    /**
+     * Gets a metric limit value, falling back to the class constant if not configured.
+     *
+     * @param string $key The configuration key.
+     * @param int|float $default The default value (class constant).
+     *
+     * @return int|float The limit value.
+     */
+    protected function getLimit(string $key, int|float $default): int|float
+    {
+        return $this->metricLimits[$key] ?? $default;
     }
 
     /**

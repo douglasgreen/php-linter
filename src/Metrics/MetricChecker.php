@@ -353,7 +353,7 @@ class MetricChecker
         foreach ($this->getIssues() as $issue) {
             echo $issue . PHP_EOL;
         }
-        
+
         $this->issueHolder->clearIssues();
     }
 

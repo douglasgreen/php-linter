@@ -49,6 +49,13 @@ abstract class AbstractVisitorChecker
     }
 
     /**
+     * Check a node and store issues for later retrieval.
+     *
+     * @param Node $node The node to check.
+     */
+    abstract public function checkNode(Node $node): void;
+
+    /**
      * Adds a single issue to the list.
      *
      * @param string $issue The issue description.
@@ -67,11 +74,4 @@ abstract class AbstractVisitorChecker
     {
         $this->issueHolder->addIssues($issues);
     }
-
-    /**
-     * Check a node and store issues for later retrieval.
-     *
-     * @param Node $node The node to check.
-     */
-    abstract public function checkNode(Node $node): void;
 }

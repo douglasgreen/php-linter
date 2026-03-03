@@ -11,7 +11,6 @@ use DouglasGreen\PhpLinter\Checker\LocalScopeChecker;
 use DouglasGreen\PhpLinter\Checker\NameChecker;
 use DouglasGreen\PhpLinter\Checker\OperatorChecker;
 use DouglasGreen\PhpLinter\Checker\TryCatchChecker;
-use DouglasGreen\PhpLinter\IssueHolder;
 use DouglasGreen\PhpLinter\Visitor\ClassVisitor;
 use DouglasGreen\PhpLinter\Visitor\FunctionVisitor;
 use DouglasGreen\PhpLinter\Visitor\MagicNumberVisitor;
@@ -326,7 +325,7 @@ class ElementVisitor extends NodeVisitorAbstract
 
             // Start function visitor to examine nodes within function.
             $this->functionVisitor = new FunctionVisitor(
-                (string) $this->currentFunctionName,
+                $this->currentFunctionName,
                 $attribs,
                 $params,
             );
@@ -465,12 +464,10 @@ class ElementVisitor extends NodeVisitorAbstract
      */
     private function checkTopLevelDefine(Node $node): void
     {
-        if ($node instanceof FuncCall && !$this->inClassLike) {
-            if ($node->name instanceof Name && $node->name->toString() === 'define') {
-                $this->addIssue(
-                    'Global define() call should be moved inside a class as a class constant according to PSR-1.',
-                );
-            }
+        if ($node instanceof FuncCall && !$this->inClassLike && ($node->name instanceof Name && $node->name->toString() === 'define')) {
+            $this->addIssue(
+                'Global define() call should be moved inside a class as a class constant according to PSR-1.',
+            );
         }
     }
 }

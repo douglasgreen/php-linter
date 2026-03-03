@@ -42,7 +42,7 @@ class Repository
     public function __construct()
     {
         $this->issueHolder = IssueHolder::getInstance();
-        
+
         $output = [];
         $returnVar = 0;
         exec('git ls-files', $output, $returnVar);
@@ -118,7 +118,7 @@ class Repository
         foreach (array_keys($this->issueHolder->getIssues()) as $issue) {
             echo $issue . PHP_EOL;
         }
-        
+
         $this->issueHolder->clearIssues();
     }
 }

@@ -35,11 +35,7 @@ class Config
      */
     public function __construct(string $currentDir, ?string $configFilePath = null)
     {
-        if ($configFilePath === null) {
-            $configFile = $currentDir . DIRECTORY_SEPARATOR . 'php-linter.json';
-        } else {
-            $configFile = $configFilePath;
-        }
+        $configFile = $configFilePath ?? $currentDir . DIRECTORY_SEPARATOR . 'php-linter.json';
 
         if (! file_exists($configFile)) {
             $this->ignoreIssues = [];
@@ -67,11 +63,7 @@ class Config
         }
 
         // Parse metricLimits
-        if (isset($data['metricLimits']) && is_array($data['metricLimits'])) {
-            $this->metricLimits = $data['metricLimits'];
-        } else {
-            $this->metricLimits = [];
-        }
+        $this->metricLimits = isset($data['metricLimits']) && is_array($data['metricLimits']) ? $data['metricLimits'] : [];
     }
 
     /**
