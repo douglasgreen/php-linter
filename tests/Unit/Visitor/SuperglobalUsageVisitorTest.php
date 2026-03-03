@@ -45,7 +45,7 @@ final class SuperglobalUsageVisitorTest extends TestCase
     {
         // Arrange
         $visitor = new SuperglobalUsageVisitor($this->issueHolder);
-        $function = new Function_(new Identifier('testFunction'), [], null);
+        $function = new Function_(new Identifier('testFunction'), [], []);
         $varNode = new Variable($superglobal);
 
         // Act
