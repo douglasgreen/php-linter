@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace DouglasGreen\PhpLinter\Metrics;
 
+use DouglasGreen\PhpLinter\IssueHolder;
 use Exception;
 
 /**
@@ -32,11 +33,15 @@ class Repository
     /**
      * Initializes the Repository by querying Git for files and default branch.
      *
+     * @param IssueHolder $issueHolder The issue holder for collecting issues.
+     *
      * @throws Exception If Git commands fail (e.g., not in a Git repository).
      *
      * @sideeffect Executes `git ls-files` and `git remote show origin`.
      */
-    public function __construct()
+    public function __construct(
+        protected readonly IssueHolder $issueHolder,
+    )
     {
         $output = [];
         $returnVar = 0;
@@ -76,8 +81,10 @@ class Repository
     {
         // Check if the default branch is 'main'
         if ($this->defaultBranch !== 'main') {
-            // Note: This will need to be refactored to accept IssueHolder via constructor
-            // For now, we'll skip this check or the caller will need to handle it
+            $this->issueHolder->addIssue(
+                sprintf('Default branch is "%s" instead of "main".', $this->defaultBranch),
+                'Set the default branch to "main" for consistency.',
+            );
         }
     }
 

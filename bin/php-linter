@@ -51,7 +51,8 @@ $ignoreIssues = $config->getIgnoreIssues();
 $issueHolder = new IssueHolder();
 $issueHolder->setIgnoreIssues($ignoreIssues);
 
-$repository = new Repository();
+$repository = new Repository($issueHolder);
+$repository->check();
 $phpFiles = $repository->getPhpFiles();
 
 // 1. Run Metrics
