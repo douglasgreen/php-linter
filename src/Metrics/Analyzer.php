@@ -6,6 +6,7 @@ namespace DouglasGreen\PhpLinter\Metrics;
 
 use DouglasGreen\PhpLinter\Config;
 use DouglasGreen\PhpLinter\IgnoreList;
+use DouglasGreen\PhpLinter\IssueHolder;
 use Exception;
 
 /**
@@ -155,20 +156,28 @@ class Analyzer
     protected readonly array $metricLimits;
 
     /**
+     * Issue holder for collecting issues.
+     */
+    protected readonly IssueHolder $issueHolder;
+
+    /**
      * Initializes the Analyzer.
      *
      * @param string $currentDir The current working directory.
      * @param CacheManager $cache The cache manager instance.
      * @param IgnoreList $ignoreList The ignore list for filtering files.
      * @param Config $config The configuration instance.
+     * @param IssueHolder|null $issueHolder The issue holder for collecting issues.
      */
     public function __construct(
         protected readonly string $currentDir,
         protected readonly CacheManager $cache,
         protected readonly IgnoreList $ignoreList,
         Config $config,
+        ?IssueHolder $issueHolder = null,
     ) {
         $this->metricLimits = $config->getMetricLimits();
+        $this->issueHolder = $issueHolder ?? new IssueHolder();
     }
 
     /**
@@ -276,11 +285,11 @@ class Analyzer
      */
     private function checkMethodMetrics(MetricData $method, string $className, string $filename): void
     {
-        $methodChecker = new MetricChecker($method, $filename, $className, $method->name);
-        $methodChecker->checkMaxCyclomaticComplexity($this->getLimit('cyclomaticComplexity', self::CYCLOMATIC_COMPLEXITY_LIMIT));
-        $methodChecker->checkMaxLinesOfCode($this->getLimit('methodLoc', self::METHOD_LOC_LIMIT));
-        $methodChecker->checkMaxNpathComplexity($this->getLimit('npathComplexity', self::NPATH_COMPLEXITY_LIMIT));
-        $methodChecker->checkMaxHalsteadEffort($this->getLimit('halsteadEffort', self::HALSTEAD_EFFORT_LIMIT));
+        $methodChecker = new MetricChecker($method, $this->issueHolder, $filename, $className, $method->name);
+        $methodChecker->checkMaxCyclomaticComplexity((int) $this->getLimit('cyclomaticComplexity', self::CYCLOMATIC_COMPLEXITY_LIMIT));
+        $methodChecker->checkMaxLinesOfCode((int) $this->getLimit('methodLoc', self::METHOD_LOC_LIMIT));
+        $methodChecker->checkMaxNpathComplexity((int) $this->getLimit('npathComplexity', self::NPATH_COMPLEXITY_LIMIT));
+        $methodChecker->checkMaxHalsteadEffort((int) $this->getLimit('halsteadEffort', self::HALSTEAD_EFFORT_LIMIT));
         $methodChecker->checkMinMaintainabilityIndex($this->getLimit('maintainabilityIndex', self::MAINTAINABILITY_INDEX_LIMIT));
     }
 
@@ -297,7 +306,7 @@ class Analyzer
                 continue;
             }
 
-            $fileChecker = new MetricChecker($fileInfo, $filename);
+            $fileChecker = new MetricChecker($fileInfo, $this->issueHolder, $filename);
             $fileChecker->checkMinCommentRatio($this->getLimit('commentRatio', self::COMMENT_RATIO_LIMIT));
         }
     }
@@ -315,18 +324,18 @@ class Analyzer
             return;
         }
 
-        $classChecker = new MetricChecker($class, $filename, $class->name);
-        $classChecker->checkMaxClassSize($this->getLimit('classSize', self::CLASS_SIZE_LIMIT));
+        $classChecker = new MetricChecker($class, $this->issueHolder, $filename, $class->name);
+        $classChecker->checkMaxClassSize((int) $this->getLimit('classSize', self::CLASS_SIZE_LIMIT));
         $classChecker->checkMaxCodeRank($this->getLimit('codeRank', self::CODE_RANK_LIMIT));
-        $classChecker->checkMaxLinesOfCode($this->getLimit('classLoc', self::CLASS_LOC_LIMIT));
-        $classChecker->checkMaxNonPrivateProperties($this->getLimit('nonPrivateProps', self::NON_PRIVATE_PROPS_LIMIT));
-        $classChecker->checkMaxProperties($this->getLimit('properties', self::PROPERTIES_LIMIT));
-        $classChecker->checkMaxPublicMethods($this->getLimit('publicMethods', self::PUBLIC_METHODS_LIMIT));
-        $classChecker->checkMaxAfferentCoupling($this->getLimit('afferentCoupling', self::AFFERENT_COUPLING_LIMIT));
-        $classChecker->checkMaxEfferentCoupling($this->getLimit('efferentCoupling', self::EFFERENT_COUPLING_LIMIT));
-        $classChecker->checkMaxInheritanceDepth($this->getLimit('inheritanceDepth', self::INHERITANCE_DEPTH_LIMIT));
-        $classChecker->checkMaxNumberOfChildClasses($this->getLimit('childClasses', self::CHILD_CLASSES_LIMIT));
-        $classChecker->checkMaxObjectCoupling($this->getLimit('objectCoupling', self::OBJECT_COUPLING_LIMIT));
+        $classChecker->checkMaxLinesOfCode((int) $this->getLimit('classLoc', self::CLASS_LOC_LIMIT));
+        $classChecker->checkMaxNonPrivateProperties((int) $this->getLimit('nonPrivateProps', self::NON_PRIVATE_PROPS_LIMIT));
+        $classChecker->checkMaxProperties((int) $this->getLimit('properties', self::PROPERTIES_LIMIT));
+        $classChecker->checkMaxPublicMethods((int) $this->getLimit('publicMethods', self::PUBLIC_METHODS_LIMIT));
+        $classChecker->checkMaxAfferentCoupling((int) $this->getLimit('afferentCoupling', self::AFFERENT_COUPLING_LIMIT));
+        $classChecker->checkMaxEfferentCoupling((int) $this->getLimit('efferentCoupling', self::EFFERENT_COUPLING_LIMIT));
+        $classChecker->checkMaxInheritanceDepth((int) $this->getLimit('inheritanceDepth', self::INHERITANCE_DEPTH_LIMIT));
+        $classChecker->checkMaxNumberOfChildClasses((int) $this->getLimit('childClasses', self::CHILD_CLASSES_LIMIT));
+        $classChecker->checkMaxObjectCoupling((int) $this->getLimit('objectCoupling', self::OBJECT_COUPLING_LIMIT));
 
         $loc = $class->loc ?? 0;
         $filesChecked[$filename] = ($filesChecked[$filename] ?? 0) + $loc;
@@ -349,11 +358,11 @@ class Analyzer
             return;
         }
 
-        $functionChecker = new MetricChecker($function, $filename, null, $function->name);
-        $functionChecker->checkMaxCyclomaticComplexity($this->getLimit('cyclomaticComplexity', self::CYCLOMATIC_COMPLEXITY_LIMIT));
-        $functionChecker->checkMaxLinesOfCode($this->getLimit('methodLoc', self::METHOD_LOC_LIMIT));
-        $functionChecker->checkMaxNpathComplexity($this->getLimit('npathComplexity', self::NPATH_COMPLEXITY_LIMIT));
-        $functionChecker->checkMaxHalsteadEffort($this->getLimit('halsteadEffort', self::HALSTEAD_EFFORT_LIMIT));
+        $functionChecker = new MetricChecker($function, $this->issueHolder, $filename, null, $function->name);
+        $functionChecker->checkMaxCyclomaticComplexity((int) $this->getLimit('cyclomaticComplexity', self::CYCLOMATIC_COMPLEXITY_LIMIT));
+        $functionChecker->checkMaxLinesOfCode((int) $this->getLimit('methodLoc', self::METHOD_LOC_LIMIT));
+        $functionChecker->checkMaxNpathComplexity((int) $this->getLimit('npathComplexity', self::NPATH_COMPLEXITY_LIMIT));
+        $functionChecker->checkMaxHalsteadEffort((int) $this->getLimit('halsteadEffort', self::HALSTEAD_EFFORT_LIMIT));
         $functionChecker->checkMinMaintainabilityIndex($this->getLimit('maintainabilityIndex', self::MAINTAINABILITY_INDEX_LIMIT));
 
         $loc = $function->loc ?? 0;
@@ -383,8 +392,8 @@ class Analyzer
             $totalLoc = $lines !== false ? count($lines) : 0;
             $otherLoc = $totalLoc - $locChecked;
 
-            $fileChecker = new MetricChecker(new MetricData(loc: $otherLoc), $filename);
-            $fileChecker->checkMaxLinesOfCode($this->getLimit('fileLoc', self::FILE_LOC_LIMIT));
+            $fileChecker = new MetricChecker(new MetricData(loc: $otherLoc), $this->issueHolder, $filename);
+            $fileChecker->checkMaxLinesOfCode((int) $this->getLimit('fileLoc', self::FILE_LOC_LIMIT));
         }
     }
 
