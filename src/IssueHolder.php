@@ -30,15 +30,14 @@ class IssueHolder
      */
     private array $ignoreIssues = [];
 
-    private function __construct()
-    {
-    }
+    private function __construct() {}
 
     public static function getInstance(): self
     {
-        if (self::$instance === null) {
+        if (!self::$instance instanceof \DouglasGreen\PhpLinter\IssueHolder) {
             self::$instance = new self();
         }
+
         return self::$instance;
     }
 
@@ -109,4 +108,3 @@ class IssueHolder
         $this->issues = [];
     }
 }
-

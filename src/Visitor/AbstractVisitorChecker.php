@@ -28,14 +28,6 @@ abstract class AbstractVisitorChecker
         $this->issueHolder = IssueHolder::getInstance();
     }
 
-    protected function getIssueHolder(): IssueHolder
-    {
-        if ($this->issueHolder === null) {
-            $this->issueHolder = IssueHolder::getInstance();
-        }
-        return $this->issueHolder;
-    }
-
     /**
      * Gets the list of issues.
      *
@@ -62,6 +54,15 @@ abstract class AbstractVisitorChecker
      * @param Node $node The node to check.
      */
     abstract public function checkNode(Node $node): void;
+
+    protected function getIssueHolder(): IssueHolder
+    {
+        if (!$this->issueHolder instanceof IssueHolder) {
+            $this->issueHolder = IssueHolder::getInstance();
+        }
+
+        return $this->issueHolder;
+    }
 
     /**
      * Adds a single issue to the list.
