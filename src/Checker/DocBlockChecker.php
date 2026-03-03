@@ -185,6 +185,10 @@ class DocBlockChecker extends AbstractNodeChecker
      */
     private function checkFunctionTags(PhpDocNode $phpDocNode): void
     {
+        if (!$this->node instanceof ClassMethod && !$this->node instanceof Function_) {
+            return;
+        }
+
         // Check @param tags match parameters
         $params = $this->node->getParams();
         $paramTags = $phpDocNode->getTagsByName('@param');
@@ -211,6 +215,10 @@ class DocBlockChecker extends AbstractNodeChecker
      */
     private function checkPropertyTags(PhpDocNode $phpDocNode): void
     {
+        if (!$this->node instanceof Property) {
+            return;
+        }
+
         // Rule 1.1: @var required if no native type or more specific type needed
         if ($this->node->type === null && $phpDocNode->getTagsByName('@var') === []) {
             $this->addIssue('Properties without native types MUST have a @var tag.');
