@@ -194,6 +194,26 @@ class ElementVisitor extends NodeVisitorAbstract
     }
 
     /**
+     * Adds a single issue.
+     *
+     * @param string $issue The issue to add.
+     */
+    protected function addIssue(string $issue): void
+    {
+        $this->issueHolder->addIssue($issue);
+    }
+
+    /**
+     * Adds multiple issues.
+     *
+     * @param array<string> $issues The issues to add.
+     */
+    protected function addIssues(array $issues): void
+    {
+        $this->issueHolder->addIssues($issues);
+    }
+
+    /**
      * Prints the issues found for a specific file.
      *
      * @param string $filename The file name.
