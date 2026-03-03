@@ -4,6 +4,7 @@ namespace Tests\Unit;
 
 use DouglasGreen\PhpLinter\ComposerFile;
 use DouglasGreen\PhpLinter\IgnoreList;
+use DouglasGreen\PhpLinter\IssueHolder;
 use DouglasGreen\PhpLinter\Linter;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\Small;
