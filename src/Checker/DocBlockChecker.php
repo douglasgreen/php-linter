@@ -33,6 +33,7 @@ class DocBlockChecker extends AbstractNodeChecker
      * Order priority for PHPDoc tags.
      */
     private const TAG_ORDER = [
+        '@package' => 1,
         '@api' => 1, '@internal' => 1,
         '@template' => 2, '@template-covariant' => 2, '@phpstan-type' => 2,
         '@extends' => 3, '@implements' => 3, '@use' => 3, '@mixin' => 3,

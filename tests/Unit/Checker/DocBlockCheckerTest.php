@@ -90,8 +90,8 @@ final class DocBlockCheckerTest extends TestCase
  * A valid summary.
  *
  * @package Test
- * @since 1.0.0
  * @api
+ * @since 1.0.0
  */
 DOC);
         $node = new Class_(new Identifier('ValidClass'), [], ['comments' => [$doc]]);
@@ -151,7 +151,7 @@ DOC);
             'DocBlock MUST start with a summary line.',
         ];
         yield 'too long' => [
-            "/**\n * This summary is definitely way too long and exceeds the eighty character limit.\n */",
+            "/**\n * This summary is definitely way too long and it exceeds the eighty character limit imposed by the standards.\n */",
             'DocBlock summary MUST be under 80 characters.',
         ];
         yield 'no capital start' => [
@@ -255,6 +255,6 @@ DOC);
         $issues = $this->issueHolder->getIssues();
 
         // Assert
-        $this->assertArrayHasKey('Tag @param is out of order. Follow the standard tag ordering.', $issues);
+        $this->assertArrayHasKey('Tag @api is out of order. Follow the standard tag ordering.', $issues);
     }
 }
