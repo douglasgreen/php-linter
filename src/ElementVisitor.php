@@ -10,11 +10,15 @@ use DouglasGreen\PhpLinter\Checker\FunctionChecker;
 use DouglasGreen\PhpLinter\Checker\LocalScopeChecker;
 use DouglasGreen\PhpLinter\Checker\NameChecker;
 use DouglasGreen\PhpLinter\Checker\OperatorChecker;
+use DouglasGreen\PhpLinter\Checker\DocBlockChecker;
 use DouglasGreen\PhpLinter\Checker\TryCatchChecker;
+use DouglasGreen\PhpLinter\PhpDoc\ParserFactory;
 use DouglasGreen\PhpLinter\Visitor\ClassVisitor;
 use DouglasGreen\PhpLinter\Visitor\FunctionVisitor;
 use DouglasGreen\PhpLinter\Visitor\MagicNumberVisitor;
 use DouglasGreen\PhpLinter\Visitor\SuperglobalUsageVisitor;
+use PHPStan\PhpDocParser\Lexer\Lexer;
+use PHPStan\PhpDocParser\Parser\PhpDocParser;
 use PhpParser\Node;
 use PhpParser\Node\Expr\Closure;
 use PhpParser\Node\Expr\FuncCall;
@@ -29,6 +33,7 @@ use PhpParser\Node\Stmt\Enum_;
 use PhpParser\Node\Stmt\Function_;
 use PhpParser\Node\Stmt\Interface_;
 use PhpParser\Node\Stmt\Namespace_;
+use PhpParser\Node\Stmt\Property;
 use PhpParser\Node\Stmt\Trait_;
 use PhpParser\Node\Stmt\TryCatch;
 use PhpParser\NodeVisitorAbstract;
@@ -53,6 +58,12 @@ class ElementVisitor extends NodeVisitorAbstract
 
     /** Visitor for superglobal usage checks. */
     protected SuperglobalUsageVisitor $superglobalUsageVisitor;
+
+    /** PHPDoc Lexer. */
+    protected Lexer $docLexer;
+
+    /** PHPDoc Parser. */
+    protected PhpDocParser $docParser;
 
     /** Current namespace name. */
     protected ?string $currentNamespace = null;
@@ -105,6 +116,10 @@ class ElementVisitor extends NodeVisitorAbstract
         $this->superglobalUsageVisitor = new SuperglobalUsageVisitor($this->issueHolder);
         $this->issueHolder->setCurrentFile($this->phpFile);
 
+        // Initialize PHPDoc parser
+        $this->docLexer = ParserFactory::createLexer();
+        $this->docParser = ParserFactory::createPhpDocParser();
+
         return null;
     }
 
@@ -140,6 +155,7 @@ class ElementVisitor extends NodeVisitorAbstract
         $this->checkTopLevelFunction($node);
         $this->checkTopLevelConst($node);
         $this->checkTopLevelDefine($node);
+        $this->checkDocBlock($node);
 
         return null;
     }
@@ -448,6 +464,20 @@ class ElementVisitor extends NodeVisitorAbstract
             $this->issueHolder->addIssue(
                 'Global define() call should be moved inside a class as a class constant according to PSR-1.',
             );
+        }
+    }
+
+    /**
+     * Checks DocBlocks for applicable elements.
+     *
+     * @param Node $node The current node.
+     */
+    private function checkDocBlock(Node $node): void
+    {
+        if ($node instanceof Class_ || $node instanceof Trait_ || $node instanceof Interface_ || $node instanceof Enum_ ||
+            $node instanceof ClassMethod || $node instanceof Function_ || $node instanceof Property) {
+            $docChecker = new DocBlockChecker($node, $this->issueHolder, $this->docLexer, $this->docParser);
+            $this->issueHolder->addIssues($docChecker->check());
         }
     }
 }
