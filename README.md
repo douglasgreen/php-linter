@@ -169,6 +169,17 @@ The AST linter analyzes your code for the following stylistic and structural iss
 
 - **Git branch:** Verifies the default repository branch is named `main`.
 
+### PHPDoc Standards
+
+- **Missing Documentation:** Public API elements (classes, interfaces, traits, enums, public methods, and public properties) must have a DocBlock.
+- **Summary Formatting:** DocBlocks must start with a summary line under 80 characters, starting with a capital letter and ending with a period.
+- **Mandatory Tags:**
+    - Classes must have `@package`, `@since`, and either `@api` or `@internal`.
+    - Methods must have `@param` tags matching the function signature and `@return` for non-void methods.
+    - Properties without native types must have a `@var` tag.
+- **Tag Ordering:** Tags must follow a specific order (e.g., `@api` before `@param`).
+- **Complex Types:** Bare `array` types are forbidden; use typed generics syntax (e.g., `list<string>`, `array<string, int>`).
+
 ## Configure the ignore list
 
 The linter supports an ignore list similar to `.gitignore`. Create a `.phplintignore` file in the
