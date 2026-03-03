@@ -284,7 +284,7 @@ class ElementVisitor extends NodeVisitorAbstract
 
             // Run checks on function node.
             $funcChecker = new FunctionChecker($node, $this->issueHolder, $this->isReadonlyClass);
-            $this->addIssues($funcChecker->check());
+            $this->issueHolder->addIssues($funcChecker->check());
 
             if ($node instanceof ClassMethod) {
                 $attribs = [
