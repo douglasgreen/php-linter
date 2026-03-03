@@ -6,6 +6,7 @@ namespace DouglasGreen\PhpLinter\Checker;
 
 use DouglasGreen\PhpLinter\IssueHolder;
 use PhpParser\Node;
+use PhpParser\Node\Identifier;
 use PhpParser\Node\Stmt\Class_;
 use PhpParser\Node\Stmt\ClassMethod;
 use PhpParser\Node\Stmt\Enum_;
@@ -182,7 +183,7 @@ class DocBlockChecker extends AbstractNodeChecker
     private function checkFunctionTags(PhpDocNode $phpDocNode): void
     {
         // Check @param tags match parameters
-        $params = $this->node instanceof ClassMethod ? $this->node->getParams() : [];
+        $params = $this->node->getParams();
         $paramTags = $phpDocNode->getTagsByName('@param');
         
         if (count($params) !== count($paramTags)) {
@@ -190,11 +191,12 @@ class DocBlockChecker extends AbstractNodeChecker
         }
 
         // Check @return
-        $returnType = $this->node instanceof ClassMethod ? $this->node->getReturnType() : null;
+        $returnType = $this->node->getReturnType();
         $returnTags = $phpDocNode->getTagsByName('@return');
         
         // Rule 4.1: @return required for non-void, optional for void but recommended
-        if ($returnType !== null && (string) $returnType !== 'void' && $returnTags === []) {
+        $isVoid = $returnType instanceof Identifier && $returnType->name === 'void';
+        if ($returnType !== null && !$isVoid && $returnTags === []) {
             $this->addIssue('Non-void methods MUST have a @return tag.');
         }
     }
