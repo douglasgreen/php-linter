@@ -59,7 +59,6 @@ class Linter
                 $visitor = new ElementVisitor($this->composerFile, $phpFile);
                 $traverser->addVisitor($visitor);
                 $traverser->traverse($stmts);
-                $visitor->printIssues($phpFile);
             } catch (Error $error) {
                 echo 'Parse Error: ', $error->getMessage();
             }

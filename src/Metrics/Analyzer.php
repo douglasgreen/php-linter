@@ -282,7 +282,6 @@ class Analyzer
         $methodChecker->checkMaxNpathComplexity($this->getLimit('npathComplexity', self::NPATH_COMPLEXITY_LIMIT));
         $methodChecker->checkMaxHalsteadEffort($this->getLimit('halsteadEffort', self::HALSTEAD_EFFORT_LIMIT));
         $methodChecker->checkMinMaintainabilityIndex($this->getLimit('maintainabilityIndex', self::MAINTAINABILITY_INDEX_LIMIT));
-        $methodChecker->printIssues($filename);
     }
 
     /**
@@ -300,7 +299,6 @@ class Analyzer
 
             $fileChecker = new MetricChecker($fileInfo);
             $fileChecker->checkMinCommentRatio($this->getLimit('commentRatio', self::COMMENT_RATIO_LIMIT));
-            $fileChecker->printIssues($filename);
         }
     }
 
@@ -332,7 +330,6 @@ class Analyzer
 
         $loc = $class->loc ?? 0;
         $filesChecked[$filename] = ($filesChecked[$filename] ?? 0) + $loc;
-        $classChecker->printIssues($filename);
 
         foreach ($class->methods as $method) {
             $this->checkMethodMetrics($method, $class->name ?? '', $filename);
@@ -361,7 +358,6 @@ class Analyzer
 
         $loc = $function->loc ?? 0;
         $filesChecked[$filename] = ($filesChecked[$filename] ?? 0) + $loc;
-        $functionChecker->printIssues($filename);
     }
 
     /**
@@ -389,7 +385,6 @@ class Analyzer
 
             $fileChecker = new MetricChecker(new MetricData(loc: $otherLoc));
             $fileChecker->checkMaxLinesOfCode($this->getLimit('fileLoc', self::FILE_LOC_LIMIT));
-            $fileChecker->printIssues($filename);
         }
     }
 
