@@ -38,7 +38,7 @@ final class AbstractNodeCheckerTest extends TestCase
         // Act
         $checker->check();
         // Assert
-        $this->assertTrue($checker->hasIssues());
+        $this->assertTrue($this->issueHolder->hasIssues());
     }
 
     #[Test]
@@ -55,7 +55,8 @@ final class AbstractNodeCheckerTest extends TestCase
         };
 
         // Act
-        $issues = $checker->check();
+        $checker->check();
+        $issues = $this->issueHolder->getIssues();
 
         // Assert
         $this->assertArrayHasKey('Issue 1', $issues);
