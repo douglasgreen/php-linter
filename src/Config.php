@@ -21,13 +21,25 @@ class Config
     protected readonly array $ignoreIssues;
 
     /**
+     * Map of metric limit names to values.
+     *
+     * @var array<string, int|float>
+     */
+    protected readonly array $metricLimits;
+
+    /**
      * Constructs a new Config instance by loading php-linter.json if it exists.
      *
      * @param string $currentDir The project root directory.
+     * @param string|null $configFilePath Optional path to config file. If null, uses $currentDir/php-linter.json.
      */
-    public function __construct(string $currentDir)
+    public function __construct(string $currentDir, ?string $configFilePath = null)
     {
-        $configFile = $currentDir . DIRECTORY_SEPARATOR . 'php-linter.json';
+        if ($configFilePath === null) {
+            $configFile = $currentDir . DIRECTORY_SEPARATOR . 'php-linter.json';
+        } else {
+            $configFile = $configFilePath;
+        }
 
         if (! file_exists($configFile)) {
             $this->ignoreIssues = [];
@@ -41,12 +53,25 @@ class Config
         }
 
         $data = json_decode($content, true);
-        if (! is_array($data) || ! isset($data['ignoreIssues']) || ! is_array($data['ignoreIssues'])) {
+        if (! is_array($data)) {
             $this->ignoreIssues = [];
+            $this->metricLimits = [];
             return;
         }
 
-        $this->ignoreIssues = array_filter($data['ignoreIssues'], is_string(...));
+        // Parse ignoreIssues
+        if (isset($data['ignoreIssues']) && is_array($data['ignoreIssues'])) {
+            $this->ignoreIssues = array_filter($data['ignoreIssues'], is_string(...));
+        } else {
+            $this->ignoreIssues = [];
+        }
+
+        // Parse metricLimits
+        if (isset($data['metricLimits']) && is_array($data['metricLimits'])) {
+            $this->metricLimits = $data['metricLimits'];
+        } else {
+            $this->metricLimits = [];
+        }
     }
 
     /**
@@ -57,5 +82,15 @@ class Config
     public function getIgnoreIssues(): array
     {
         return $this->ignoreIssues;
+    }
+
+    /**
+     * Returns the map of metric limits.
+     *
+     * @return array<string, int|float> Map of metric limit names to values.
+     */
+    public function getMetricLimits(): array
+    {
+        return $this->metricLimits;
     }
 }

@@ -58,7 +58,7 @@ $repository->printIssues();
 // 1. Run Metrics
 $cache = new CacheManager($currentDir);
 $ignoreList = new IgnoreList($currentDir);
-$analyzer = new Analyzer($currentDir, $cache, $ignoreList);
+$analyzer = new Analyzer($currentDir, $cache, $ignoreList, $config);
 $analyzer->run($phpFiles);
 
 // 2. Run Linter
