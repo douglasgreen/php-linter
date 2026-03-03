@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace DouglasGreen\PhpLinter\Checker;
 
-use PhpParser\Comment\Doc;
 use DouglasGreen\PhpLinter\IssueHolder;
+use PhpParser\Comment\Doc;
 use PhpParser\Node;
 use PhpParser\Node\Identifier;
 use PhpParser\Node\Stmt\Class_;
