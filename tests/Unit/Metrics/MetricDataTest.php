@@ -30,7 +30,7 @@ final class MetricDataTest extends TestCase
     public function testItCreatesMetricDataWithAllValues(): void
     {
         // Arrange
-        $methodData = ;
+        $methodData = null;
 
         // Act
         $metricData = new MetricData(

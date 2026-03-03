@@ -37,7 +37,7 @@ final class ClassVisitorTest extends TestCase
         $visitor = new ClassVisitor('TestClass');
         $property = new Property(
             modifiers: Modifier::PUBLIC,
-            props:
+            props: null,
         );
         // Act
         $visitor->checkNode($property);
