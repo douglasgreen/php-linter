@@ -20,6 +20,11 @@
       "DouglasGreen\\PhpLinter\\": "src/"
     }
   },
+  "autoload-dev": {
+    "psr-4": {
+      "Tests\\": "tests/"
+    }
+  },
   "config": {
     "platform": {
       "php": "8.3"
@@ -47,7 +52,8 @@
       "phpunit --testsuite=Integration"
     ],
     "qa": [
-      "@lint"
+      "@lint",
+      "@test"
     ]
   },
   "bin": [

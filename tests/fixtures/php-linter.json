@@ -1,0 +1,22 @@
+{
+  "metricLimits": {
+    "classSize": 10,
+    "classLoc": 100,
+    "methodLoc": 20,
+    "cyclomaticComplexity": 5,
+    "npathComplexity": 100,
+    "halsteadEffort": 1000,
+    "maintainabilityIndex": 50,
+    "commentRatio": 0.1,
+    "properties": 5,
+    "nonPrivateProps": 3,
+    "publicMethods": 5,
+    "afferentCoupling": 5,
+    "efferentCoupling": 5,
+    "objectCoupling": 5,
+    "inheritanceDepth": 2,
+    "childClasses": 5,
+    "codeRank": 1.0,
+    "fileLoc": 50
+  }
+}
