@@ -111,7 +111,7 @@ class XmlParser
             $filename = self::extractString($class, 'file');
 
             // Fallback: Check for child file element
-            if ($filename === null && isset($class->file)) {
+            if ($filename === null && (property_exists($class, 'file') && $class->file !== null)) {
                 $fileAttribs = $class->file->attributes();
                 if ($fileAttribs !== null) {
                     $filename = (string) $fileAttribs['name'];
@@ -182,7 +182,7 @@ class XmlParser
             $filename = self::extractString($function, 'file');
 
             // Fallback: Check for child file element
-            if ($filename === null && isset($function->file)) {
+            if ($filename === null && (property_exists($function, 'file') && $function->file !== null)) {
                 $fileAttribs = $function->file->attributes();
                 if ($fileAttribs !== null) {
                     $filename = (string) $fileAttribs['name'];
