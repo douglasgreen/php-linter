@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace DouglasGreen\PhpLinter;
 
-use DouglasGreen\PhpLinter\IssueHolder;
 use Exception;
 use PhpParser\Error;
 use PhpParser\NodeTraverser;

@@ -41,8 +41,7 @@ class Repository
      */
     public function __construct(
         protected readonly IssueHolder $issueHolder,
-    )
-    {
+    ) {
         $output = [];
         $returnVar = 0;
         exec('git ls-files', $output, $returnVar);
