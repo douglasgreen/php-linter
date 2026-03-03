@@ -59,7 +59,7 @@ class Config
 
         // Parse ignoreIssues
         if (isset($data['ignoreIssues']) && is_array($data['ignoreIssues'])) {
-            $this->ignoreIssues = array_filter($data['ignoreIssues'], is_string(...));
+            $this->ignoreIssues = array_values(array_filter($data['ignoreIssues'], is_string(...)));
         } else {
             $this->ignoreIssues = [];
         }

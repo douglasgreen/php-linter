@@ -230,7 +230,7 @@ class ElementVisitor extends NodeVisitorAbstract
             }
 
             // Start class visitor to examine nodes within class.
-            $this->classVisitor = new ClassVisitor($this->issueHolder, $this->currentClassName, $attribs);
+            $this->classVisitor = new ClassVisitor($this->currentClassName, $attribs);
             $this->isLocalScope = true;
 
             // Check namespace name, class name, and file path.
@@ -304,7 +304,6 @@ class ElementVisitor extends NodeVisitorAbstract
 
             // Start function visitor to examine nodes within function.
             $this->functionVisitor = new FunctionVisitor(
-                $this->issueHolder,
                 $this->currentFunctionName,
                 $attribs,
                 $params,

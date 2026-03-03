@@ -119,11 +119,12 @@ class FunctionChecker extends AbstractNodeChecker
      * Constructs a FunctionChecker with optional readonly class context.
      *
      * @param Node $node The function or method node to check.
+     * @param IssueHolder $issueHolder The issue holder for collecting issues.
      * @param bool $isReadonly Whether the containing class is readonly.
      */
-    public function __construct(Node $node, protected bool $isReadonly = false)
+    public function __construct(Node $node, IssueHolder $issueHolder, protected bool $isReadonly = false)
     {
-        parent::__construct($node);
+        parent::__construct($node, $issueHolder);
     }
 
     /**
