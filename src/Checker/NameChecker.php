@@ -205,7 +205,7 @@ class NameChecker extends AbstractNodeChecker
             return true;
         }
 
-        return preg_match('/[A-Z]{2}|_/', $name) === 0;
+        return preg_match('/^[a-z]|[A-Z]{2}|_/', $name) === 0;
     }
 
     /**
