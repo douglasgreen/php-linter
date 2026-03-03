@@ -14,6 +14,7 @@ use PhpParser\Node\Stmt\Class_;
 use PhpParser\Node\Stmt\ClassMethod;
 use PhpParser\Node\Stmt\Interface_;
 use PhpParser\Node\Stmt\Property;
+use PhpParser\Node\Stmt\PropertyProperty;
 use PhpParser\Node\Stmt\Trait_;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\DataProvider;
@@ -72,9 +73,8 @@ final class DocBlockCheckerTest extends TestCase
         yield 'public property' => [
             new Property(
                 Class_::MODIFIER_PUBLIC,
-                [],
-                [],
-                ['comments' => []]
+                [new PropertyProperty('testProp')],
+                []
             ),
         ];
     }

@@ -15,6 +15,7 @@ use PhpParser\Node\Stmt\Property;
 use PhpParser\Node\Stmt\Trait_;
 use PHPStan\PhpDocParser\Ast\PhpDoc\PhpDocNode;
 use PHPStan\PhpDocParser\Ast\PhpDoc\PhpDocTagNode;
+use PHPStan\PhpDocParser\Ast\PhpDoc\PhpDocTextNode;
 use PHPStan\PhpDocParser\Lexer\Lexer;
 use PHPStan\PhpDocParser\Parser\PhpDocParser;
 use PHPStan\PhpDocParser\Parser\TokenIterator;
@@ -108,11 +109,16 @@ class DocBlockChecker extends AbstractNodeChecker
      */
     private function validateSummaryAndDescription(PhpDocNode $phpDocNode): void
     {
-        $text = $phpDocNode->getAttribute('description') ?? '';
-        // The parser usually separates the summary (first line) from description.
-        // We rely on the text property for basic checks.
-        
-        // Attempt to get summary (first part of description)
+        // Extract text from the first PhpDocTextNode
+        $text = '';
+        foreach ($phpDocNode->children as $child) {
+            if ($child instanceof PhpDocTextNode) {
+                $text = $child->text;
+                break;
+            }
+        }
+
+        // Attempt to get summary (first line of text)
         $parts = preg_split('/\R/', trim($text), 2);
         $summary = $parts[0] ?? '';
 
