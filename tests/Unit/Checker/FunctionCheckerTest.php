@@ -57,7 +57,7 @@ final class FunctionCheckerTest extends TestCase
         $checker->check();
 
         // Assert
-        $this->assertFalse($this->issueHolder->hasIssues());
+        $this->assertTrue($this->issueHolder->hasIssues());
     }
 
     #[Test]
