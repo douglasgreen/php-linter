@@ -38,10 +38,18 @@ class XmlParser
     public function __construct(
         protected readonly string $xmlFile,
     ) {
+        // Use internal errors to prevent warnings from being emitted to output
+        $previousState = libxml_use_internal_errors(true);
+
         $xml = simplexml_load_file($this->xmlFile);
+
         if ($xml === false) {
+            libxml_clear_errors();
+            libxml_use_internal_errors($previousState);
             throw new RuntimeException('Unable to load XML file');
         }
+
+        libxml_use_internal_errors($previousState);
 
         if ($xml->files === null) {
             throw new RuntimeException('No files found');
@@ -99,8 +107,16 @@ class XmlParser
     {
         $classList = [];
         foreach ($classes as $class) {
-            $fileAttribs = $class->file->attributes();
-            $filename = (string) $fileAttribs['name'];
+            // Check for file attribute on class element (standard PDepend output)
+            $filename = self::extractString($class, 'file');
+
+            // Fallback: Check for child file element
+            if ($filename === null && isset($class->file)) {
+                $fileAttribs = $class->file->attributes();
+                if ($fileAttribs !== null) {
+                    $filename = (string) $fileAttribs['name'];
+                }
+            }
 
             $classList[] = new MetricData(
                 name: self::extractString($class, 'name'),
@@ -162,8 +178,16 @@ class XmlParser
     {
         $functionList = [];
         foreach ($functions as $function) {
-            $fileAttribs = $function->file->attributes();
-            $filename = (string) $fileAttribs['name'];
+            // Check for file attribute on function element (standard PDepend output)
+            $filename = self::extractString($function, 'file');
+
+            // Fallback: Check for child file element
+            if ($filename === null && isset($function->file)) {
+                $fileAttribs = $function->file->attributes();
+                if ($fileAttribs !== null) {
+                    $filename = (string) $fileAttribs['name'];
+                }
+            }
 
             $functionList[] = new MetricData(
                 name: self::extractString($function, 'name'),
