@@ -220,7 +220,7 @@ class DocBlockChecker extends AbstractNodeChecker
         }
 
         // Rule 1.1: @var required if no native type or more specific type needed
-        if ($this->node->type === null && $phpDocNode->getTagsByName('@var') === []) {
+        if (!$this->node->type instanceof Node && $phpDocNode->getTagsByName('@var') === []) {
             $this->addIssue('Properties without native types MUST have a @var tag.');
         }
     }
