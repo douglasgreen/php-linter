@@ -53,16 +53,15 @@ $issueHolder->setIgnoreIssues($ignoreIssues);
 
 $repository = new Repository();
 $phpFiles = $repository->getPhpFiles();
+$ignoreList = new IgnoreList($currentDir);
 
 // 1. Run Metrics
 $cache = new CacheManager($currentDir);
-$ignoreList = new IgnoreList($currentDir);
 $analyzer = new Analyzer($currentDir, $cache, $ignoreList, $config, $issueHolder);
 $analyzer->run($phpFiles);
 
 // 2. Run Linter
 $composerFile = new ComposerFile($currentDir . '/composer.json');
-$ignoreList = new IgnoreList($currentDir);
 $linter = new Linter($composerFile, $ignoreList, $issueHolder);
 $linter->run($phpFiles);
 
