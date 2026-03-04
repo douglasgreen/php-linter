@@ -14,9 +14,9 @@ use PhpParser\Node\Expr\Variable;
  *
  * @package DouglasGreen\PhpLinter\Visitor
  *
- * @since 1.0.0
- *
  * @internal
+ *
+ * @since 1.0.0
  */
 class FunctionVisitor extends AbstractVisitorChecker
 {

@@ -9,6 +9,8 @@ namespace DouglasGreen\PhpLinter;
  *
  * @package DouglasGreen\PhpLinter
  *
+ * @api
+ *
  * @since 1.0.0
  */
 class Config

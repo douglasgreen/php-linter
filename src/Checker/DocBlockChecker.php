@@ -27,6 +27,8 @@ use PHPStan\PhpDocParser\Parser\TokenIterator;
  *
  * @package DouglasGreen\PhpLinter\Checker
  *
+ * @internal
+ *
  * @since 1.0.0
  */
 class DocBlockChecker extends AbstractNodeChecker

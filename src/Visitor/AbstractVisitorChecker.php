@@ -15,9 +15,9 @@ use PhpParser\Node;
  *
  * @package DouglasGreen\PhpLinter\Visitor
  *
- * @since 1.0.0
- *
  * @internal
+ *
+ * @since 1.0.0
  */
 abstract class AbstractVisitorChecker
 {

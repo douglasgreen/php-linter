@@ -11,6 +11,8 @@ namespace DouglasGreen\PhpLinter\Metrics;
  *
  * @package DouglasGreen\PhpLinter\Metrics
  *
+ * @internal
+ *
  * @since 1.0.0
  */
 readonly class MetricData

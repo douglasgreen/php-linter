@@ -17,9 +17,9 @@ use ReturnTypeWillChange;
  * Magic numbers are numeric literals that appear directly in the code
  * without a named constant definition, reducing maintainability.
  *
- * @internal
- *
  * @package DouglasGreen\PhpLinter\Visitor
+ *
+ * @internal
  *
  * @since 1.0.0
  */

@@ -43,6 +43,8 @@ use PHPStan\PhpDocParser\Parser\PhpDocParser;
  *
  * @package DouglasGreen\PhpLinter
  *
+ * @internal
+ *
  * @since 1.0.0
  */
 class ElementVisitor extends NodeVisitorAbstract

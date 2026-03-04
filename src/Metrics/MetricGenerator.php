@@ -14,9 +14,9 @@ use RuntimeException;
  *
  * @package DouglasGreen\PhpLinter\Metrics
  *
- * @since 1.0.0
- *
  * @internal
+ *
+ * @since 1.0.0
  */
 class MetricGenerator
 {

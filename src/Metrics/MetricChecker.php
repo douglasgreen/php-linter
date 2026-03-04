@@ -14,10 +14,10 @@ use DouglasGreen\PhpLinter\IssueHolder;
  *
  * @package DouglasGreen\PhpLinter\Metrics
  *
+ * @api
+ *
  * @since 1.0.0
  * @see https://pdepend.org/documentation/software-metrics/index.html
- *
- * @api
  */
 class MetricChecker
 {

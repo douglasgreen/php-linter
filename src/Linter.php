@@ -14,6 +14,8 @@ use PhpParser\ParserFactory;
  *
  * @package DouglasGreen\PhpLinter
  *
+ * @api
+ *
  * @since 1.0.0
  */
 class Linter

@@ -22,9 +22,9 @@ use PhpParser\Node\Stmt\Property;
  *
  * @package DouglasGreen\PhpLinter\Visitor
  *
- * @since 1.0.0
- *
  * @internal
+ *
+ * @since 1.0.0
  */
 class ClassVisitor extends AbstractVisitorChecker
 {

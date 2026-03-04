@@ -15,6 +15,8 @@ use PHPStan\PhpDocParser\ParserConfig;
  *
  * @package DouglasGreen\PhpLinter\PhpDoc
  *
+ * @internal
+ *
  * @since 1.0.0
  */
 class ParserFactory

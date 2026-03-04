@@ -11,6 +11,8 @@ use Exception;
  *
  * @package DouglasGreen\PhpLinter
  *
+ * @api
+ *
  * @since 1.0.0
  */
 class IgnoreList

@@ -19,9 +19,9 @@ use PhpParser\Node\Stmt\If_;
  *
  * @package DouglasGreen\PhpLinter\Checker
  *
- * @since 1.0.0
- *
  * @internal
+ *
+ * @since 1.0.0
  */
 class ExpressionChecker extends AbstractNodeChecker
 {

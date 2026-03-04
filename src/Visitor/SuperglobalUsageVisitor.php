@@ -20,9 +20,9 @@ use PhpParser\NodeVisitorAbstract;
  *
  * @package DouglasGreen\PhpLinter\Visitor
  *
- * @since 1.0.0
- *
  * @internal
+ *
+ * @since 1.0.0
  */
 class SuperglobalUsageVisitor extends NodeVisitorAbstract
 {

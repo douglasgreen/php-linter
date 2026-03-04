@@ -26,9 +26,9 @@ use PhpParser\NodeFinder;
  *
  * @package DouglasGreen\PhpLinter\Checker
  *
- * @since 1.0.0
- *
  * @internal
+ *
+ * @since 1.0.0
  */
 class FunctionChecker extends AbstractNodeChecker
 {

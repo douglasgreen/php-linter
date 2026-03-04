@@ -14,9 +14,9 @@ use PhpParser\Node\Name;
  *
  * @package DouglasGreen\PhpLinter\Checker
  *
- * @since 1.0.0
- *
  * @internal
+ *
+ * @since 1.0.0
  */
 class FunctionCallChecker extends AbstractNodeChecker
 {

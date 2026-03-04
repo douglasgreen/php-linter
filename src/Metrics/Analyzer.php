@@ -16,9 +16,9 @@ use Exception;
  *
  * @package DouglasGreen\PhpLinter\Metrics
  *
- * @since 1.0.0
- *
  * @api
+ *
+ * @since 1.0.0
  */
 class Analyzer
 {

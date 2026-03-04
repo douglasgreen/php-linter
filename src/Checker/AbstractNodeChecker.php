@@ -15,9 +15,9 @@ use PhpParser\Node;
  *
  * @package DouglasGreen\PhpLinter\Checker
  *
- * @since 1.0.0
+ * @internal
  *
- * @api
+ * @since 1.0.0
  */
 abstract class AbstractNodeChecker
 {

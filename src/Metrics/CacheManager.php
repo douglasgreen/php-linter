@@ -11,9 +11,9 @@ namespace DouglasGreen\PhpLinter\Metrics;
  *
  * @package DouglasGreen\PhpLinter\Metrics
  *
- * @since 1.0.0
+ * @api
  *
- * @internal
+ * @since 1.0.0
  */
 class CacheManager
 {

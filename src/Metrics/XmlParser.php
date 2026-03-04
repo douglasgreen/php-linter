@@ -14,10 +14,10 @@ use SimpleXMLElement;
  *
  * @package DouglasGreen\PhpLinter\Metrics
  *
+ * @internal
+ *
  * @since 1.0.0
  * @see https://pdepend.org/documentation/software-metrics/index.html
- *
- * @internal
  */
 class XmlParser
 {
