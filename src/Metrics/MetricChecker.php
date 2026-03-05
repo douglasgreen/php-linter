@@ -16,8 +16,8 @@ use DouglasGreen\PhpLinter\IssueHolder;
  *
  * @api
  *
- * @since 1.0.0
  * @see https://pdepend.org/documentation/software-metrics/index.html
+ * @since 1.0.0
  */
 class MetricChecker
 {

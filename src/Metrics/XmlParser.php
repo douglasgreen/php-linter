@@ -16,8 +16,8 @@ use SimpleXMLElement;
  *
  * @internal
  *
- * @since 1.0.0
  * @see https://pdepend.org/documentation/software-metrics/index.html
+ * @since 1.0.0
  */
 class XmlParser
 {

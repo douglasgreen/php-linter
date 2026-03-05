@@ -7,11 +7,9 @@ namespace DouglasGreen\PhpLinter\Linter\Checker;
 use DouglasGreen\PhpLinter\IssueHolder;
 use PhpParser\Comment\Doc;
 use PhpParser\Node;
-use PhpParser\Node\Identifier;
 use PhpParser\Node\Stmt\Class_;
 use PhpParser\Node\Stmt\ClassMethod;
 use PhpParser\Node\Stmt\Enum_;
-use PhpParser\Node\Stmt\Function_;
 use PhpParser\Node\Stmt\Interface_;
 use PhpParser\Node\Stmt\Property;
 use PhpParser\Node\Stmt\Trait_;
@@ -129,6 +127,7 @@ class DocBlockChecker extends AbstractNodeChecker
             if (!$this->isMagicMethod()) {
                 $this->addIssue('DocBlock MUST start with a summary line.');
             }
+
             return;
         }
 
@@ -263,6 +262,7 @@ class DocBlockChecker extends AbstractNodeChecker
             $methodName = $this->node->name->toString();
             return str_starts_with($methodName, '__');
         }
+
         return false;
     }
 }
