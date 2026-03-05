@@ -153,8 +153,6 @@ class DocBlockChecker extends AbstractNodeChecker
     {
         if ($this->node instanceof Class_ || $this->node instanceof Interface_ || $this->node instanceof Trait_ || $this->node instanceof Enum_) {
             $this->checkClassTags($phpDocNode);
-        } elseif ($this->node instanceof ClassMethod || $this->node instanceof Function_) {
-            $this->checkFunctionTags($phpDocNode);
         } elseif ($this->node instanceof Property) {
             $this->checkPropertyTags($phpDocNode);
         }
@@ -177,36 +175,6 @@ class DocBlockChecker extends AbstractNodeChecker
 
         if ($phpDocNode->getTagsByName('@api') === [] && $phpDocNode->getTagsByName('@internal') === []) {
             $this->addIssue('Class-like structures MUST have an @api or @internal tag.');
-        }
-    }
-
-    /**
-     * Checks mandatory tags for methods/functions.
-     *
-     * @param PhpDocNode $phpDocNode The parsed DocBlock node.
-     */
-    private function checkFunctionTags(PhpDocNode $phpDocNode): void
-    {
-        if (!$this->node instanceof ClassMethod && !$this->node instanceof Function_) {
-            return;
-        }
-
-        // Check @param tags match parameters
-        $params = $this->node->getParams();
-        $paramTags = $phpDocNode->getTagsByName('@param');
-
-        if (count($params) !== count($paramTags)) {
-            $this->addIssue('Method parameters and @param tags count mismatch.');
-        }
-
-        // Check @return
-        $returnType = $this->node->getReturnType();
-        $returnTags = $phpDocNode->getTagsByName('@return');
-
-        // Rule 4.1: @return required for non-void, optional for void but recommended
-        $isVoid = $returnType instanceof Identifier && $returnType->name === 'void';
-        if ($returnType !== null && !$isVoid && $returnTags === []) {
-            $this->addIssue('Non-void methods MUST have a @return tag.');
         }
     }
 
