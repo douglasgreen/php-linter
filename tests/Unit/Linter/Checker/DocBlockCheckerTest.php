@@ -227,7 +227,7 @@ DOC);
         $issues = $this->issueHolder->getIssues();
 
         // Assert
-        $this->assertArrayHasKey('Use typed generics syntax (e.g., list<Foo>) instead of bare "array".', $issues);
+        $this->assertArrayHasKey('Use typed generics syntax (e.g., list<Foo> or array<string, int>) instead of bare "array".', $issues);
     }
 
     /**

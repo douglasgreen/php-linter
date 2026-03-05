@@ -242,13 +242,21 @@ class DocBlockChecker extends AbstractNodeChecker
         );
 
         foreach ($typeTags as $tag) {
-            // Accessing the type string is tricky without deep inspection of the AST.
-            // We check the raw text of the tag value for simplicity.
-            $typeString = (string) $tag->value;
+            $value = $tag->value;
 
-            // Rule 4.4: No bare 'array'
+            // Ensure we are dealing with a tag that has a type (ParamTagValueNode, ReturnTagValueNode, etc.)
+            if (!property_exists($value, 'type')) {
+                continue;
+            }
+
+            // Convert only the TypeNode part to a string, ignoring variable names and descriptions
+            $typeString = (string) $value->type;
+
+            // Rule 4.4: No bare 'array' in the type definition
+            // \barray\b matches the word "array"
+            // array[<\{] checks if it's already using generics (array<T> or array{...})
             if (preg_match('/\barray\b/', $typeString) && !preg_match('/array[<\{]/', $typeString)) {
-                $this->addIssue('Use typed generics syntax (e.g., list<Foo>) instead of bare "array".');
+                $this->addIssue('Use typed generics syntax (e.g., list<Foo> or array<string, int>) instead of bare "array".');
             }
         }
     }
