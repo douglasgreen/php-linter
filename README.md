@@ -172,7 +172,7 @@ The AST linter analyzes your code for the following stylistic and structural iss
 ### PHPDoc Standards
 
 - **Missing Documentation:** Public API elements (classes, interfaces, traits, enums, public methods, and public properties) must have a DocBlock.
-- **Summary Formatting:** DocBlocks must start with a summary line under 80 characters, starting with a capital letter and ending with a period.
+- **Summary Formatting:** DocBlocks for non-magic functions must start with a summary line under 80 characters, starting with a capital letter and ending with a period.
 - **Mandatory Tags:**
     - Classes must have `@package`, `@since`, and either `@api` or `@internal`.
     - Properties without native types must have a `@var` tag.

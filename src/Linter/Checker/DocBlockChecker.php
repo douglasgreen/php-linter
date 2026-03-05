@@ -126,7 +126,9 @@ class DocBlockChecker extends AbstractNodeChecker
         $summary = $parts[0] ?? '';
 
         if ($summary === '') {
-            $this->addIssue('DocBlock MUST start with a summary line.');
+            if (!$this->isMagicMethod()) {
+                $this->addIssue('DocBlock MUST start with a summary line.');
+            }
             return;
         }
 
@@ -250,5 +252,17 @@ class DocBlockChecker extends AbstractNodeChecker
                 $this->addIssue('Use typed generics syntax (e.g., list<Foo>) instead of bare "array".');
             }
         }
+    }
+
+    /**
+     * Checks if the current node is a PHP magic method.
+     */
+    private function isMagicMethod(): bool
+    {
+        if ($this->node instanceof ClassMethod) {
+            $methodName = $this->node->name->toString();
+            return str_starts_with($methodName, '__');
+        }
+        return false;
     }
 }

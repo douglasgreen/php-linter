@@ -170,7 +170,9 @@ class FunctionChecker extends AbstractNodeChecker
     }
 
     /**
-     * Determines if a class is a "Newable" (fine to instantiate) vs an "Injectable" (should be DI'd).
+     * Determines if a class is a "Newable" or an "Injectable".
+     *
+     * A "Newable" is fine to instantiate but an "Injectable" should be DI'd.
      *
      * @param string $className The name of the class to check.
      *
