@@ -4,13 +4,13 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Linter\Checker;
 
-use PhpParser\Node\Stmt\Echo_;
-use PhpParser\Node\Stmt\If_;
-use PhpParser\Node\Expr\ConstFetch;
-use PhpParser\Node\Name;
 use DouglasGreen\PhpLinter\IssueHolder;
 use DouglasGreen\PhpLinter\Linter\Checker\TryCatchChecker;
+use PhpParser\Node\Expr\ConstFetch;
+use PhpParser\Node\Name;
 use PhpParser\Node\Stmt\Catch_;
+use PhpParser\Node\Stmt\Echo_;
+use PhpParser\Node\Stmt\If_;
 use PhpParser\Node\Stmt\TryCatch;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\Small;

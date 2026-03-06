@@ -4,17 +4,17 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Linter\Visitor;
 
-use PhpParser\Node\PropertyItem;
-use PhpParser\Node\VarLikeIdentifier;
 use DouglasGreen\PhpLinter\IssueHolder;
 use DouglasGreen\PhpLinter\Linter\Visitor\ClassVisitor;
 use PhpParser\Node\Expr\MethodCall;
 use PhpParser\Node\Expr\PropertyFetch;
 use PhpParser\Node\Expr\Variable;
 use PhpParser\Node\Identifier;
+use PhpParser\Node\PropertyItem;
 use PhpParser\Node\Stmt\Class_;
 use PhpParser\Node\Stmt\ClassMethod;
 use PhpParser\Node\Stmt\Property;
+use PhpParser\Node\VarLikeIdentifier;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\Small;
 use PHPUnit\Framework\Attributes\Test;

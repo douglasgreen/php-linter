@@ -4,15 +4,15 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Linter\Checker;
 
-use PhpParser\Node\Identifier;
-use PhpParser\Node\Scalar\String_;
-use PhpParser\Node\Scalar\Int_;
 use DouglasGreen\PhpLinter\IssueHolder;
 use DouglasGreen\PhpLinter\Linter\Checker\ExpressionChecker;
 use PhpParser\Node\Expr\Assign;
 use PhpParser\Node\Expr\Eval_;
 use PhpParser\Node\Expr\Include_;
 use PhpParser\Node\Expr\Variable;
+use PhpParser\Node\Identifier;
+use PhpParser\Node\Scalar\Int_;
+use PhpParser\Node\Scalar\String_;
 use PhpParser\Node\Stmt\Global_;
 use PhpParser\Node\Stmt\Goto_;
 use PhpParser\Node\Stmt\If_;

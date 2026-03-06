@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Linter\Visitor;
 
-use PhpParser\Node\Stmt\Nop;
 use DouglasGreen\PhpLinter\IssueHolder;
 use DouglasGreen\PhpLinter\Linter\Visitor\AbstractVisitorChecker;
 use PhpParser\Node;
+use PhpParser\Node\Stmt\Nop;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\Small;
 use PHPUnit\Framework\Attributes\Test;

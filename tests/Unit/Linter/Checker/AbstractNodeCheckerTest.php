@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Linter\Checker;
 
-use PhpParser\Node\Stmt\Nop;
 use DouglasGreen\PhpLinter\IssueHolder;
 use DouglasGreen\PhpLinter\Linter\Checker\AbstractNodeChecker;
+use PhpParser\Node\Stmt\Nop;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\Small;
 use PHPUnit\Framework\Attributes\Test;
