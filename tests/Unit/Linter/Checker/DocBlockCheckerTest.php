@@ -178,6 +178,7 @@ DOC);
             // We only check that the specific summary issue is NOT present.
             // Other issues (like missing tags) might exist, so we don't assertEmpty.
             foreach (array_keys($issues) as $message) {
+                $this->assertIsString($message);
                 $this->assertStringNotContainsString('summary', $message);
             }
         } else {

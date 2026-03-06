@@ -64,6 +64,7 @@ XML;
 
         // Act
         $parser = new XmlParser($xmlPath);
+        /** @var array<string, mixed> $data */
         $data = $parser->getData();
 
         // Assert
@@ -91,6 +92,7 @@ XML;
 
         // Act
         $parser = new XmlParser($xmlPath);
+        /** @var array<int, object> $files */
         $files = $parser->getFiles();
 
         // Assert
