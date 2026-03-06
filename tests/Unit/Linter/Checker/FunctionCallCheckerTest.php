@@ -25,6 +25,9 @@ final class FunctionCallCheckerTest extends TestCase
         $this->issueHolder = new IssueHolder();
     }
 
+    /**
+     * @return iterable<string, array{0: string}>
+     */
     public static function debugFunctionProvider(): iterable
     {
         yield 'var_dump' => ['var_dump'];

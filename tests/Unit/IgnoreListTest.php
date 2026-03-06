@@ -28,6 +28,9 @@ final class IgnoreListTest extends TestCase
         $this->removeDirectory($this->tempDir);
     }
 
+    /**
+     * @return iterable<string, array{0: string, 1: string, 2: string}>
+     */
     public static function subpathProvider(): iterable
     {
         yield 'trailing slash on base' => ['/path/to/', 'subdir/file.txt', '/path/to/subdir/file.txt'];
@@ -110,6 +113,9 @@ final class IgnoreListTest extends TestCase
         $this->assertSame($expected, $result);
     }
 
+    /**
+     * @param list<string> $patterns
+     */
     private function createIgnoreFile(array $patterns): void
     {
         file_put_contents($this->tempDir . '/.phplintignore', implode("\n", $patterns));

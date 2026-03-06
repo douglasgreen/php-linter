@@ -27,6 +27,9 @@ final class SuperglobalUsageVisitorTest extends TestCase
         $this->issueHolder = new IssueHolder();
     }
 
+    /**
+     * @return iterable<string, array{0: string}>
+     */
     public static function superglobalProvider(): iterable
     {
         yield '_GET' => ['_GET'];

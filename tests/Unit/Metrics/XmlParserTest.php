@@ -92,7 +92,7 @@ XML;
 
         // Act
         $parser = new XmlParser($xmlPath);
-        /** @var array<int, object> $files */
+        /** @var list<\DouglasGreen\PhpLinter\Metrics\MetricData> $files */
         $files = $parser->getFiles();
 
         // Assert

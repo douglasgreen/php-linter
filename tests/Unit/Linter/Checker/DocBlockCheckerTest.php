@@ -38,6 +38,8 @@ final class DocBlockCheckerTest extends TestCase
 
     /**
      * Provides nodes that require DocBlocks.
+     *
+     * @return iterable<string, array{0: \PhpParser\Node}>
      */
     public static function publicApiNodeProvider(): iterable
     {
@@ -61,6 +63,8 @@ final class DocBlockCheckerTest extends TestCase
 
     /**
      * Provides summary test cases.
+     *
+     * @return iterable<string, array{0: string, 1: ?string}>
      */
     public static function summaryProvider(): iterable
     {
@@ -88,6 +92,8 @@ final class DocBlockCheckerTest extends TestCase
 
     /**
      * Provides class tag test cases.
+     *
+     * @return iterable<string, array{0: string, 1: string}>
      */
     public static function classTagProvider(): iterable
     {
@@ -109,7 +115,7 @@ final class DocBlockCheckerTest extends TestCase
      * Tests that missing DocBlocks are detected on public API elements.
      */
     #[DataProvider('publicApiNodeProvider')]
-    public function testItDetectsMissingDocBlockOnPublicApi(object $node): void
+    public function testItDetectsMissingDocBlockOnPublicApi(\PhpParser\Node $node): void
     {
         // Arrange
         $lexer = ParserFactory::createLexer();
@@ -178,7 +184,6 @@ DOC);
             // We only check that the specific summary issue is NOT present.
             // Other issues (like missing tags) might exist, so we don't assertEmpty.
             foreach (array_keys($issues) as $message) {
-                $this->assertIsString($message);
                 $this->assertStringNotContainsString('summary', $message);
             }
         } else {

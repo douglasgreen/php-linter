@@ -28,6 +28,9 @@ final class NameCheckerTest extends TestCase
         $this->issueHolder = new IssueHolder();
     }
 
+    /**
+     * @return iterable<string, array{0: string}>
+     */
     public static function validClassNameProvider(): iterable
     {
         yield 'PascalCase single word' => ['User'];
@@ -35,6 +38,9 @@ final class NameCheckerTest extends TestCase
         yield 'PascalCase with numbers' => ['Api2Client'];
     }
 
+    /**
+     * @return iterable<string, array{0: string}>
+     */
     public static function invalidClassNameProvider(): iterable
     {
         yield 'snake_case' => ['user_controller'];
