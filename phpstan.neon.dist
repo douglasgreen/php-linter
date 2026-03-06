@@ -4,6 +4,7 @@ parameters:
   level: 8
   paths:
     - src
+    - tests
   excludePaths:
     - var
     - vendor

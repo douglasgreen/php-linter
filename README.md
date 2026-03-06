@@ -171,13 +171,16 @@ The AST linter analyzes your code for the following stylistic and structural iss
 
 ### PHPDoc Standards
 
-- **Missing Documentation:** Public API elements (classes, interfaces, traits, enums, public methods, and public properties) must have a DocBlock.
-- **Summary Formatting:** DocBlocks for non-magic functions must start with a summary line under 80 characters, starting with a capital letter and ending with a period.
+- **Missing Documentation:** Public API elements (classes, interfaces, traits, enums, public
+  methods, and public properties) must have a DocBlock.
+- **Summary Formatting:** DocBlocks for non-magic functions must start with a summary line under 80
+  characters, starting with a capital letter and ending with a period.
 - **Mandatory Tags:**
-    - Classes must have `@package`, `@since`, and either `@api` or `@internal`.
-    - Properties without native types must have a `@var` tag.
+  - Classes must have `@package`, `@since`, and either `@api` or `@internal`.
+  - Properties without native types must have a `@var` tag.
 - **Tag Ordering:** Tags must follow a specific order (e.g., `@api` before `@param`).
-- **Complex Types:** Bare `array` types are forbidden; use typed generics syntax (e.g., `list<string>`, `array<string, int>`).
+- **Complex Types:** Bare `array` types are forbidden; use typed generics syntax (e.g.,
+  `list<string>`, `array<string, int>`).
 
 ## Configure the ignore list
 
@@ -202,21 +205,23 @@ build/*.tmp.php
 
 ## Configure error ignoring
 
-Create a `php-linter.json` file in the root of your repository to configure the linter. This file supports two main configuration options: ignoring specific issue types and customizing metric limits.
+Create a `php-linter.json` file in the root of your repository to configure the linter. This file
+supports two main configuration options: ignoring specific issue types and customizing metric
+limits.
 
 ### Configuration structure
 
 The configuration file contains two optional arrays:
 
-- **`ignoreIssues`**: An array of issue strings to ignore. The strings must match the exact issue text reported by the linter.
-- **`metricLimits`**: An object mapping metric names to custom limit values. These override the default constants defined in the Analyzer class.
+- **`ignoreIssues`**: An array of issue strings to ignore. The strings must match the exact issue
+  text reported by the linter.
+- **`metricLimits`**: An object mapping metric names to custom limit values. These override the
+  default constants defined in the Analyzer class.
 
 ```json
 {
   "ignoreIssues": [
     "Remove unused private non-static method MyClass::unusedMethod() to reduce dead code.",
-    "Remove unused parameter \"paramName\" from function \"myFunction()\"; it is defined but not used in the function body.",
-    "Replace the magic number 42 with a named constant. It appears 3 times on lines 10, 25, 30. Centralizing this value improves maintainability and readability."
   ],
   "metricLimits": {
     "classSize": 80,
@@ -241,9 +246,14 @@ The configuration file contains two optional arrays:
 }
 ```
 
-**Note on ignoreIssues:** The ignore list matches the complete issue message text, not short codes. To find the exact strings to ignore, run the linter first and copy the issue messages you want to suppress into the `ignoreIssues` array. When an issue message is listed in `ignoreIssues`, all instances of that exact issue will be suppressed from the output.
+**Note on ignoreIssues:** The ignore list matches the complete issue message text, not short codes.
+To find the exact strings to ignore, run the linter first and copy the issue messages you want to
+suppress into the `ignoreIssues` array. When an issue message is listed in `ignoreIssues`, all
+instances of that exact issue will be suppressed from the output.
 
-**Note on metricLimits:** All metric limit keys are optional. If a key is not specified, the linter uses its default value (the class constant defined in the Analyzer). The example above shows all available metric limit keys with their default values.
+**Note on metricLimits:** All metric limit keys are optional. If a key is not specified, the linter
+uses its default value (the class constant defined in the Analyzer). The example above shows all
+available metric limit keys with their default values.
 
 ### Custom configuration file path
 
