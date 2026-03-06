@@ -1,11 +1,16 @@
 <?php
+
 declare(strict_types=1);
+
 namespace Tests\Unit\Linter\Checker;
 
-use DouglasGreen\PhpLinter\Linter\Checker\TryCatchChecker;
+use PhpParser\Node\Stmt\Echo_;
+use PhpParser\Node\Stmt\If_;
+use PhpParser\Node\Expr\ConstFetch;
+use PhpParser\Node\Name;
 use DouglasGreen\PhpLinter\IssueHolder;
+use DouglasGreen\PhpLinter\Linter\Checker\TryCatchChecker;
 use PhpParser\Node\Stmt\Catch_;
-use PhpParser\Node\Stmt\Nop;
 use PhpParser\Node\Stmt\TryCatch;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\Small;
@@ -42,7 +47,7 @@ final class TryCatchCheckerTest extends TestCase
     public function testItDetectsCatchBlockWithNop(): void
     {
         // Arrange
-        $catch = new Catch_([], null, );
+        $catch = new Catch_([], );
         $node = new TryCatch([], [$catch]);
         // Act
         $checker = new TryCatchChecker($node, $this->issueHolder);
@@ -56,7 +61,7 @@ final class TryCatchCheckerTest extends TestCase
     public function testItAllowsNonEmptyCatchBlock(): void
     {
         // Arrange
-        $catch = new Catch_([], null, [new \PhpParser\Node\Stmt\Echo_([])]);
+        $catch = new Catch_([], null, [new Echo_([])]);
         $node = new TryCatch([], [$catch]);
 
         // Act
@@ -70,7 +75,7 @@ final class TryCatchCheckerTest extends TestCase
     public function testItIgnoresNonTryCatchNodes(): void
     {
         // Arrange
-        $node = new \PhpParser\Node\Stmt\If_(new \PhpParser\Node\Expr\ConstFetch(new \PhpParser\Node\Name('true')));
+        $node = new If_(new ConstFetch(new Name('true')));
 
         // Act
         $checker = new TryCatchChecker($node, $this->issueHolder);

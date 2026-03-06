@@ -1,16 +1,16 @@
 <?php
+
 declare(strict_types=1);
+
 namespace Tests\Unit\Linter\Checker;
 
-use DouglasGreen\PhpLinter\Linter\Checker\NameChecker;
 use DouglasGreen\PhpLinter\IssueHolder;
+use DouglasGreen\PhpLinter\Linter\Checker\NameChecker;
+use PhpParser\Node\Expr\Variable;
 use PhpParser\Node\Identifier;
 use PhpParser\Node\Stmt\Class_;
-use PhpParser\Node\Stmt\ClassMethod;
-use PhpParser\Node\Stmt\Function_;
 use PhpParser\Node\Stmt\Interface_;
 use PhpParser\Node\Stmt\Trait_;
-use PhpParser\Node\Expr\Variable;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Small;
@@ -26,6 +26,20 @@ final class NameCheckerTest extends TestCase
     protected function setUp(): void
     {
         $this->issueHolder = new IssueHolder();
+    }
+
+    public static function validClassNameProvider(): iterable
+    {
+        yield 'PascalCase single word' => ['User'];
+        yield 'PascalCase multiple words' => ['UserController'];
+        yield 'PascalCase with numbers' => ['Api2Client'];
+    }
+
+    public static function invalidClassNameProvider(): iterable
+    {
+        yield 'snake_case' => ['user_controller'];
+        yield 'camelCase' => ['userController'];
+        yield 'ALL_CAPS' => ['USER_CONTROLLER'];
     }
 
     #[Test]
@@ -92,19 +106,5 @@ final class NameCheckerTest extends TestCase
 
         // Assert
         $this->assertFalse($this->issueHolder->hasIssues());
-    }
-
-    public static function validClassNameProvider(): iterable
-    {
-        yield 'PascalCase single word' => ['User'];
-        yield 'PascalCase multiple words' => ['UserController'];
-        yield 'PascalCase with numbers' => ['Api2Client'];
-    }
-
-    public static function invalidClassNameProvider(): iterable
-    {
-        yield 'snake_case' => ['user_controller'];
-        yield 'camelCase' => ['userController'];
-        yield 'ALL_CAPS' => ['USER_CONTROLLER'];
     }
 }

@@ -1,5 +1,7 @@
 <?php
+
 declare(strict_types=1);
+
 namespace Tests\Unit\Metrics;
 
 use DouglasGreen\PhpLinter\IssueHolder;
@@ -46,6 +48,7 @@ final class MetricCheckerTest extends TestCase
         $this->assertSame(MetricChecker::STATUS_ERROR, $result);
         $this->assertTrue($this->issueHolder->hasIssues());
     }
+
     #[Test]
     public function testItChecksCyclomaticComplexity(): void
     {
@@ -77,7 +80,7 @@ final class MetricCheckerTest extends TestCase
     public function testItSkipsCommentRatioCheckWhenNoExecutableLines(): void
     {
         // Arrange
-        $data = new MetricData(eloc: 0, cloc: 0);
+        $data = new MetricData(cloc: 0, eloc: 0);
         $checker = new MetricChecker($data, $this->issueHolder);
         // Act
         $result = $checker->checkMinCommentRatio(0.05);
@@ -96,6 +99,7 @@ final class MetricCheckerTest extends TestCase
         // Act
         $this->issueHolder->setCurrentFile('test.php');
         $this->issueHolder->addIssue('Test message');
+
         $issues = $this->issueHolder->getIssues();
 
         // Assert
@@ -113,6 +117,7 @@ final class MetricCheckerTest extends TestCase
         // Act
         $this->issueHolder->setCurrentFile('test.php');
         $this->issueHolder->addIssue('Test message');
+
         $issues = $this->issueHolder->getIssues();
 
         // Assert
@@ -130,6 +135,7 @@ final class MetricCheckerTest extends TestCase
         // Act
         $this->issueHolder->setCurrentFile('test.php');
         $this->issueHolder->addIssue('Test message');
+
         $issues = $this->issueHolder->getIssues();
 
         // Assert

@@ -30,14 +30,15 @@ final class AnalyzerTest extends TestCase
     {
         $this->removeDirectory($this->tempDir);
     }
+
     #[Test]
     public function testItCanBeInstantiated(): void
     {
         // Arrange
-        $cache = $this->createMock(CacheManager::class);
-        $ignoreList = $this->createMock(IgnoreList::class);
-        $config = $this->createMock(Config::class);
-        $issueHolder = $this->createMock(IssueHolder::class);
+        $cache = $this->createStub(CacheManager::class);
+        $ignoreList = $this->createStub(IgnoreList::class);
+        $config = $this->createStub(Config::class);
+        $issueHolder = $this->createStub(IssueHolder::class);
 
         // Act
         $analyzer = new Analyzer($this->tempDir, $cache, $ignoreList, $config, $issueHolder);
@@ -51,11 +52,13 @@ final class AnalyzerTest extends TestCase
         if (!is_dir($dir)) {
             return;
         }
+
         $files = array_diff(scandir($dir), ['.', '..']);
         foreach ($files as $file) {
             $path = $dir . '/' . $file;
             is_dir($path) ? $this->removeDirectory($path) : unlink($path);
         }
+
         rmdir($dir);
     }
 }

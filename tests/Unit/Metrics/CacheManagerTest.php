@@ -1,6 +1,7 @@
 <?php
 
 declare(strict_types=1);
+
 namespace Tests\Unit\Metrics;
 
 use DouglasGreen\PhpLinter\Metrics\CacheManager;
@@ -14,6 +15,7 @@ use PHPUnit\Framework\TestCase;
 final class CacheManagerTest extends TestCase
 {
     private string $tempDir;
+
     protected function setUp(): void
     {
         $this->tempDir = sys_get_temp_dir() . '/phplint-cache-test-' . uniqid();
@@ -29,7 +31,7 @@ final class CacheManagerTest extends TestCase
     public function testItCreatesCacheDirectoriesOnConstruction(): void
     {
         // Act
-        $cacheManager = new CacheManager($this->tempDir);
+        new CacheManager($this->tempDir);
         // Assert
         $this->assertDirectoryExists($this->tempDir . '/var/cache/pdepend');
         $this->assertDirectoryExists($this->tempDir . '/var/cache/pdepend/files');
@@ -43,15 +45,15 @@ final class CacheManagerTest extends TestCase
         // Act & Assert
         $this->assertSame(
             $this->tempDir . '/var/cache/pdepend',
-            $cacheManager->getCacheDir()
+            $cacheManager->getCacheDir(),
         );
         $this->assertSame(
             $this->tempDir . '/var/cache/pdepend/files',
-            $cacheManager->getFileCacheDir()
+            $cacheManager->getFileCacheDir(),
         );
         $this->assertSame(
             $this->tempDir . '/var/cache/pdepend/summary.xml',
-            $cacheManager->getSummaryFile()
+            $cacheManager->getSummaryFile(),
         );
     }
 
@@ -75,7 +77,7 @@ final class CacheManagerTest extends TestCase
         // Act & Assert
         $this->assertSame(
             'src/Controller.php',
-            CacheManager::getOriginalFile('var/cache/pdepend/files/src/Controller.php.php')
+            CacheManager::getOriginalFile('var/cache/pdepend/files/src/Controller.php.php'),
         );
     }
 
@@ -85,7 +87,7 @@ final class CacheManagerTest extends TestCase
         // Act & Assert
         $this->assertSame(
             'src/Controller.php',
-            CacheManager::getOriginalFile('src/Controller.php')
+            CacheManager::getOriginalFile('src/Controller.php'),
         );
     }
 
@@ -94,11 +96,13 @@ final class CacheManagerTest extends TestCase
         if (!is_dir($dir)) {
             return;
         }
+
         $files = array_diff(scandir($dir), ['.', '..']);
         foreach ($files as $file) {
             $path = $dir . '/' . $file;
             is_dir($path) ? $this->removeDirectory($path) : unlink($path);
         }
+
         rmdir($dir);
     }
 }

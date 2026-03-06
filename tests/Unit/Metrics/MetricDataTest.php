@@ -1,6 +1,7 @@
 <?php
 
 declare(strict_types=1);
+
 namespace Tests\Unit\Metrics;
 
 use DouglasGreen\PhpLinter\Metrics\MetricData;
@@ -63,14 +64,14 @@ final class MetricDataTest extends TestCase
         $this->assertSame(3, $metricData->ce);
         $this->assertSame(8, $metricData->cbo);
         $this->assertSame(10, $metricData->ccn2);
-        $this->assertSame(1.5, $metricData->cr);
+        $this->assertEqualsWithDelta(1.5, $metricData->cr, PHP_FLOAT_EPSILON);
         $this->assertSame(15, $metricData->csz);
         $this->assertSame(50, $metricData->cloc);
         $this->assertSame(2, $metricData->dit);
         $this->assertSame(200, $metricData->eloc);
         $this->assertSame(5000, $metricData->he);
         $this->assertSame(250, $metricData->loc);
-        $this->assertSame(85.5, $metricData->mi);
+        $this->assertEqualsWithDelta(85.5, $metricData->mi, PHP_FLOAT_EPSILON);
         $this->assertSame(3, $metricData->nocc);
         $this->assertSame(8, $metricData->npm);
         $this->assertSame(500, $metricData->npath);

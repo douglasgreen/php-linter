@@ -1,10 +1,12 @@
 <?php
+
 declare(strict_types=1);
+
 namespace Tests\Unit\Linter;
 
-use DouglasGreen\PhpLinter\Linter\ComposerFile;
 use DouglasGreen\PhpLinter\IgnoreList;
 use DouglasGreen\PhpLinter\IssueHolder;
+use DouglasGreen\PhpLinter\Linter\ComposerFile;
 use DouglasGreen\PhpLinter\Linter\Linter;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\Small;
@@ -32,9 +34,9 @@ final class LinterTest extends TestCase
     public function testItCanBeInstantiated(): void
     {
         // Arrange
-        $composerFile = $this->createMock(ComposerFile::class);
-        $ignoreList = $this->createMock(IgnoreList::class);
-        $issueHolder = $this->createMock(IssueHolder::class);
+        $composerFile = $this->createStub(ComposerFile::class);
+        $ignoreList = $this->createStub(IgnoreList::class);
+        $issueHolder = $this->createStub(IssueHolder::class);
         // Act
         $linter = new Linter($composerFile, $ignoreList, $issueHolder);
 
@@ -53,6 +55,7 @@ final class LinterTest extends TestCase
             $path = $dir . '/' . $file;
             is_dir($path) ? $this->removeDirectory($path) : unlink($path);
         }
+
         rmdir($dir);
     }
 }

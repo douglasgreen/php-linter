@@ -1,14 +1,14 @@
 <?php
 
 declare(strict_types=1);
+
 namespace Tests\Unit\Linter\Checker;
 
-use DouglasGreen\PhpLinter\Linter\Checker\LocalScopeChecker;
 use DouglasGreen\PhpLinter\IssueHolder;
+use DouglasGreen\PhpLinter\Linter\Checker\LocalScopeChecker;
 use PhpParser\Node\Expr\Exit_;
 use PhpParser\Node\Expr\Variable;
 use PHPUnit\Framework\Attributes\CoversClass;
-use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Small;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;

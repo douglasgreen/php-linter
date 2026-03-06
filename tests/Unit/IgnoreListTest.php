@@ -1,6 +1,7 @@
 <?php
 
 declare(strict_types=1);
+
 namespace Tests\Unit;
 
 use DouglasGreen\PhpLinter\IgnoreList;
@@ -27,6 +28,13 @@ final class IgnoreListTest extends TestCase
         $this->removeDirectory($this->tempDir);
     }
 
+    public static function subpathProvider(): iterable
+    {
+        yield 'trailing slash on base' => ['/path/to/', 'subdir/file.txt', '/path/to/subdir/file.txt'];
+        yield 'no trailing slash on base' => ['/path/to', 'subdir/file.txt', '/path/to/subdir/file.txt'];
+        yield 'leading slash on sub' => ['/path/to', '/subdir/file.txt', '/path/to/subdir/file.txt'];
+    }
+
     #[Test]
     public function testItIgnoresFilesMatchingStarPattern(): void
     {
@@ -39,6 +47,7 @@ final class IgnoreListTest extends TestCase
         $this->assertTrue($ignoreList->shouldIgnore('vendor/autoload.php'));
         $this->assertFalse($ignoreList->shouldIgnore('src/Controller.php'));
     }
+
     #[Test]
     public function testItIgnoresFilesMatchingQuestionMarkPattern(): void
     {
@@ -52,6 +61,7 @@ final class IgnoreListTest extends TestCase
         $this->assertTrue($ignoreList->shouldIgnore('testA.php'));
         $this->assertFalse($ignoreList->shouldIgnore('test10.php'));
     }
+
     #[Test]
     public function testItIgnoresFilesMatchingDirectoryPattern(): void
     {
@@ -64,13 +74,14 @@ final class IgnoreListTest extends TestCase
         $this->assertTrue($ignoreList->shouldIgnore('cache/file1.php'));
         $this->assertTrue($ignoreList->shouldIgnore('cache/subdir/file2.php'));
     }
+
     #[Test]
     public function testItSkipsEmptyLinesAndComments(): void
     {
         // Arrange
         file_put_contents(
             $this->tempDir . '/.phplintignore',
-            "# This is a comment\n\nvendor/*\n"
+            "# This is a comment\n\nvendor/*\n",
         );
         // Act
         $ignoreList = new IgnoreList($this->tempDir);
@@ -99,13 +110,6 @@ final class IgnoreListTest extends TestCase
         $this->assertSame($expected, $result);
     }
 
-    public static function subpathProvider(): iterable
-    {
-        yield 'trailing slash on base' => ['/path/to/', 'subdir/file.txt', '/path/to/subdir/file.txt'];
-        yield 'no trailing slash on base' => ['/path/to', 'subdir/file.txt', '/path/to/subdir/file.txt'];
-        yield 'leading slash on sub' => ['/path/to', '/subdir/file.txt', '/path/to/subdir/file.txt'];
-    }
-
     private function createIgnoreFile(array $patterns): void
     {
         file_put_contents($this->tempDir . '/.phplintignore', implode("\n", $patterns));
@@ -122,6 +126,7 @@ final class IgnoreListTest extends TestCase
             $path = $dir . '/' . $file;
             is_dir($path) ? $this->removeDirectory($path) : unlink($path);
         }
+
         rmdir($dir);
     }
 }

@@ -1,8 +1,10 @@
 <?php
 
 declare(strict_types=1);
+
 namespace Tests\Unit\Linter\Visitor;
 
+use PhpParser\Node\Stmt\Nop;
 use DouglasGreen\PhpLinter\IssueHolder;
 use DouglasGreen\PhpLinter\Linter\Visitor\AbstractVisitorChecker;
 use PhpParser\Node;
@@ -26,31 +28,32 @@ final class AbstractVisitorCheckerTest extends TestCase
     public function testItAddsIssuesThroughProtectedMethod(): void
     {
         // Arrange
-        $visitor = new class($this->issueHolder) extends AbstractVisitorChecker {
+        $visitor = new class ($this->issueHolder) extends AbstractVisitorChecker {
             public function checkNode(Node $node): void
             {
                 $this->addIssue('Test issue');
             }
         };
         // Act
-        $visitor->checkNode(new \PhpParser\Node\Stmt\Nop());
+        $visitor->checkNode(new Nop());
 
         // Assert
         $this->assertTrue($this->issueHolder->hasIssues());
         $this->assertSame(['Test issue' => true], $this->issueHolder->getIssues());
     }
+
     #[Test]
     public function testItAddsMultipleIssues(): void
     {
         // Arrange
-        $visitor = new class($this->issueHolder) extends AbstractVisitorChecker {
+        $visitor = new class ($this->issueHolder) extends AbstractVisitorChecker {
             public function checkNode(Node $node): void
             {
                 $this->addIssues(['Issue 1' => true, 'Issue 2' => true]);
             }
         };
         // Act
-        $visitor->checkNode(new \PhpParser\Node\Stmt\Nop());
+        $visitor->checkNode(new Nop());
         // Assert
         $issues = $this->issueHolder->getIssues();
         $this->assertArrayHasKey('Issue 1', $issues);

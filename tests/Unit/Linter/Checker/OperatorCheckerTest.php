@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Linter\Checker;
 
-use DouglasGreen\PhpLinter\Linter\Checker\OperatorChecker;
 use DouglasGreen\PhpLinter\IssueHolder;
+use DouglasGreen\PhpLinter\Linter\Checker\OperatorChecker;
 use PhpParser\Node\Expr\ErrorSuppress;
 use PhpParser\Node\Expr\Variable;
 use PHPUnit\Framework\Attributes\CoversClass;

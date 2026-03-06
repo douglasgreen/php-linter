@@ -1,11 +1,12 @@
 <?php
 
 declare(strict_types=1);
+
 namespace Tests\Unit\Linter;
 
+use DouglasGreen\PhpLinter\IssueHolder;
 use DouglasGreen\PhpLinter\Linter\ComposerFile;
 use DouglasGreen\PhpLinter\Linter\ElementVisitor;
-use DouglasGreen\PhpLinter\IssueHolder;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\Small;
 use PHPUnit\Framework\Attributes\Test;
@@ -19,8 +20,8 @@ final class ElementVisitorTest extends TestCase
     public function testItCanBeInstantiated(): void
     {
         // Arrange
-        $composerFile = $this->createMock(ComposerFile::class);
-        $issueHolder = $this->createMock(IssueHolder::class);
+        $composerFile = $this->createStub(ComposerFile::class);
+        $issueHolder = $this->createStub(IssueHolder::class);
 
         // Act
         $visitor = new ElementVisitor($composerFile, 'test.php', $issueHolder);
@@ -33,8 +34,8 @@ final class ElementVisitorTest extends TestCase
     public function testItInitializesLocalScopeAsFalse(): void
     {
         // Arrange
-        $composerFile = $this->createMock(ComposerFile::class);
-        $issueHolder = $this->createMock(IssueHolder::class);
+        $composerFile = $this->createStub(ComposerFile::class);
+        $issueHolder = $this->createStub(IssueHolder::class);
         $visitor = new ElementVisitor($composerFile, 'test.php', $issueHolder);
 
         // Assert

@@ -1,6 +1,7 @@
 <?php
 
 declare(strict_types=1);
+
 namespace Tests\Unit\Linter;
 
 use DouglasGreen\PhpLinter\Linter\ComposerFile;
@@ -25,6 +26,7 @@ final class ComposerFileTest extends TestCase
     {
         $this->removeDirectory($this->tempDir);
     }
+
     #[Test]
     public function testItLoadsPsr4MappingsFromComposerJson(): void
     {
@@ -45,6 +47,7 @@ final class ComposerFileTest extends TestCase
         // Assert
         $this->assertSame('src/Controller.php', $composerFile->convertClassNameToFileName('App\\Controller'));
     }
+
     #[Test]
     public function testItHandlesMultiplePsr4Paths(): void
     {
@@ -65,6 +68,7 @@ final class ComposerFileTest extends TestCase
         // Assert
         $this->assertSame('src/Controller.php', $composerFile->convertClassNameToFileName('App\\Controller'));
     }
+
     #[Test]
     public function testItReturnsNullForUnmappedNamespace(): void
     {
@@ -106,7 +110,7 @@ final class ComposerFileTest extends TestCase
         // Assert
         $this->assertSame(
             'src/Service/User/Manager.php',
-            $composerFile->convertClassNameToFileName('App\\Service\\User\\Manager')
+            $composerFile->convertClassNameToFileName('App\\Service\\User\\Manager'),
         );
     }
 
@@ -140,6 +144,7 @@ final class ComposerFileTest extends TestCase
             $path = $dir . '/' . $file;
             is_dir($path) ? $this->removeDirectory($path) : unlink($path);
         }
+
         rmdir($dir);
     }
 }

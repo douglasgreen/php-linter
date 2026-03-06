@@ -1,5 +1,7 @@
 <?php
+
 declare(strict_types=1);
+
 namespace Tests\Unit\Metrics;
 
 use DouglasGreen\PhpLinter\Metrics\XmlParser;
@@ -7,21 +9,25 @@ use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\Small;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
+use RuntimeException;
 
 #[CoversClass(XmlParser::class)]
 #[Small]
 final class XmlParserTest extends TestCase
 {
     private string $tempDir;
+
     protected function setUp(): void
     {
         $this->tempDir = sys_get_temp_dir() . '/phplint-xml-test-' . uniqid();
         mkdir($this->tempDir, 0777, true);
     }
+
     protected function tearDown(): void
     {
         $this->removeDirectory($this->tempDir);
     }
+
     #[Test]
     public function testItThrowsExceptionForInvalidXmlFile(): void
     {
@@ -30,7 +36,7 @@ final class XmlParserTest extends TestCase
         file_put_contents($xmlPath, 'not valid xml');
 
         // Assert
-        $this->expectException(\RuntimeException::class);
+        $this->expectException(RuntimeException::class);
 
         // Act
         new XmlParser($xmlPath);
@@ -104,6 +110,7 @@ XML;
             $path = $dir . '/' . $file;
             is_dir($path) ? $this->removeDirectory($path) : unlink($path);
         }
+
         rmdir($dir);
     }
 }

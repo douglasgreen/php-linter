@@ -1,14 +1,15 @@
 <?php
 
 declare(strict_types=1);
+
 namespace Tests\Unit\Linter\Visitor;
 
 use DouglasGreen\PhpLinter\IssueHolder;
 use DouglasGreen\PhpLinter\Linter\Visitor\SuperglobalUsageVisitor;
 use PhpParser\Node\Expr\Variable;
+use PhpParser\Node\Identifier;
 use PhpParser\Node\Stmt\Class_;
 use PhpParser\Node\Stmt\Function_;
-use PhpParser\Node\Identifier;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Small;
@@ -24,6 +25,18 @@ final class SuperglobalUsageVisitorTest extends TestCase
     protected function setUp(): void
     {
         $this->issueHolder = new IssueHolder();
+    }
+
+    public static function superglobalProvider(): iterable
+    {
+        yield '_GET' => ['_GET'];
+        yield '_POST' => ['_POST'];
+        yield '_SESSION' => ['_SESSION'];
+        yield '_COOKIE' => ['_COOKIE'];
+        yield '_FILES' => ['_FILES'];
+        yield '_SERVER' => ['_SERVER'];
+        yield '_ENV' => ['_ENV'];
+        yield '_REQUEST' => ['_REQUEST'];
     }
 
     #[Test]
@@ -84,17 +97,5 @@ final class SuperglobalUsageVisitorTest extends TestCase
 
         // Assert
         $this->assertFalse($this->issueHolder->hasIssues());
-    }
-
-    public static function superglobalProvider(): iterable
-    {
-        yield '_GET' => ['_GET'];
-        yield '_POST' => ['_POST'];
-        yield '_SESSION' => ['_SESSION'];
-        yield '_COOKIE' => ['_COOKIE'];
-        yield '_FILES' => ['_FILES'];
-        yield '_SERVER' => ['_SERVER'];
-        yield '_ENV' => ['_ENV'];
-        yield '_REQUEST' => ['_REQUEST'];
     }
 }

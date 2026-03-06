@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Linter\Checker;
 
-use DouglasGreen\PhpLinter\Linter\Checker\AbstractNodeChecker;
+use PhpParser\Node\Stmt\Nop;
 use DouglasGreen\PhpLinter\IssueHolder;
-use PhpParser\Node;
+use DouglasGreen\PhpLinter\Linter\Checker\AbstractNodeChecker;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\Small;
 use PHPUnit\Framework\Attributes\Test;
@@ -27,8 +27,8 @@ final class AbstractNodeCheckerTest extends TestCase
     public function testItAddsIssuesThroughProtectedMethod(): void
     {
         // Arrange
-        $node = new \PhpParser\Node\Stmt\Nop();
-        $checker = new class($node, $this->issueHolder) extends AbstractNodeChecker {
+        $node = new Nop();
+        $checker = new class ($node, $this->issueHolder) extends AbstractNodeChecker {
             public function check(): array
             {
                 $this->addIssue('Test issue');
@@ -45,8 +45,8 @@ final class AbstractNodeCheckerTest extends TestCase
     public function testItAddsMultipleIssues(): void
     {
         // Arrange
-        $node = new \PhpParser\Node\Stmt\Nop();
-        $checker = new class($node, $this->issueHolder) extends AbstractNodeChecker {
+        $node = new Nop();
+        $checker = new class ($node, $this->issueHolder) extends AbstractNodeChecker {
             public function check(): array
             {
                 $this->addIssues(['Issue 1' => true, 'Issue 2' => true]);
@@ -56,6 +56,7 @@ final class AbstractNodeCheckerTest extends TestCase
 
         // Act
         $checker->check();
+
         $issues = $this->issueHolder->getIssues();
 
         // Assert

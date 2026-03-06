@@ -4,15 +4,17 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Linter\Visitor;
 
+use PhpParser\Node\PropertyItem;
+use PhpParser\Node\VarLikeIdentifier;
 use DouglasGreen\PhpLinter\IssueHolder;
 use DouglasGreen\PhpLinter\Linter\Visitor\ClassVisitor;
 use PhpParser\Node\Expr\MethodCall;
 use PhpParser\Node\Expr\PropertyFetch;
 use PhpParser\Node\Expr\Variable;
 use PhpParser\Node\Identifier;
+use PhpParser\Node\Stmt\Class_;
 use PhpParser\Node\Stmt\ClassMethod;
 use PhpParser\Node\Stmt\Property;
-use PhpParser\Node\Stmt\Class_;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\Small;
 use PHPUnit\Framework\Attributes\Test;
@@ -44,8 +46,8 @@ final class ClassVisitorTest extends TestCase
         // Arrange
         $visitor = new ClassVisitor($this->issueHolder, 'TestClass');
         $property = new Property(
-            props: [new \PhpParser\Node\PropertyItem(new \PhpParser\Node\VarLikeIdentifier('testProp'))],
             flags: Class_::MODIFIER_PUBLIC,
+            props: [new PropertyItem(new VarLikeIdentifier('testProp'))],
         );
         // Act
         $visitor->checkNode($property);
@@ -75,7 +77,7 @@ final class ClassVisitorTest extends TestCase
         $visitor = new ClassVisitor($this->issueHolder, 'TestClass');
         $methodCall = new MethodCall(
             new Variable('this'),
-            new Identifier('someMethod')
+            new Identifier('someMethod'),
         );
 
         // Act
@@ -91,7 +93,7 @@ final class ClassVisitorTest extends TestCase
         $visitor = new ClassVisitor($this->issueHolder, 'TestClass');
         $propertyFetch = new PropertyFetch(
             new Variable('this'),
-            new Identifier('someProperty')
+            new Identifier('someProperty'),
         );
         // Act
         $visitor->checkNode($propertyFetch);

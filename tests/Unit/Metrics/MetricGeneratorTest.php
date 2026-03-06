@@ -1,7 +1,9 @@
 <?php
 
 declare(strict_types=1);
+
 namespace Tests\Unit\Metrics;
+
 use DouglasGreen\PhpLinter\Metrics\CacheManager;
 use DouglasGreen\PhpLinter\Metrics\MetricGenerator;
 use PHPUnit\Framework\Attributes\CoversClass;
@@ -17,7 +19,7 @@ final class MetricGeneratorTest extends TestCase
     public function testItCanBeInstantiated(): void
     {
         // Arrange
-        $cache = $this->createMock(CacheManager::class);
+        $cache = $this->createStub(CacheManager::class);
         // Act
         $generator = new MetricGenerator($cache, []);
         // Assert

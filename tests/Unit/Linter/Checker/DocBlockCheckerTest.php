@@ -4,12 +4,11 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Linter\Checker;
 
-use DouglasGreen\PhpLinter\Linter\Checker\DocBlockChecker;
 use DouglasGreen\PhpLinter\IssueHolder;
+use DouglasGreen\PhpLinter\Linter\Checker\DocBlockChecker;
 use DouglasGreen\PhpLinter\Linter\PhpDoc\ParserFactory;
 use PhpParser\Comment\Doc;
 use PhpParser\Node\Identifier;
-use PhpParser\Node\Name;
 use PhpParser\Node\Stmt\Class_;
 use PhpParser\Node\Stmt\ClassMethod;
 use PhpParser\Node\Stmt\Interface_;
@@ -38,25 +37,6 @@ final class DocBlockCheckerTest extends TestCase
     }
 
     /**
-     * Tests that missing DocBlocks are detected on public API elements.
-     */
-    #[DataProvider('publicApiNodeProvider')]
-    public function testItDetectsMissingDocBlockOnPublicApi(object $node): void
-    {
-        // Arrange
-        $lexer = ParserFactory::createLexer();
-        $parser = ParserFactory::createPhpDocParser();
-        $checker = new DocBlockChecker($node, $this->issueHolder, $lexer, $parser);
-
-        // Act
-        $checker->check();
-        $issues = $this->issueHolder->getIssues();
-
-        // Assert
-        $this->assertArrayHasKey('Public API elements MUST have a DocBlock.', $issues);
-    }
-
-    /**
      * Provides nodes that require DocBlocks.
      */
     public static function publicApiNodeProvider(): iterable
@@ -67,74 +47,16 @@ final class DocBlockCheckerTest extends TestCase
         yield 'public method' => [
             new ClassMethod(
                 new Identifier('publicMethod'),
-                ['flags' => Class_::MODIFIER_PUBLIC]
+                ['flags' => Class_::MODIFIER_PUBLIC],
             ),
         ];
         yield 'public property' => [
             new Property(
                 Class_::MODIFIER_PUBLIC,
                 [new PropertyProperty('testProp')],
-                []
+                [],
             ),
         ];
-    }
-
-    /**
-     * Tests that valid DocBlocks do not trigger issues.
-     */
-    public function testItAcceptsValidClassDocBlock(): void
-    {
-        // Arrange
-        $doc = new Doc(<<<'DOC'
-/**
- * A valid summary.
- *
- * @package Test
- * @api
- * @since 1.0.0
- */
-DOC);
-        $node = new Class_(new Identifier('ValidClass'), [], ['comments' => [$doc]]);
-        $lexer = ParserFactory::createLexer();
-        $parser = ParserFactory::createPhpDocParser();
-        $checker = new DocBlockChecker($node, $this->issueHolder, $lexer, $parser);
-
-        // Act
-        $checker->check();
-        $issues = $this->issueHolder->getIssues();
-
-        // Assert
-        $this->assertEmpty($issues);
-    }
-
-    /**
-     * Tests summary validation rules.
-     */
-    #[DataProvider('summaryProvider')]
-    public function testItValidatesSummary(string $docBlock, ?string $expectedIssue): void
-    {
-        // Arrange
-        $doc = new Doc($docBlock);
-        // Using Class_ as a container for the docblock
-        $node = new Class_(new Identifier('TestClass'), [], ['comments' => [$doc]]);
-        $lexer = ParserFactory::createLexer();
-        $parser = ParserFactory::createPhpDocParser();
-        $checker = new DocBlockChecker($node, $this->issueHolder, $lexer, $parser);
-
-        // Act
-        $checker->check();
-        $issues = $this->issueHolder->getIssues();
-
-        // Assert
-        if ($expectedIssue === null) {
-            // We only check that the specific summary issue is NOT present.
-            // Other issues (like missing tags) might exist, so we don't assertEmpty.
-            foreach ($issues as $message => $bool) {
-                $this->assertStringNotContainsString('summary', $message);
-            }
-        } else {
-            $this->assertArrayHasKey($expectedIssue, $issues);
-        }
     }
 
     /**
@@ -165,27 +87,6 @@ DOC);
     }
 
     /**
-     * Tests mandatory tag validation for classes.
-     */
-    #[DataProvider('classTagProvider')]
-    public function testItValidatesMandatoryClassTags(string $docBlock, string $expectedIssue): void
-    {
-        // Arrange
-        $doc = new Doc($docBlock);
-        $node = new Class_(new Identifier('TestClass'), [], ['comments' => [$doc]]);
-        $lexer = ParserFactory::createLexer();
-        $parser = ParserFactory::createPhpDocParser();
-        $checker = new DocBlockChecker($node, $this->issueHolder, $lexer, $parser);
-
-        // Act
-        $checker->check();
-        $issues = $this->issueHolder->getIssues();
-
-        // Assert
-        $this->assertArrayHasKey($expectedIssue, $issues);
-    }
-
-    /**
      * Provides class tag test cases.
      */
     public static function classTagProvider(): iterable
@@ -202,6 +103,108 @@ DOC);
             "/**\n * Summary.\n * @package Test\n * @since 1.0.0\n */",
             'Class-like structures MUST have an @api or @internal tag.',
         ];
+    }
+
+    /**
+     * Tests that missing DocBlocks are detected on public API elements.
+     */
+    #[DataProvider('publicApiNodeProvider')]
+    public function testItDetectsMissingDocBlockOnPublicApi(object $node): void
+    {
+        // Arrange
+        $lexer = ParserFactory::createLexer();
+        $parser = ParserFactory::createPhpDocParser();
+        $checker = new DocBlockChecker($node, $this->issueHolder, $lexer, $parser);
+
+        // Act
+        $checker->check();
+
+        $issues = $this->issueHolder->getIssues();
+
+        // Assert
+        $this->assertArrayHasKey('Public API elements MUST have a DocBlock.', $issues);
+    }
+
+    /**
+     * Tests that valid DocBlocks do not trigger issues.
+     */
+    public function testItAcceptsValidClassDocBlock(): void
+    {
+        // Arrange
+        $doc = new Doc(<<<'DOC'
+/**
+ * A valid summary.
+ *
+ * @package Test
+ * @api
+ * @since 1.0.0
+ */
+DOC);
+        $node = new Class_(new Identifier('ValidClass'), [], ['comments' => [$doc]]);
+        $lexer = ParserFactory::createLexer();
+        $parser = ParserFactory::createPhpDocParser();
+        $checker = new DocBlockChecker($node, $this->issueHolder, $lexer, $parser);
+
+        // Act
+        $checker->check();
+
+        $issues = $this->issueHolder->getIssues();
+
+        // Assert
+        $this->assertEmpty($issues);
+    }
+
+    /**
+     * Tests summary validation rules.
+     */
+    #[DataProvider('summaryProvider')]
+    public function testItValidatesSummary(string $docBlock, ?string $expectedIssue): void
+    {
+        // Arrange
+        $doc = new Doc($docBlock);
+        // Using Class_ as a container for the docblock
+        $node = new Class_(new Identifier('TestClass'), [], ['comments' => [$doc]]);
+        $lexer = ParserFactory::createLexer();
+        $parser = ParserFactory::createPhpDocParser();
+        $checker = new DocBlockChecker($node, $this->issueHolder, $lexer, $parser);
+
+        // Act
+        $checker->check();
+
+        $issues = $this->issueHolder->getIssues();
+
+        // Assert
+        if ($expectedIssue === null) {
+            // We only check that the specific summary issue is NOT present.
+            // Other issues (like missing tags) might exist, so we don't assertEmpty.
+            foreach (array_keys($issues) as $message) {
+                $this->assertStringNotContainsString('summary', $message);
+            }
+        } else {
+            $this->assertArrayHasKey($expectedIssue, $issues);
+        }
+    }
+
+    /**
+     * Tests mandatory tag validation for classes.
+     */
+    #[DataProvider('classTagProvider')]
+    public function testItValidatesMandatoryClassTags(string $docBlock, string $expectedIssue): void
+    {
+        // Arrange
+        $doc = new Doc($docBlock);
+        $node = new Class_(new Identifier('TestClass'), [], ['comments' => [$doc]]);
+        $lexer = ParserFactory::createLexer();
+        $parser = ParserFactory::createPhpDocParser();
+        $checker = new DocBlockChecker($node, $this->issueHolder, $lexer, $parser);
+
+        // Act
+        $checker->check();
+
+        $issues = $this->issueHolder->getIssues();
+
+        // Assert
+        $this->assertArrayHasKey($expectedIssue, $issues);
     }
 
     /**
@@ -224,6 +227,7 @@ DOC);
 
         // Act
         $checker->check();
+
         $issues = $this->issueHolder->getIssues();
 
         // Assert
@@ -252,6 +256,7 @@ DOC);
 
         // Act
         $checker->check();
+
         $issues = $this->issueHolder->getIssues();
 
         // Assert

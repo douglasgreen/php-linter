@@ -1,6 +1,9 @@
 <?php
+
 declare(strict_types=1);
+
 namespace Tests\Unit;
+
 use DouglasGreen\PhpLinter\Config;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\Small;
@@ -72,6 +75,7 @@ final class ConfigTest extends TestCase
         // Assert
         $this->assertSame(['classSize' => 50, 'methodLoc' => 100], $config->getMetricLimits());
     }
+
     #[Test]
     public function testItUsesDefaultPathWhenConfigPathIsNull(): void
     {
@@ -85,6 +89,7 @@ final class ConfigTest extends TestCase
         // Assert
         $this->assertSame(['Default path issue'], $config->getIgnoreIssues());
     }
+
     #[Test]
     public function testItFiltersNonStringIgnoreIssues(): void
     {
@@ -113,6 +118,7 @@ final class ConfigTest extends TestCase
             $path = $dir . '/' . $file;
             is_dir($path) ? $this->removeDirectory($path) : unlink($path);
         }
+
         rmdir($dir);
     }
 }
