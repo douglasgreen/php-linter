@@ -8,6 +8,7 @@ use DouglasGreen\PhpLinter\IssueHolder;
 use DouglasGreen\PhpLinter\Linter\Checker\DocBlockChecker;
 use DouglasGreen\PhpLinter\Linter\PhpDoc\ParserFactory;
 use PhpParser\Comment\Doc;
+use PhpParser\Node;
 use PhpParser\Node\Identifier;
 use PhpParser\Node\Stmt\Class_;
 use PhpParser\Node\Stmt\ClassMethod;
@@ -39,7 +40,7 @@ final class DocBlockCheckerTest extends TestCase
     /**
      * Provides nodes that require DocBlocks.
      *
-     * @return iterable<string, array{0: \PhpParser\Node}>
+     * @return iterable<string, array{0: Node}>
      */
     public static function publicApiNodeProvider(): iterable
     {
@@ -115,7 +116,7 @@ final class DocBlockCheckerTest extends TestCase
      * Tests that missing DocBlocks are detected on public API elements.
      */
     #[DataProvider('publicApiNodeProvider')]
-    public function testItDetectsMissingDocBlockOnPublicApi(\PhpParser\Node $node): void
+    public function testItDetectsMissingDocBlockOnPublicApi(Node $node): void
     {
         // Arrange
         $lexer = ParserFactory::createLexer();

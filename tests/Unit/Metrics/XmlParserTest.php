@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Metrics;
 
+use DouglasGreen\PhpLinter\Metrics\MetricData;
 use DouglasGreen\PhpLinter\Metrics\XmlParser;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\Small;
@@ -92,7 +93,7 @@ XML;
 
         // Act
         $parser = new XmlParser($xmlPath);
-        /** @var list<\DouglasGreen\PhpLinter\Metrics\MetricData> $files */
+        /** @var list<MetricData> $files */
         $files = $parser->getFiles();
 
         // Assert
