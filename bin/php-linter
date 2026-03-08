@@ -30,6 +30,7 @@ use DouglasGreen\PhpLinter\IgnoreList;
 use DouglasGreen\PhpLinter\IssueHolder;
 use DouglasGreen\PhpLinter\Linter\Linter;
 use DouglasGreen\PhpLinter\Linter\UnusedClassAnalyzer;
+use DouglasGreen\PhpLinter\Linter\UnusedFunctionAnalyzer;
 use DouglasGreen\PhpLinter\Metrics\Analyzer;
 use DouglasGreen\PhpLinter\Metrics\CacheManager;
 use DouglasGreen\PhpLinter\Metrics\MetricChecker;
@@ -67,6 +68,10 @@ $linter->run($phpFiles);
 // 3. Run Unused Class Analyzer
 $unusedClassAnalyzer = new UnusedClassAnalyzer($issueHolder);
 $unusedClassAnalyzer->run($phpFiles);
+
+// 4. Run Unused Function Analyzer
+$unusedFunctionAnalyzer = new UnusedFunctionAnalyzer($issueHolder);
+$unusedFunctionAnalyzer->run($phpFiles);
 
 // Print all collected issues
 $issueHolder->printIssues();

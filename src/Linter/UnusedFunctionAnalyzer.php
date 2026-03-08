@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace DouglasGreen\PHPProjectChecker\Linter;
+namespace DouglasGreen\PhpLinter\Linter;
 
-use DouglasGreen\PhpLinter\Repository;
+use DouglasGreen\PhpLinter\IssueHolder;
 use PhpParser\Error;
 use PhpParser\Node;
 use PhpParser\Node\Stmt\ClassLike;
@@ -13,135 +13,148 @@ use PhpParser\NodeVisitor\NameResolver;
 use PhpParser\NodeVisitorAbstract;
 use PhpParser\ParserFactory;
 
-class UnusedFunctionAnalyzer
+/**
+ * Analyzes PHP files to detect unused functions and methods.
+ *
+ * @internal
+ */
+class UnusedFunctionAnalyzer extends NodeVisitorAbstract
 {
     /** @var array<string, array{file: string, line: int, type: string}> */
-    private array $definitions =[];
+    private array $definitions = [];
 
     /** @var array<string, int> */
-    private array $calls =[];
+    private array $calls = [];
 
-    private Repository $repository;
+    /** @var array<int, string|null> */
+    private array $classStack = [];
 
-    public function __construct()
+    private string $currentFile = '';
+
+    public function __construct(
+        protected readonly IssueHolder $issueHolder,
+    ) {}
+
+    /**
+     * Runs the analysis on the provided list of PHP files.
+     *
+     * @param array<string> $phpFiles
+     */
+    public function run(array $phpFiles): void
     {
-        $this->repository = new Repository();
+        $parserFactory = new ParserFactory();
+
+        // Version compatible instantiation (supports php-parser v4 and v5)
+        if (method_exists($parserFactory, 'createForHostVersion')) {
+            $parser = $parserFactory->createForHostVersion();
+        } else {
+            // @phpstan-ignore-next-line
+            $parser = $parserFactory->create(ParserFactory::PREFER_PHP7);
+        }
+
+        foreach ($phpFiles as $file) {
+            $this->currentFile = $file;
+            $this->parseFile($parser, $file);
+        }
+
+        $this->reportUnusedFunctions();
     }
 
-    public function analyze(): void
+    /**
+     * Parses a single PHP file.
+     *
+     * @param \PhpParser\Parser $parser
+     */
+    private function parseFile($parser, string $file): void
     {
-        $files = $this->repository->getPhpFiles();
+        $content = @file_get_contents($file);
+        if ($content === false) {
+            return;
+        }
 
-        $parser = (new ParserFactory())->createForNewestSupportedVersion();
         $traverser = new NodeTraverser();
+        // NameResolver will convert all class/trait/interface references to fully qualified names
         $traverser->addVisitor(new NameResolver());
+        $traverser->addVisitor($this);
 
-        $visitor = new class($this) extends NodeVisitorAbstract {
-            private FunctionAnalyzer $analyzer;
-            private array $classStack =[];
-            private string $file = '';
-
-            public function __construct(FunctionAnalyzer $analyzer)
-            {
-                $this->analyzer = $analyzer;
+        try {
+            $ast = $parser->parse($content);
+            if ($ast !== null) {
+                $traverser->traverse($ast);
             }
+        } catch (Error $exception) {
+            // Silently ignore parse errors
+        }
+    }
 
-            public function setFile(string $file): void
-            {
-                $this->file = $file;
+    public function enterNode(Node $node)
+    {
+        // Track current class, handling nested or anonymous classes via a stack
+        if ($node instanceof ClassLike) {
+            $className = null;
+            if (isset($node->namespacedName)) {
+                $className = $node->namespacedName->toString();
+            } elseif (isset($node->name) && $node->name instanceof Node\Identifier) {
+                $className = $node->name->toString();
             }
+            $this->classStack[] = $className;
+        }
 
-            public function enterNode(Node $node)
-            {
-                // Track current class, handling nested or anonymous classes via a stack
-                if ($node instanceof ClassLike) {
-                    $className = null;
-                    if (isset($node->namespacedName)) {
-                        $className = $node->namespacedName->toString();
-                    } elseif (isset($node->name) && $node->name instanceof Node\Identifier) {
-                        $className = $node->name->toString();
-                    }
-                    $this->classStack[] = $className;
-                }
+        $currentClass = end($this->classStack) ?: null;
 
-                $currentClass = end($this->classStack) ?: null;
-
-                // Find definitions
-                if ($node instanceof Node\Stmt\ClassMethod) {
-                    if ($currentClass && $node->name instanceof Node\Identifier) {
-                        $fullName = $currentClass . '::' . $node->name->toString();
-                        $this->analyzer->addDefinition($fullName, $this->file, $node->getStartLine(), 'method');
-                    }
-                } elseif ($node instanceof Node\Stmt\Function_) {
-                    if (isset($node->namespacedName)) {
-                        $this->analyzer->addDefinition($node->namespacedName->toString(), $this->file, $node->getStartLine(), 'function');
-                    }
-                }
-
-                // Find calls
-                elseif ($node instanceof Node\Expr\FuncCall) {
-                    if ($node->name instanceof Node\Name) {
-                        $this->analyzer->incrementCall($node->name->toString());
-                    }
-                } elseif ($node instanceof Node\Expr\MethodCall || $node instanceof Node\Expr\NullsafeMethodCall) {
-                    if ($node->name instanceof Node\Identifier) {
-                        $methodName = $node->name->toString();
-                        $this->analyzer->incrementCall($methodName);
-                        $this->analyzer->incrementCall('*::' . $methodName);
-                    }
-                } elseif ($node instanceof Node\Expr\StaticCall) {
-                    if ($node->name instanceof Node\Identifier) {
-                        $methodName = $node->name->toString();
-                        $this->analyzer->incrementCall($methodName);
-                        $this->analyzer->incrementCall('*::' . $methodName);
-                    }
-                }
-
-                return null;
+        // 1. Definition Tracking
+        if ($node instanceof Node\Stmt\ClassMethod) {
+            if ($currentClass && $node->name instanceof Node\Identifier) {
+                $fullName = $currentClass . '::' . $node->name->toString();
+                $this->addDefinition($fullName, $this->currentFile, $node->getStartLine(), 'method');
             }
-
-            public function leaveNode(Node $node)
-            {
-                if ($node instanceof ClassLike) {
-                    array_pop($this->classStack);
-                }
-
-                return null;
-            }
-        };
-
-        $traverser->addVisitor($visitor);
-
-        foreach ($files as $file) {
-            $content = file_get_contents($file);
-            if ($content === false) {
-                continue;
-            }
-
-            try {
-                $ast = $parser->parse($content);
-                if ($ast !== null) {
-                    $visitor->setFile($file);
-                    $traverser->traverse($ast);
-                }
-            } catch (Error $e) {
-                // Ignore parsing errors for individual files
+        } elseif ($node instanceof Node\Stmt\Function_) {
+            if (isset($node->namespacedName)) {
+                $this->addDefinition($node->namespacedName->toString(), $this->currentFile, $node->getStartLine(), 'function');
             }
         }
 
-        $this->printReport();
+        // 2. Usage Tracking
+        if ($node instanceof Node\Expr\FuncCall) {
+            if ($node->name instanceof Node\Name) {
+                $this->incrementCall($node->name->toString());
+            }
+        } elseif ($node instanceof Node\Expr\MethodCall || $node instanceof Node\Expr\NullsafeMethodCall) {
+            if ($node->name instanceof Node\Identifier) {
+                $methodName = $node->name->toString();
+                $this->incrementCall($methodName);
+                $this->incrementCall('*::' . $methodName);
+            }
+        } elseif ($node instanceof Node\Expr\StaticCall) {
+            if ($node->name instanceof Node\Identifier) {
+                $methodName = $node->name->toString();
+                $this->incrementCall($methodName);
+                $this->incrementCall('*::' . $methodName);
+            }
+        }
+
+        return null;
     }
 
-    public function addDefinition(string $name, string $file, int $line, string $type): void
+    public function leaveNode(Node $node)
     {
-        $this->definitions[$name] =[
+        if ($node instanceof ClassLike) {
+            array_pop($this->classStack);
+        }
+
+        return null;
+    }
+
+    private function addDefinition(string $name, string $file, int $line, string $type): void
+    {
+        $this->definitions[$name] = [
             'file' => $file,
             'line' => $line,
             'type' => $type,
         ];
     }
 
-    public function incrementCall(string $name): void
+    private function incrementCall(string $name): void
     {
         if (!isset($this->calls[$name])) {
             $this->calls[$name] = 0;
@@ -150,7 +163,7 @@ class UnusedFunctionAnalyzer
         ++$this->calls[$name];
     }
 
-    private function printReport(): void
+    private function reportUnusedFunctions(): void
     {
         foreach ($this->definitions as $funcName => $info) {
             $callCount = 0;
@@ -171,14 +184,14 @@ class UnusedFunctionAnalyzer
                 }
             }
 
-            // Output only the items that have not been called anywhere
             if ($callCount === 0 && !$this->isSpecialMethod($funcName)) {
-                echo sprintf(
-                    "%-50s [%s]\n  File: %s:%d\n\n",
-                    $funcName,
-                    $info['type'],
-                    $info['file'],
-                    $info['line'],
+                $this->issueHolder->setCurrentFile($info['file']);
+                $this->issueHolder->addIssue(
+                    sprintf(
+                        'Unused %s "%s" found.',
+                        $info['type'],
+                        $funcName,
+                    ),
                 );
             }
         }
@@ -187,7 +200,7 @@ class UnusedFunctionAnalyzer
     private function isSpecialMethod(string $funcName): bool
     {
         // Check for magic methods and constructors
-        $specialMethods =[
+        $specialMethods = [
             '__construct', '__destruct', '__call', '__callStatic',
             '__get', '__set', '__isset', '__unset', '__sleep',
             '__wakeup', '__serialize', '__unserialize', '__toString',
