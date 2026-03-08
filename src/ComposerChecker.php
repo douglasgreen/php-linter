@@ -29,8 +29,7 @@ class ComposerChecker
     /** @var array<string, mixed> */
     private array $composer;
 
-    /** @var array<int, array<string, string>> */
-    private array $issues = [];
+    private IssueHolder $issueHolder;
 
     /** @var array<string, mixed>|null */
     private ?array $lockData = null;
@@ -59,9 +58,10 @@ class ComposerChecker
         '/\/usr\/bin\//', // System binaries (should use vendor/bin)
     ];
 
-    public function __construct(string $directory, string $configFile = '')
+    public function __construct(string $directory, IssueHolder $issueHolder, string $configFile = '')
     {
         $this->rootDir = (string) (realpath($directory) ?: getcwd());
+        $this->issueHolder = $issueHolder;
         $this->loadComposerJson();
         $this->loadComposerLock();
         $this->loadConfig($configFile);
@@ -69,10 +69,6 @@ class ComposerChecker
 
     public function run(): void
     {
-        echo str_repeat('=', 60) . "\n";
-        echo "Running Composer Standards Checks\n";
-        echo str_repeat('=', 60) . "\n\n";
-
         $this->validateBasicStructure();
         $this->validatePackageName();
         $this->validateType();
@@ -105,8 +101,6 @@ class ComposerChecker
         }
 
         $this->runComposerValidate();
-
-        $this->printReport();
     }
 
     private function loadComposerJson(): void
@@ -1109,84 +1103,8 @@ class ComposerChecker
 
     private function addIssue(string $level, string $category, string $context, string $message): void
     {
-        $this->issues[] = [
-            'level' => $level,
-            'category' => $category,
-            'context' => $context,
-            'message' => $message,
-        ];
+        $fullMessage = sprintf('[%s] %s: %s', $level, $category, $message);
+        $this->issueHolder->addIssue($fullMessage, $context);
     }
 
-    private function printReport(): void
-    {
-        $mustIssues = array_filter($this->issues, fn (array $i): bool => $i['level'] === self::MUST);
-        $shouldIssues = array_filter($this->issues, fn (array $i): bool => $i['level'] === self::SHOULD);
-        $mayIssues = array_filter($this->issues, fn (array $i): bool => $i['level'] === self::MAY);
-
-        echo "\n" . str_repeat('=', 60) . "\n";
-        echo "Composer Standards Compliance Report\n";
-        echo str_repeat('=', 60) . "\n\n";
-
-        // Print MUST issues (red)
-        if ($mustIssues !== []) {
-            echo "\033[31mMUST (Critical Violations): " . count($mustIssues) . "\033[0m\n";
-            echo str_repeat('-', 60) . "\n";
-            foreach ($mustIssues as $issue) {
-                echo sprintf("\033[31m[%s]\033[0m %s\n", $issue['category'], $issue['context']);
-                echo "  → {$issue['message']}\n\n";
-            }
-        }
-
-        // Print SHOULD issues (yellow)
-        if ($shouldIssues !== []) {
-            echo "\033[33mSHOULD (Recommendations): " . count($shouldIssues) . "\033[0m\n";
-            echo str_repeat('-', 60) . "\n";
-            foreach ($shouldIssues as $issue) {
-                echo sprintf("\033[33m[%s]\033[0m %s\n", $issue['category'], $issue['context']);
-                echo "  → {$issue['message']}\n\n";
-            }
-        }
-
-        // Print MAY issues (cyan)
-        if ($mayIssues !== []) {
-            echo "\033[36mMAY (Suggestions): " . count($mayIssues) . "\033[0m\n";
-            echo str_repeat('-', 60) . "\n";
-            foreach ($mayIssues as $issue) {
-                echo sprintf("\033[36m[%s]\033[0m %s\n", $issue['category'], $issue['context']);
-                echo "  → {$issue['message']}\n\n";
-            }
-        }
-
-        if ($this->issues === []) {
-            echo "\033[32m✓ All composer.json standards met\033[0m\n";
-        }
-
-        // Summary statistics
-        echo "\nSummary:\n";
-        echo "--------\n";
-        printf("Project: %s\n", $this->composer['name'] ?? 'unknown');
-        printf("Type: %s\n", $this->composer['type'] ?? 'library');
-        printf(
-            "Total issues: %d (MUST: %d, SHOULD: %d, MAY: %d)\n",
-            count($this->issues),
-            count($mustIssues),
-            count($shouldIssues),
-            count($mayIssues),
-        );
-
-        // Compliance score
-        $totalChecks = 25; // Approximate number of validation rules
-        $deduction = (count($mustIssues) * 4) + (count($shouldIssues));
-        $compliance = max(0, 100 - ($deduction * 100 / $totalChecks));
-        printf("Compliance score: %d%%\n", $compliance);
-
-        echo "\n";
-
-        if ($mustIssues !== []) {
-            echo "\033[31m⚠️  Critical violations detected - fix before committing\033[0m\n";
-            exit(1);
-        }
-
-        exit(0);
-    }
 }

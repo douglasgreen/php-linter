@@ -169,6 +169,22 @@ The AST linter analyzes your code for the following stylistic and structural iss
 
 - **Git branch:** Verifies the default repository branch is named `main`.
 
+### Composer.json standards
+
+- **Basic structure:** Validates required fields: `name`, `description`, `type`.
+- **Package name:** Ensures lowercase, hyphenated format matching `owner/package` pattern.
+- **Package type:** Validates against allowed types (library, project, composer-plugin, etc.).
+- **License:** Checks for presence and optionally validates against expected license.
+- **Keywords:** Validates presence, checks for duplicates and non-empty strings.
+- **PHP version:** Ensures PHP version constraint is present and meets minimum (8.3+).
+- **Autoload:** Validates PSR-4 autoloading configuration and namespace conventions.
+- **Config settings:** Checks for `sort-packages` and warns about platform overrides.
+- **Dependencies:** Validates version constraints, warns about wildcards and dev branches.
+- **Scripts:** Security checks for dangerous commands in post-install/post-update scripts.
+- **Binaries:** Validates binary files exist and are executable.
+- **Support info:** Checks for issues URL and valid source URLs.
+- **Public packages:** Additional validation for homepage, authors, and keywords.
+
 ### PHPDoc Standards
 
 - **Missing Documentation:** Public API elements (classes, interfaces, traits, enums, public

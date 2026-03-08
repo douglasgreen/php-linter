@@ -24,6 +24,7 @@
 
 declare(strict_types=1);
 
+use DouglasGreen\PhpLinter\ComposerChecker;
 use DouglasGreen\PhpLinter\Linter\ComposerFile;
 use DouglasGreen\PhpLinter\Config;
 use DouglasGreen\PhpLinter\IgnoreList;
@@ -72,6 +73,10 @@ $unusedClassAnalyzer->run($phpFiles);
 // 4. Run Unused Function Analyzer
 $unusedFunctionAnalyzer = new UnusedFunctionAnalyzer($issueHolder);
 $unusedFunctionAnalyzer->run($phpFiles);
+
+// 5. Run Composer Checker
+$composerChecker = new ComposerChecker($currentDir, $issueHolder);
+$composerChecker->run();
 
 // Print all collected issues
 $issueHolder->printIssues();
