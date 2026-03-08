@@ -4,6 +4,15 @@ declare(strict_types=1);
 
 namespace DouglasGreen\PhpLinter\Linter;
 
+use PhpParser\Node\Identifier;
+use PhpParser\Node\Stmt\ClassMethod;
+use PhpParser\Node\Stmt\Function_;
+use PhpParser\Node\Expr\FuncCall;
+use PhpParser\Node\Name;
+use PhpParser\Node\Expr\MethodCall;
+use PhpParser\Node\Expr\NullsafeMethodCall;
+use PhpParser\Node\Expr\StaticCall;
+use PhpParser\Parser;
 use DouglasGreen\PhpLinter\IssueHolder;
 use PhpParser\Error;
 use PhpParser\Node;
@@ -60,10 +69,69 @@ class UnusedFunctionAnalyzer extends NodeVisitorAbstract
         $this->reportUnusedFunctions();
     }
 
+    public function enterNode(Node $node)
+    {
+        // Track current class, handling nested or anonymous classes via a stack
+        if ($node instanceof ClassLike) {
+            $className = null;
+            if (isset($node->namespacedName)) {
+                $className = $node->namespacedName->toString();
+            } elseif (isset($node->name) && $node->name instanceof Identifier) {
+                $className = $node->name->toString();
+            }
+
+            $this->classStack[] = $className;
+        }
+
+        $currentClass = end($this->classStack) ?: null;
+
+        // 1. Definition Tracking
+        if ($node instanceof ClassMethod) {
+            if ($currentClass && $node->name instanceof Identifier) {
+                $fullName = $currentClass . '::' . $node->name->toString();
+                $this->addDefinition($fullName, $this->currentFile, $node->getStartLine(), 'method');
+            }
+        } elseif ($node instanceof Function_) {
+            if (isset($node->namespacedName)) {
+                $this->addDefinition($node->namespacedName->toString(), $this->currentFile, $node->getStartLine(), 'function');
+            }
+        }
+
+        // 2. Usage Tracking
+        if ($node instanceof FuncCall) {
+            if ($node->name instanceof Name) {
+                $this->incrementCall($node->name->toString());
+            }
+        } elseif ($node instanceof MethodCall || $node instanceof NullsafeMethodCall) {
+            if ($node->name instanceof Identifier) {
+                $methodName = $node->name->toString();
+                $this->incrementCall($methodName);
+                $this->incrementCall('*::' . $methodName);
+            }
+        } elseif ($node instanceof StaticCall) {
+            if ($node->name instanceof Identifier) {
+                $methodName = $node->name->toString();
+                $this->incrementCall($methodName);
+                $this->incrementCall('*::' . $methodName);
+            }
+        }
+
+        return null;
+    }
+
+    public function leaveNode(Node $node)
+    {
+        if ($node instanceof ClassLike) {
+            array_pop($this->classStack);
+        }
+
+        return null;
+    }
+
     /**
      * Parses a single PHP file.
      *
-     * @param \PhpParser\Parser $parser
+     * @param Parser $parser
      */
     private function parseFile($parser, string $file): void
     {
@@ -82,67 +150,9 @@ class UnusedFunctionAnalyzer extends NodeVisitorAbstract
             if ($ast !== null) {
                 $traverser->traverse($ast);
             }
-        } catch (Error $exception) {
+        } catch (Error) {
             // Silently ignore parse errors
         }
-    }
-
-    public function enterNode(Node $node)
-    {
-        // Track current class, handling nested or anonymous classes via a stack
-        if ($node instanceof ClassLike) {
-            $className = null;
-            if (isset($node->namespacedName)) {
-                $className = $node->namespacedName->toString();
-            } elseif (isset($node->name) && $node->name instanceof Node\Identifier) {
-                $className = $node->name->toString();
-            }
-            $this->classStack[] = $className;
-        }
-
-        $currentClass = end($this->classStack) ?: null;
-
-        // 1. Definition Tracking
-        if ($node instanceof Node\Stmt\ClassMethod) {
-            if ($currentClass && $node->name instanceof Node\Identifier) {
-                $fullName = $currentClass . '::' . $node->name->toString();
-                $this->addDefinition($fullName, $this->currentFile, $node->getStartLine(), 'method');
-            }
-        } elseif ($node instanceof Node\Stmt\Function_) {
-            if (isset($node->namespacedName)) {
-                $this->addDefinition($node->namespacedName->toString(), $this->currentFile, $node->getStartLine(), 'function');
-            }
-        }
-
-        // 2. Usage Tracking
-        if ($node instanceof Node\Expr\FuncCall) {
-            if ($node->name instanceof Node\Name) {
-                $this->incrementCall($node->name->toString());
-            }
-        } elseif ($node instanceof Node\Expr\MethodCall || $node instanceof Node\Expr\NullsafeMethodCall) {
-            if ($node->name instanceof Node\Identifier) {
-                $methodName = $node->name->toString();
-                $this->incrementCall($methodName);
-                $this->incrementCall('*::' . $methodName);
-            }
-        } elseif ($node instanceof Node\Expr\StaticCall) {
-            if ($node->name instanceof Node\Identifier) {
-                $methodName = $node->name->toString();
-                $this->incrementCall($methodName);
-                $this->incrementCall('*::' . $methodName);
-            }
-        }
-
-        return null;
-    }
-
-    public function leaveNode(Node $node)
-    {
-        if ($node instanceof ClassLike) {
-            array_pop($this->classStack);
-        }
-
-        return null;
     }
 
     private function addDefinition(string $name, string $file, int $line, string $type): void
