@@ -18,7 +18,7 @@ class DocStandardsChecker
 
     private readonly IgnoreList $ignoreList;
 
-    private RepoMapBuilder $repoMapBuilder;
+    private Repository $repository;
 
     /** @var array<int, string> */
     private array $files = [];
@@ -61,18 +61,13 @@ class DocStandardsChecker
     {
         $this->issueHolder = $issueHolder;
         $this->ignoreList = $ignoreList;
-        $this->repoMapBuilder = new RepoMapBuilder($directory);
-        $root = $this->repoMapBuilder->getGitRoot();
-        if ($root === null) {
-            fwrite(STDERR, sprintf('Error: Not a git repository: %s%s', $directory, PHP_EOL));
-            exit(1);
-        }
-        $this->rootDir = $root;
+        $this->repository = new Repository();
+        $this->rootDir = $directory;
     }
 
     public function run(): void
     {
-        $this->files = $this->repoMapBuilder->getAllFiles();
+        $this->files = $this->repository->getAllFiles();
 
         // Filter out ignored files
         $this->files = array_filter($this->files, fn (string $file): bool => !$this->ignoreList->shouldIgnore($file));

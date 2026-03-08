@@ -55,6 +55,16 @@ class Repository
     }
 
     /**
+     * Returns the list of all files in the repository.
+     *
+     * @return list<string> The list of all file paths.
+     */
+    public function getAllFiles(): array
+    {
+        return $this->files;
+    }
+
+    /**
      * Determines the file type based on the extension.
      *
      * @param string $extension The file extension.
