@@ -73,10 +73,10 @@ class DocStandardsChecker
     public function run(): void
     {
         $this->files = $this->repoMapBuilder->getAllFiles();
-        
+
         // Filter out ignored files
         $this->files = array_filter($this->files, fn (string $file): bool => !$this->ignoreList->shouldIgnore($file));
-        
+
         $this->markdownFiles = array_filter($this->files, fn (string $file): bool => (bool) preg_match('/\.md$/i', $file));
 
         $this->checkRequiredFiles();
