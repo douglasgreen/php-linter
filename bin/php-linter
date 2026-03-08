@@ -29,6 +29,7 @@ use DouglasGreen\PhpLinter\Config;
 use DouglasGreen\PhpLinter\IgnoreList;
 use DouglasGreen\PhpLinter\IssueHolder;
 use DouglasGreen\PhpLinter\Linter\Linter;
+use DouglasGreen\PhpLinter\Linter\UnusedClassAnalyzer;
 use DouglasGreen\PhpLinter\Metrics\Analyzer;
 use DouglasGreen\PhpLinter\Metrics\CacheManager;
 use DouglasGreen\PhpLinter\Metrics\MetricChecker;
@@ -62,6 +63,10 @@ $analyzer->run($phpFiles);
 $composerFile = new ComposerFile($currentDir . '/composer.json');
 $linter = new Linter($composerFile, $ignoreList, $issueHolder);
 $linter->run($phpFiles);
+
+// 3. Run Unused Class Analyzer
+$unusedClassAnalyzer = new UnusedClassAnalyzer($issueHolder);
+$unusedClassAnalyzer->run($phpFiles);
 
 // Print all collected issues
 $issueHolder->printIssues();

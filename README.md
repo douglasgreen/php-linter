@@ -148,8 +148,8 @@ The AST linter analyzes your code for the following stylistic and structural iss
 
 ### Potential bugs & Cleanup
 
-- **Unused code:** Detects unused private properties, unused private methods, and unused function
-  parameters.
+- **Unused code:** Detects unused private properties, unused private methods, unused function
+  parameters, and unused classes, interfaces, or traits.
 - **Redundant variables:** Flags variables that are assigned but only used once.
 - **Magic numbers:** Detects duplicate numeric literals used across the code and suggests defining
   them as constants.
