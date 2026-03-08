@@ -75,11 +75,11 @@ $linter = new Linter($composerFile, $ignoreList, $issueHolder);
 $linter->run($phpFiles);
 
 // 3. Run Unused Class Analyzer
-$unusedClassAnalyzer = new UnusedClassAnalyzer($issueHolder);
+$unusedClassAnalyzer = new UnusedClassAnalyzer($issueHolder, $ignoreList);
 $unusedClassAnalyzer->run($phpFiles);
 
 // 4. Run Unused Function Analyzer
-$unusedFunctionAnalyzer = new UnusedFunctionAnalyzer($issueHolder);
+$unusedFunctionAnalyzer = new UnusedFunctionAnalyzer($issueHolder, $ignoreList);
 $unusedFunctionAnalyzer->run($phpFiles);
 
 // 5. Run Composer Checker
@@ -97,7 +97,7 @@ if ($fixMode) {
 }
 
 // 7. Run Doc Standards Checker
-$docChecker = new DocStandardsChecker($currentDir, $issueHolder);
+$docChecker = new DocStandardsChecker($currentDir, $issueHolder, $ignoreList);
 $docChecker->run();
 
 // Print all collected issues

@@ -16,6 +16,8 @@ class DocStandardsChecker
 
     private readonly IssueHolder $issueHolder;
 
+    private readonly IgnoreList $ignoreList;
+
     private RepoMapBuilder $repoMapBuilder;
 
     /** @var array<int, string> */
@@ -55,9 +57,10 @@ class DocStandardsChecker
         '/\b\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\b/' => 'IP address (verify not sensitive)',
     ];
 
-    public function __construct(string $directory, IssueHolder $issueHolder)
+    public function __construct(string $directory, IssueHolder $issueHolder, IgnoreList $ignoreList)
     {
         $this->issueHolder = $issueHolder;
+        $this->ignoreList = $ignoreList;
         $this->repoMapBuilder = new RepoMapBuilder($directory);
         $root = $this->repoMapBuilder->getGitRoot();
         if ($root === null) {
@@ -70,6 +73,10 @@ class DocStandardsChecker
     public function run(): void
     {
         $this->files = $this->repoMapBuilder->getAllFiles();
+        
+        // Filter out ignored files
+        $this->files = array_filter($this->files, fn (string $file): bool => !$this->ignoreList->shouldIgnore($file));
+        
         $this->markdownFiles = array_filter($this->files, fn (string $file): bool => (bool) preg_match('/\.md$/i', $file));
 
         $this->checkRequiredFiles();

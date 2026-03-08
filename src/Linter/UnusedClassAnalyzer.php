@@ -26,6 +26,7 @@ use PhpParser\Node\NullableType;
 use PhpParser\Node\UnionType;
 use PhpParser\Node\IntersectionType;
 use PhpParser\Parser;
+use DouglasGreen\PhpLinter\IgnoreList;
 use DouglasGreen\PhpLinter\IssueHolder;
 use PhpParser\Error;
 use PhpParser\Node;
@@ -51,6 +52,7 @@ class UnusedClassAnalyzer extends NodeVisitorAbstract
 
     public function __construct(
         protected readonly IssueHolder $issueHolder,
+        protected readonly IgnoreList $ignoreList,
     ) {}
 
     /**
@@ -60,6 +62,9 @@ class UnusedClassAnalyzer extends NodeVisitorAbstract
      */
     public function run(array $phpFiles): void
     {
+        // Filter out ignored files
+        $phpFiles = array_filter($phpFiles, fn(string $file): bool => !$this->ignoreList->shouldIgnore($file));
+
         $parserFactory = new ParserFactory();
 
         // Version compatible instantiation (supports php-parser v4 and v5)
