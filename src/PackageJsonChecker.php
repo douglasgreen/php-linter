@@ -596,11 +596,14 @@ class PackageJsonChecker
     private function validateFileLocations(): void
     {
         foreach ($this->fileInventory as $file) {
-            // Skip node_modules and hidden files
+            // Skip node_modules, vendor files, and hidden files
             if (str_contains((string) $file, 'node_modules')) {
                 continue;
             }
 
+            if (str_contains((string) $file, 'vendor')) {
+                continue;
+            }
             if (str_contains((string) $file, '/.')) {
                 continue;
             }
