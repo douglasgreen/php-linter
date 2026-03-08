@@ -1159,4 +1159,85 @@ class ComposerChecker
         $this->issueHolder->addIssue($fullMessage, $context);
     }
 
+    /**
+     * Checks if composer.json keys are in the correct order.
+     */
+    private function checkKeyOrder(): void
+    {
+        $keys = array_keys($this->composer);
+        $expectedOrder = self::KEY_ORDER;
+
+        // Build a list of keys in their expected order
+        $sortedKeys = [];
+        foreach ($expectedOrder as $key) {
+            if (in_array($key, $keys, true)) {
+                $sortedKeys[] = $key;
+            }
+        }
+
+        // Append any remaining keys not in the standard order
+        foreach ($keys as $key) {
+            if (!in_array($key, $expectedOrder, true)) {
+                $sortedKeys[] = $key;
+            }
+        }
+
+        // Compare actual order with expected order
+        $outOfOrder = [];
+        foreach ($keys as $index => $key) {
+            if (!isset($sortedKeys[$index]) || $sortedKeys[$index] !== $key) {
+                $outOfOrder[] = $key;
+            }
+        }
+
+        if (!empty($outOfOrder)) {
+            $this->addIssue(
+                self::SHOULD,
+                'Key order',
+                'composer.json',
+                sprintf(
+                    'Keys are not in conventional order. Out of order: %s. Run with --fix to sort automatically.',
+                    implode(', ', $outOfOrder),
+                ),
+            );
+        }
+    }
+
+    /**
+     * Sorts composer.json into conventional key order and writes it back.
+     */
+    private function sortJson(): void
+    {
+        $sortedData = [];
+
+        // Add keys in the specified order
+        foreach (self::KEY_ORDER as $key) {
+            if (array_key_exists($key, $this->composer)) {
+                $sortedData[$key] = $this->composer[$key];
+                unset($this->composer[$key]);
+            }
+        }
+
+        // Append any remaining keys that were not in the specified order
+        foreach ($this->composer as $key => $value) {
+            $sortedData[$key] = $value;
+        }
+
+        // Encode and write back
+        $jsonContent = json_encode(
+            $sortedData,
+            JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES,
+        );
+
+        if ($jsonContent === false) {
+            fwrite(STDERR, "Error encoding composer.json: " . json_last_error_msg() . "\n");
+            return;
+        }
+
+        $jsonContent .= "\n";
+        $path = $this->rootDir . '/composer.json';
+        file_put_contents($path, $jsonContent);
+
+        echo "Sorted composer.json\n";
+    }
 }
