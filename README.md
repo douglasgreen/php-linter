@@ -199,6 +199,29 @@ The AST linter analyzes your code for the following stylistic and structural iss
 - **Frontmatter:** Validates YAML frontmatter structure and recommended fields.
 - **Orphaned files:** Identifies Markdown files not linked from other documentation.
 
+### Package.json standards
+
+- **Basic structure:** Validates required fields: `name`, `version`, `description`.
+- **Package name:** Ensures lowercase, hyphenated format matching `@scope/package` pattern for scoped
+  packages.
+- **Package type:** Validates against allowed types (module, commonjs, esm, cjs).
+- **License:** Checks for presence and cross-file consistency with composer.json.
+- **Keywords:** Validates presence, checks for duplicates and forbidden generic terms.
+- **Engines:** Ensures Node.js and npm version constraints are specified and meet minimums.
+- **Dependencies:** Validates dev tools are in devDependencies, warns about wildcards and version
+  inconsistencies.
+- **Scripts:** Checks for standard scripts (lint, test, format) when tools are installed, and flags
+  dangerous commands.
+- **Binaries:** Validates binary files exist, are executable, and in the `bin/` directory.
+- **Exports:** Recommends exports field for ES modules.
+- **Deprecated configs:** Flags legacy config files (eslintrc, tslint, etc.) and suggests modern
+  alternatives.
+- **File locations:** Validates files are in appropriate directories based on type.
+- **Tooling configs:** Checks Prettier, ESLint, and Stylelint configurations are present and
+  plugins are properly configured.
+- **Cross-file consistency:** Compares project name, description, and license with composer.json.
+- **Public packages:** Additional validation for homepage, repository, author, and contributors.
+
 ### PHPDoc Standards
 
 - **Missing Documentation:** Public API elements (classes, interfaces, traits, enums, public

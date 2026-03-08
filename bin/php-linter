@@ -36,6 +36,7 @@ use DouglasGreen\PhpLinter\Linter\UnusedFunctionAnalyzer;
 use DouglasGreen\PhpLinter\Metrics\Analyzer;
 use DouglasGreen\PhpLinter\Metrics\CacheManager;
 use DouglasGreen\PhpLinter\Metrics\MetricChecker;
+use DouglasGreen\PhpLinter\PackageJsonChecker;
 use DouglasGreen\PhpLinter\Repository;
 
 $currentDir = getcwd();
@@ -82,6 +83,10 @@ $composerChecker->run();
 // 6. Run Doc Standards Checker
 $docChecker = new DocStandardsChecker($currentDir, $issueHolder);
 $docChecker->run();
+
+// 7. Run Package.json Checker
+$packageChecker = new PackageJsonChecker($currentDir, $issueHolder);
+$packageChecker->run();
 
 // Print all collected issues
 $issueHolder->printIssues();
