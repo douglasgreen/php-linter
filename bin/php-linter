@@ -25,10 +25,11 @@
 declare(strict_types=1);
 
 use DouglasGreen\PhpLinter\ComposerChecker;
-use DouglasGreen\PhpLinter\Linter\ComposerFile;
 use DouglasGreen\PhpLinter\Config;
+use DouglasGreen\PhpLinter\DocStandardsChecker;
 use DouglasGreen\PhpLinter\IgnoreList;
 use DouglasGreen\PhpLinter\IssueHolder;
+use DouglasGreen\PhpLinter\Linter\ComposerFile;
 use DouglasGreen\PhpLinter\Linter\Linter;
 use DouglasGreen\PhpLinter\Linter\UnusedClassAnalyzer;
 use DouglasGreen\PhpLinter\Linter\UnusedFunctionAnalyzer;
@@ -77,6 +78,10 @@ $unusedFunctionAnalyzer->run($phpFiles);
 // 5. Run Composer Checker
 $composerChecker = new ComposerChecker($currentDir, $issueHolder);
 $composerChecker->run();
+
+// 6. Run Doc Standards Checker
+$docChecker = new DocStandardsChecker($currentDir, $issueHolder);
+$docChecker->run();
 
 // Print all collected issues
 $issueHolder->printIssues();

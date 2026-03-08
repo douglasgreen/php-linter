@@ -185,6 +185,20 @@ The AST linter analyzes your code for the following stylistic and structural iss
 - **Support info:** Checks for issues URL and valid source URLs.
 - **Public packages:** Additional validation for homepage, authors, and keywords.
 
+### Documentation standards
+
+- **Required files:** Checks for essential files like README.md, CHANGELOG.md, LICENSE, and
+  documentation structure.
+- **File naming:** Validates kebab-case naming convention for Markdown files.
+- **File encoding:** Ensures UTF-8 encoding and Unix line endings (LF).
+- **Heading structure:** Validates single H1, no skipped heading levels, and sentence case.
+- **Code blocks:** Checks for language specification in fenced code blocks.
+- **Writing style:** Flags fluff words, passive voice, and future tense.
+- **Links:** Validates internal links, flags bare URLs and non-descriptive link text.
+- **Security:** Detects exposed API keys, tokens, passwords, and other credentials.
+- **Frontmatter:** Validates YAML frontmatter structure and recommended fields.
+- **Orphaned files:** Identifies Markdown files not linked from other documentation.
+
 ### PHPDoc Standards
 
 - **Missing Documentation:** Public API elements (classes, interfaces, traits, enums, public
