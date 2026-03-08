@@ -11,11 +11,7 @@ use PhpParser\Node\Expr\Exit_;
  *
  * Detects usage of exit/die expressions.
  *
- * @package DouglasGreen\PhpLinter\Checker
- *
  * @internal
- *
- * @since 1.0.0
  */
 class LocalScopeChecker extends AbstractNodeChecker
 {

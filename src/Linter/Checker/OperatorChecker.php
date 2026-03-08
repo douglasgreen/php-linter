@@ -11,11 +11,7 @@ use PhpParser\Node\Expr\ErrorSuppress;
  *
  * Specifically targets the error suppression operator (@).
  *
- * @package DouglasGreen\PhpLinter\Checker
- *
  * @internal
- *
- * @since 1.0.0
  */
 class OperatorChecker extends AbstractNodeChecker
 {

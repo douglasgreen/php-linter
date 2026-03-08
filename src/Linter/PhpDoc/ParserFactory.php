@@ -13,11 +13,7 @@ use PHPStan\PhpDocParser\ParserConfig;
 /**
  * Factory for creating PHPDoc parser instances.
  *
- * @package DouglasGreen\PhpLinter\PhpDoc
- *
  * @internal
- *
- * @since 1.0.0
  */
 class ParserFactory
 {

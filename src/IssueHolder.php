@@ -7,11 +7,7 @@ namespace DouglasGreen\PhpLinter;
 /**
  * Provides functionality to hold and manage a list of unique issues.
  *
- * @package DouglasGreen\PhpLinter
- *
  * @api
- *
- * @since 1.0.0
  */
 class IssueHolder
 {

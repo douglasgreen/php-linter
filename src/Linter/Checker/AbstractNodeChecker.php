@@ -13,11 +13,7 @@ use PhpParser\Node;
  * Provides a common interface and issue collection mechanism for specific
  * node validation rules.
  *
- * @package DouglasGreen\PhpLinter\Checker
- *
  * @internal
- *
- * @since 1.0.0
  */
 abstract class AbstractNodeChecker
 {

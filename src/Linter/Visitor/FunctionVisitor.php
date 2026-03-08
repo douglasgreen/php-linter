@@ -12,11 +12,7 @@ use PhpParser\Node\Expr\Variable;
 /**
  * Analyzes function and method scope for variable usage and parameter handling.
  *
- * @package DouglasGreen\PhpLinter\Visitor
- *
  * @internal
- *
- * @since 1.0.0
  */
 class FunctionVisitor extends AbstractVisitorChecker
 {

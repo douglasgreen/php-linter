@@ -23,11 +23,7 @@ use PhpParser\Node\Stmt\Trait_;
  *
  * Validates casing, length, and suffixes for classes, methods, properties, etc.
  *
- * @package DouglasGreen\PhpLinter\Checker
- *
  * @internal
- *
- * @since 1.0.0
  */
 class NameChecker extends AbstractNodeChecker
 {

@@ -12,12 +12,9 @@ use SimpleXMLElement;
  *
  * Provides access to metrics, files, and packages extracted from the XML.
  *
- * @package DouglasGreen\PhpLinter\Metrics
- *
  * @internal
  *
  * @see https://pdepend.org/documentation/software-metrics/index.html
- * @since 1.0.0
  */
 class XmlParser
 {

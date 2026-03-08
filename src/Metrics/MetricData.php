@@ -9,11 +9,7 @@ namespace DouglasGreen\PhpLinter\Metrics;
  *
  * Holds metric data for files, classes, methods, and functions.
  *
- * @package DouglasGreen\PhpLinter\Metrics
- *
  * @internal
- *
- * @since 1.0.0
  */
 readonly class MetricData
 {

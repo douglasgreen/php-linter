@@ -23,11 +23,7 @@ use PHPStan\PhpDocParser\Parser\TokenIterator;
 /**
  * Checks PHPDoc blocks for compliance with documentation standards.
  *
- * @package DouglasGreen\PhpLinter\Checker
- *
  * @internal
- *
- * @since 1.0.0
  */
 class DocBlockChecker extends AbstractNodeChecker
 {
@@ -166,14 +162,6 @@ class DocBlockChecker extends AbstractNodeChecker
      */
     private function checkClassTags(PhpDocNode $phpDocNode): void
     {
-        if ($phpDocNode->getTagsByName('@package') === []) {
-            $this->addIssue('Class-like structures MUST have a @package tag.');
-        }
-
-        if ($phpDocNode->getTagsByName('@since') === []) {
-            $this->addIssue('Class-like structures MUST have a @since tag.');
-        }
-
         if ($phpDocNode->getTagsByName('@api') === [] && $phpDocNode->getTagsByName('@internal') === []) {
             $this->addIssue('Class-like structures MUST have an @api or @internal tag.');
         }

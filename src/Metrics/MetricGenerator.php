@@ -12,11 +12,7 @@ use RuntimeException;
  * Handles the caching of non-.php files and execution of the PDepend process
  * to generate a summary XML file.
  *
- * @package DouglasGreen\PhpLinter\Metrics
- *
  * @internal
- *
- * @since 1.0.0
  */
 class MetricGenerator
 {

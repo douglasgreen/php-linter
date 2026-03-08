@@ -14,11 +14,7 @@ use Exception;
  *
  * Orchestrates metric generation, parsing, and checking against defined thresholds.
  *
- * @package DouglasGreen\PhpLinter\Metrics
- *
  * @api
- *
- * @since 1.0.0
  */
 class Analyzer
 {

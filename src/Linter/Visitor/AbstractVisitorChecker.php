@@ -13,11 +13,7 @@ use PhpParser\Node;
  * Visitor checkers analyze nodes within a structure (like a class or function)
  * and accumulate issues during traversal.
  *
- * @package DouglasGreen\PhpLinter\Visitor
- *
  * @internal
- *
- * @since 1.0.0
  */
 abstract class AbstractVisitorChecker
 {

@@ -18,11 +18,7 @@ use PhpParser\NodeVisitorAbstract;
  * Detects direct access to PHP superglobals and flags usage outside of
  * allowed contexts (Controllers, Middleware, or global scope).
  *
- * @package DouglasGreen\PhpLinter\Visitor
- *
  * @internal
- *
- * @since 1.0.0
  */
 class SuperglobalUsageVisitor extends NodeVisitorAbstract
 {

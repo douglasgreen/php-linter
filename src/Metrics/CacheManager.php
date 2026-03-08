@@ -9,11 +9,7 @@ namespace DouglasGreen\PhpLinter\Metrics;
  *
  * Ensures cache directories exist and handles file copying for non-.php files.
  *
- * @package DouglasGreen\PhpLinter\Metrics
- *
  * @api
- *
- * @since 1.0.0
  */
 class CacheManager
 {

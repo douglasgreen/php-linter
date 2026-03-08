@@ -24,11 +24,7 @@ use PhpParser\NodeFinder;
  *
  * Checks parameter counts, return types, naming conventions, and static recommendations.
  *
- * @package DouglasGreen\PhpLinter\Checker
- *
  * @internal
- *
- * @since 1.0.0
  */
 class FunctionChecker extends AbstractNodeChecker
 {

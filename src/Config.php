@@ -7,11 +7,7 @@ namespace DouglasGreen\PhpLinter;
 /**
  * Handles loading and parsing of php-linter.json configuration file.
  *
- * @package DouglasGreen\PhpLinter
- *
  * @api
- *
- * @since 1.0.0
  */
 class Config
 {

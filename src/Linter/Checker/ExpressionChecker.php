@@ -17,11 +17,7 @@ use PhpParser\Node\Stmt\If_;
  *
  * Analyzes if conditions, eval, global, goto, and include statements.
  *
- * @package DouglasGreen\PhpLinter\Checker
- *
  * @internal
- *
- * @since 1.0.0
  */
 class ExpressionChecker extends AbstractNodeChecker
 {

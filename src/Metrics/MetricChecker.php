@@ -12,12 +12,9 @@ use DouglasGreen\PhpLinter\IssueHolder;
  * Wraps metric data and provides methods to validate against thresholds,
  * collecting issues for reporting.
  *
- * @package DouglasGreen\PhpLinter\Metrics
- *
  * @api
  *
  * @see https://pdepend.org/documentation/software-metrics/index.html
- * @since 1.0.0
  */
 class MetricChecker
 {

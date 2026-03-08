@@ -15,8 +15,6 @@
  * This script accepts no command-line arguments. It automatically detects
  * PHP files within the repository.
  *
- * @package DouglasGreen\PhpLinter
- *
  * @example
  * ```bash
  * # Execute from the repository root

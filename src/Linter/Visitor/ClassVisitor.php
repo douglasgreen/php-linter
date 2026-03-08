@@ -20,11 +20,7 @@ use PhpParser\Node\Stmt\Property;
  *
  * Checks for unused private members, visibility ordering, and PHP 4 style constructors.
  *
- * @package DouglasGreen\PhpLinter\Visitor
- *
  * @internal
- *
- * @since 1.0.0
  */
 class ClassVisitor extends AbstractVisitorChecker
 {

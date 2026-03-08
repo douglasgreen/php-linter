@@ -12,11 +12,7 @@ use PhpParser\Node\Name;
  *
  * Detects calls to debug functions that should not be present in production code.
  *
- * @package DouglasGreen\PhpLinter\Checker
- *
  * @internal
- *
- * @since 1.0.0
  */
 class FunctionCallChecker extends AbstractNodeChecker
 {

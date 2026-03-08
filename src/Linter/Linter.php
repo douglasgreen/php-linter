@@ -14,11 +14,7 @@ use PhpParser\ParserFactory;
 /**
  * Orchestrates the linting process for a list of PHP files.
  *
- * @package DouglasGreen\PhpLinter
- *
  * @api
- *
- * @since 1.0.0
  */
 class Linter
 {

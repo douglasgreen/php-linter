@@ -42,11 +42,7 @@ use PHPStan\PhpDocParser\Parser\PhpDocParser;
 /**
  * Visitor for traversing PHP AST nodes to detect linting issues.
  *
- * @package DouglasGreen\PhpLinter
- *
  * @internal
- *
- * @since 1.0.0
  */
 class ElementVisitor extends NodeVisitorAbstract
 {

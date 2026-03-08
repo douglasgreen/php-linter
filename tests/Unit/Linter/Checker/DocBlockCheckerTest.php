@@ -23,8 +23,6 @@ use PHPUnit\Framework\TestCase;
 
 /**
  * Tests for the DocBlockChecker class.
- *
- * @package Tests\Unit\Checker
  */
 #[CoversClass(DocBlockChecker::class)]
 #[Small]
@@ -98,14 +96,6 @@ final class DocBlockCheckerTest extends TestCase
      */
     public static function classTagProvider(): iterable
     {
-        yield 'missing package' => [
-            "/**\n * Summary.\n * @since 1.0.0\n * @api\n */",
-            'Class-like structures MUST have a @package tag.',
-        ];
-        yield 'missing since' => [
-            "/**\n * Summary.\n * @package Test\n * @api\n */",
-            'Class-like structures MUST have a @since tag.',
-        ];
         yield 'missing api or internal' => [
             "/**\n * Summary.\n * @package Test\n * @since 1.0.0\n */",
             'Class-like structures MUST have an @api or @internal tag.',
