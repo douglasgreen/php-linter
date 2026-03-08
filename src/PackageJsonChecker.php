@@ -23,6 +23,48 @@ class PackageJsonChecker
 
     public const MAY = 'MAY';
 
+    /**
+     * Desired order of keys in package.json.
+     *
+     * @see https://docs.npmjs.com/cli/v10/configuring-npm/package-json
+     */
+    private const KEY_ORDER = [
+        'name',
+        'version',
+        'description',
+        'keywords',
+        'homepage',
+        'bugs',
+        'license',
+        'author',
+        'contributors',
+        'funding',
+        'files',
+        'main',
+        'browser',
+        'bin',
+        'man',
+        'directories',
+        'repository',
+        'scripts',
+        'config',
+        'dependencies',
+        'devDependencies',
+        'peerDependencies',
+        'bundledDependencies',
+        'optionalDependencies',
+        'engines',
+        'os',
+        'cpu',
+        'type',
+        'exports',
+        'module',
+        'imports',
+        'workspaces',
+        'private',
+        'publishConfig',
+    ];
+
     private readonly string $rootDir;
 
     /** @var array<string, mixed> */
@@ -35,6 +77,8 @@ class PackageJsonChecker
     private ?array $composer = null;
 
     private IssueHolder $issueHolder;
+
+    private bool $fixMode;
 
     /** @var array<int, string> */
     private array $fileInventory = [];
@@ -72,11 +116,12 @@ class PackageJsonChecker
         'assets/xml/' => ['*.xml', '*.xsd', '*.xsl', '*.xslt', '*.wsdl'],
     ];
 
-    public function __construct(string $directory, IssueHolder $issueHolder, string $configFile = '')
+    public function __construct(string $directory, IssueHolder $issueHolder, string $configFile = '', bool $fixMode = false)
     {
         $realPath = realpath($directory);
         $this->rootDir = $realPath !== false ? $realPath : (string) getcwd();
         $this->issueHolder = $issueHolder;
+        $this->fixMode = $fixMode;
         $this->loadPackageJson();
         $this->loadComposerJson();
         $this->scanFileInventory();
@@ -88,6 +133,15 @@ class PackageJsonChecker
         $this->issueHolder->setCurrentFile('package.json');
         $this->issueHolder->setCurrentClass(null);
         $this->issueHolder->setCurrentFunction(null);
+
+        // If in fix mode, only sort the JSON file
+        if ($this->fixMode) {
+            $this->sortJson();
+            return;
+        }
+
+        // Check key order first
+        $this->checkKeyOrder();
 
         $this->validateBasicStructure();
         $this->validatePackageName();
@@ -1265,5 +1319,87 @@ class PackageJsonChecker
     {
         $formattedMessage = sprintf('[%s] %s: %s - %s', $level, $category, $context, $message);
         $this->issueHolder->addIssue($formattedMessage);
+    }
+
+    /**
+     * Checks if package.json keys are in the correct order.
+     */
+    private function checkKeyOrder(): void
+    {
+        $keys = array_keys($this->package);
+        $expectedOrder = self::KEY_ORDER;
+
+        // Build a list of keys in their expected order
+        $sortedKeys = [];
+        foreach ($expectedOrder as $key) {
+            if (in_array($key, $keys, true)) {
+                $sortedKeys[] = $key;
+            }
+        }
+
+        // Append any remaining keys not in the standard order
+        foreach ($keys as $key) {
+            if (!in_array($key, $expectedOrder, true)) {
+                $sortedKeys[] = $key;
+            }
+        }
+
+        // Compare actual order with expected order
+        $outOfOrder = [];
+        foreach ($keys as $index => $key) {
+            if (!isset($sortedKeys[$index]) || $sortedKeys[$index] !== $key) {
+                $outOfOrder[] = $key;
+            }
+        }
+
+        if (!empty($outOfOrder)) {
+            $this->addIssue(
+                self::SHOULD,
+                'Key order',
+                'package.json',
+                sprintf(
+                    'Keys are not in conventional order. Out of order: %s. Run with --fix to sort automatically.',
+                    implode(', ', $outOfOrder),
+                ),
+            );
+        }
+    }
+
+    /**
+     * Sorts package.json into conventional key order and writes it back.
+     */
+    private function sortJson(): void
+    {
+        $sortedData = [];
+
+        // Add keys in the specified order
+        foreach (self::KEY_ORDER as $key) {
+            if (array_key_exists($key, $this->package)) {
+                $sortedData[$key] = $this->package[$key];
+                unset($this->package[$key]);
+            }
+        }
+
+        // Append any remaining keys that were not in the specified order
+        foreach ($this->package as $key => $value) {
+            $sortedData[$key] = $value;
+        }
+
+        // Encode and write back
+        $jsonContent = json_encode(
+            $sortedData,
+            JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES,
+        );
+
+        if ($jsonContent === false) {
+            fwrite(STDERR, "Error encoding package.json: " . json_last_error_msg() . "\n");
+            return;
+        }
+
+        $jsonContent .= "\n";
+        $path = $this->rootDir . '/package.json';
+        file_put_contents($path, $jsonContent);
+
+        echo "Sorted package.json\n";
     }
 }

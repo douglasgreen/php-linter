@@ -21,6 +21,46 @@ class ComposerChecker
 
     public const MAY = 'MAY';
 
+    /**
+     * Desired order of keys in composer.json.
+     *
+     * @see https://getcomposer.org/doc/04-schema.md
+     */
+    private const KEY_ORDER = [
+        'name',
+        'description',
+        'version',
+        'type',
+        'keywords',
+        'homepage',
+        'readme',
+        'time',
+        'license',
+        'authors',
+        'support',
+        'funding',
+        'require',
+        'require-dev',
+        'conflict',
+        'replace',
+        'provide',
+        'suggest',
+        'autoload',
+        'autoload-dev',
+        'include-path',
+        'target-dir',
+        'minimum-stability',
+        'prefer-stable',
+        'repositories',
+        'config',
+        'scripts',
+        'extra',
+        'bin',
+        'archive',
+        'abandoned',
+        '_comment',
+    ];
+
     private readonly string $rootDir;
 
     /** @var array<string, mixed> */
@@ -30,6 +70,8 @@ class ComposerChecker
     private array $composer;
 
     private IssueHolder $issueHolder;
+
+    private bool $fixMode;
 
     /** @var array<string, mixed>|null */
     private ?array $lockData = null;
@@ -58,10 +100,11 @@ class ComposerChecker
         '/\/usr\/bin\//', // System binaries (should use vendor/bin)
     ];
 
-    public function __construct(string $directory, IssueHolder $issueHolder, string $configFile = '')
+    public function __construct(string $directory, IssueHolder $issueHolder, string $configFile = '', bool $fixMode = false)
     {
         $this->rootDir = (string) (realpath($directory) ?: getcwd());
         $this->issueHolder = $issueHolder;
+        $this->fixMode = $fixMode;
         $this->loadComposerJson();
         $this->loadComposerLock();
         $this->loadConfig($configFile);
@@ -69,6 +112,15 @@ class ComposerChecker
 
     public function run(): void
     {
+        // If in fix mode, only sort the JSON file
+        if ($this->fixMode) {
+            $this->sortJson();
+            return;
+        }
+
+        // Check key order first
+        $this->checkKeyOrder();
+
         $this->validateBasicStructure();
         $this->validatePackageName();
         $this->validateType();

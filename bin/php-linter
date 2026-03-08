@@ -12,13 +12,16 @@
  * - Must be run from the repository root directory to correctly locate `vendor/autoload.php` and configuration files.
  *
  * ## Arguments
- * This script accepts no command-line arguments. It automatically detects
- * PHP files within the repository.
+ * --fix    Sort composer.json and package.json files into conventional order.
+ *          When this flag is set, only sorting is performed and all other checks are skipped.
  *
  * @example
  * ```bash
  * # Execute from the repository root
  * php bin/php-linter
+ *
+ * # Sort JSON files
+ * php bin/php-linter --fix
  * ```
  */
 
@@ -45,6 +48,9 @@ if ($currentDir === false) {
 }
 
 require_once $currentDir . '/vendor/autoload.php';
+
+// Parse command-line arguments
+$fixMode = in_array('--fix', $argv, true);
 
 // Load configuration
 $config = new Config($currentDir);
@@ -77,16 +83,22 @@ $unusedFunctionAnalyzer = new UnusedFunctionAnalyzer($issueHolder);
 $unusedFunctionAnalyzer->run($phpFiles);
 
 // 5. Run Composer Checker
-$composerChecker = new ComposerChecker($currentDir, $issueHolder);
+$composerChecker = new ComposerChecker($currentDir, $issueHolder, '', $fixMode);
 $composerChecker->run();
 
-// 6. Run Doc Standards Checker
+// 6. Run Package.json Checker
+$packageChecker = new PackageJsonChecker($currentDir, $issueHolder, '', $fixMode);
+$packageChecker->run();
+
+// If in fix mode, skip remaining checks
+if ($fixMode) {
+    echo "JSON files have been sorted.\n";
+    exit(0);
+}
+
+// 7. Run Doc Standards Checker
 $docChecker = new DocStandardsChecker($currentDir, $issueHolder);
 $docChecker->run();
-
-// 7. Run Package.json Checker
-$packageChecker = new PackageJsonChecker($currentDir, $issueHolder);
-$packageChecker->run();
 
 // Print all collected issues
 $issueHolder->printIssues();

@@ -59,6 +59,21 @@ vendor/bin/php-linter
 > `git ls-files`, parses the `composer.json` file for PSR-4 namespace mappings, and utilizes a
 > `var/cache/pdepend` directory for caching metric analysis.
 
+### Sort JSON files
+
+The linter can automatically sort `composer.json` and `package.json` files into conventional key
+order. Use the `--fix` flag to sort these files:
+
+```bash
+vendor/bin/php-linter --fix
+```
+
+When the `--fix` flag is provided, the linter skips all other checks and only sorts the JSON files.
+This is useful for maintaining consistent file structure across your project.
+
+> **Note:** The sorting follows the official schema documentation for each file type. Keys not in
+> the standard order are appended at the end in their original relative order.
+
 ### Add to Composer scripts
 
 To integrate the linter into your continuous integration (CI) pipeline or daily workflow, add it to
