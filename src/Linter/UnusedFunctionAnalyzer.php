@@ -73,7 +73,7 @@ class UnusedFunctionAnalyzer extends NodeVisitorAbstract
             $className = null;
             if (isset($node->namespacedName)) {
                 $className = $node->namespacedName->toString();
-            } elseif (isset($node->name) && $node->name instanceof Identifier) {
+            } elseif (isset($node->name)) {
                 $className = $node->name->toString();
             }
 
@@ -84,7 +84,7 @@ class UnusedFunctionAnalyzer extends NodeVisitorAbstract
 
         // 1. Definition Tracking
         if ($node instanceof ClassMethod) {
-            if ($currentClass && $node->name instanceof Identifier) {
+            if ($currentClass) {
                 $fullName = $currentClass . '::' . $node->name->toString();
                 $this->addDefinition($fullName, $this->currentFile, $node->getStartLine(), 'method');
             }
