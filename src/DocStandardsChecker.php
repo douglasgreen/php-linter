@@ -10,9 +10,25 @@ declare(strict_types=1);
 
 namespace DouglasGreen\PhpLinter;
 
+use League\CommonMark\Environment\Environment;
+use League\CommonMark\Extension\CommonMark\CommonMarkCoreExtension;
+use League\CommonMark\Extension\CommonMark\Node\Block\FencedCode;
+use League\CommonMark\Extension\CommonMark\Node\Block\Heading;
+use League\CommonMark\Extension\CommonMark\Node\Block\IndentedCode;
+use League\CommonMark\Extension\CommonMark\Node\Block\ListBlock;
+use League\CommonMark\Extension\CommonMark\Node\Block\ListItem;
+use League\CommonMark\Extension\CommonMark\Node\Block\Paragraph;
+use League\CommonMark\Extension\CommonMark\Node\Inline\Link;
+use League\CommonMark\Extension\FrontMatter\FrontMatterExtension;
+use League\CommonMark\Node\Block\Document;
+use League\CommonMark\Node\Node;
+use League\CommonMark\Parser\MarkdownParser;
+
 class DocStandardsChecker
 {
     private readonly Repository $repository;
+
+    private readonly MarkdownParser $parser;
 
     /** @var array<int, string> */
     private array $files = [];
@@ -54,6 +70,13 @@ class DocStandardsChecker
     public function __construct(private readonly string $rootDir, private readonly IssueHolder $issueHolder, private readonly IgnoreList $ignoreList)
     {
         $this->repository = new Repository();
+
+        // Initialize the League CommonMark parser environment
+        $environment = new Environment([]);
+        $environment->addExtension(new CommonMarkCoreExtension());
+        $environment->addExtension(new FrontMatterExtension()); // Support YAML Frontmatter natively
+
+        $this->parser = new MarkdownParser($environment);
     }
 
     public function run(): void
@@ -198,54 +221,38 @@ class DocStandardsChecker
     {
         foreach ($this->markdownFiles as $file) {
             $content = $this->getFileContent($file);
-            $lines = explode("\n", $content);
+            $document = $this->parser->parse($content);
 
-            $this->checkHeadingStructure($file, $lines);
-            $this->checkCodeBlocks($file, $content);
-            $this->checkWritingStyle($file, $content, $lines);
-            $this->checkLinks($file, $content);
-            $this->checkSecurity($file, $content);
-            $this->checkFrontmatter($file, $content);
-            $this->buildLinkGraph($file, $content);
+            $this->checkHeadingStructure($file, $document);
+            $this->checkCodeBlocks($file, $document);
+            $this->checkWritingStyle($file, $document);
+            $this->checkLinks($file, $document);
+            $this->checkSecurity($file, $content); // Security is still checked against the raw string
+            $this->checkFrontmatter($file, $content, $document);
+            $this->buildLinkGraph($file, $document);
         }
     }
 
-    /**
-     * @param array<int, string> $lines
-     */
-    private function checkHeadingStructure(string $file, array $lines): void
+    private function checkHeadingStructure(string $file, Document $document): void
     {
         $hasH1 = false;
         $prevLevel = 0;
-        $inCodeBlock = false;
         $this->issueHolder->setCurrentFile($file);
 
-        foreach ($lines as $i => $line) {
-            $trimmedLine = trim((string) $line);
-            
-            // Check for code block fence
-            if (str_starts_with($trimmedLine, '```') || str_starts_with($trimmedLine, '~~~')) {
-                $inCodeBlock = !$inCodeBlock;
-                continue;
-            }
-            
-            // Skip lines inside code blocks
-            if ($inCodeBlock) {
+        foreach ($document->iterator() as $node) {
+            if (!$node instanceof Heading) {
                 continue;
             }
 
-            if (!preg_match('/^(#{1,6})\s+(.+)$/', (string) $line, $matches)) {
-                continue;
-            }
-
-            $level = strlen($matches[1]);
-            $text = $matches[2];
+            $level = $node->getLevel();
+            $text = trim($this->extractText($node));
+            $lineNum = (string) $node->getStartLine();
 
             // Check single H1
             if ($level === 1) {
                 if ($hasH1) {
                     $this->issueHolder->addIssue(
-                        'Multiple H1 headings at line ' . ($i + 1),
+                        'Multiple H1 headings at line ' . $lineNum,
                         'Document should have exactly one H1 heading for clarity',
                     );
                 }
@@ -256,7 +263,7 @@ class DocStandardsChecker
             // Check no skipped levels
             if ($prevLevel > 0 && $level > $prevLevel + 1) {
                 $this->issueHolder->addIssue(
-                    sprintf('Skipped heading level at line %d: H%d -> H%d', $i + 1, $prevLevel, $level),
+                    sprintf('Skipped heading level at line %s: H%d -> H%d', $lineNum, $prevLevel, $level),
                     'Use sequential heading levels for proper document structure',
                 );
             }
@@ -264,10 +271,9 @@ class DocStandardsChecker
             $prevLevel = $level;
 
             // Check sentence case
-            // Allow acronyms and proper nouns, but flag Title Case
-            if ($level <= 3 && preg_match('/[A-Z]{2,}/', $text) && !preg_match('/^[A-Z][a-z]+( [a-z]+)*$/', $text) && preg_match('/^[A-Z][a-z]+ [A-Z]/', $text)) {
+            if ($level <= 3 && preg_match('/[A-Z]{2,}/', $text) && !preg_match('/^[A-Z][a-z]+([a-z]+)*$/', $text) && preg_match('/^[A-Z][a-z]+ [A-Z]/', $text)) {
                 $this->issueHolder->addIssue(
-                    'Title Case heading at line ' . ($i + 1) . ": '" . $text . "'",
+                    'Title Case heading at line ' . $lineNum . ": '" . $text . "'",
                     'Use sentence case for better readability',
                 );
             }
@@ -281,148 +287,143 @@ class DocStandardsChecker
         }
     }
 
-    private function checkCodeBlocks(string $file, string $content): void
+    private function checkCodeBlocks(string $file, Document $document): void
     {
         $this->issueHolder->setCurrentFile($file);
 
-        // Check for fenced code blocks without language (only opening markers)
-        $lines = explode("\n", $content);
-        $inCodeBlock = false;
-
-        foreach ($lines as $i => $line) {
-            $trimmedLine = trim($line);
-
-            // Check if this line starts a code block
-            if (str_starts_with($trimmedLine, '```')) {
-                if (!$inCodeBlock) {
-                    // This is an opening code block marker
-                    $inCodeBlock = true;
-
-                    // Check if it has a language specification
-                    if ($trimmedLine === '```' || $trimmedLine === '``` ') {
-                        $this->issueHolder->addIssue(
-                            'Code block at line ' . ($i + 1) . ' missing language specification',
-                            'Specify a language for syntax highlighting (e.g., ```php)',
-                        );
-                    }
-                } else {
-                    // This is a closing code block marker
-                    $inCodeBlock = false;
+        foreach ($document->iterator() as $node) {
+            if ($node instanceof FencedCode) {
+                $info = $node->getInfo();
+                if ($info === null || trim($info) === '') {
+                    $this->issueHolder->addIssue(
+                        'Code block at line ' . $node->getStartLine() . ' missing language specification',
+                        'Specify a language for syntax highlighting (e.g., ```php)',
+                    );
                 }
+            } elseif ($node instanceof IndentedCode) {
+                $this->issueHolder->addIssue(
+                    'Indented code block detected at line ' . $node->getStartLine(),
+                    'Use fenced code blocks (```) instead of indentation for better readability',
+                );
             }
-        }
-
-        // Check for indented code blocks (discouraged in favor of fences)
-        if (preg_match('/\n    [^\s*]/', $content)) {
-            $this->issueHolder->addIssue(
-                'Indented code block detected',
-                'Use fenced code blocks (```) instead of indentation for better readability',
-            );
         }
     }
 
-    /**
-     * @param array<int, string> $lines
-     */
-    private function checkWritingStyle(string $file, string $content, array $lines): void
+    private function checkWritingStyle(string $file, Document $document): void
     {
         $this->issueHolder->setCurrentFile($file);
 
-        // Check for fluff words
-        foreach ($this->forbiddenWords as $word) {
-            if (preg_match(sprintf('/\b%s\b/i', $word), $content)) {
+        foreach ($document->iterator() as $node) {
+            // Only check prose context (Paragraphs and Headings) to avoid triggering on code contents
+            if (!$node instanceof Paragraph && !$node instanceof Heading) {
+                continue;
+            }
+
+            $blockText = $this->extractText($node);
+
+            // Check for fluff words
+            foreach ($this->forbiddenWords as $word) {
+                if (preg_match(sprintf('/\b%s\b/i', $word), $blockText)) {
+                    $this->issueHolder->addIssue(
+                        "Fluff word detected: '" . $word . "'",
+                        'Remove words that can alienate struggling users',
+                    );
+                }
+            }
+
+            // Check for passive voice indicators - heuristic
+            if (preg_match('/\b(is|was|were|been|be|being)\s+(?:configured|installed|created|updated|deleted|processed|generated|used|done|made)\b/i', $blockText)) {
                 $this->issueHolder->addIssue(
-                    "Fluff word detected: '" . $word . "'",
-                    'Remove words that can alienate struggling users',
+                    'Passive voice detected',
+                    "Use active voice (e.g., 'Click Save') instead of passive (e.g., 'Save should be clicked')",
+                );
+            }
+
+            // Check for future tense
+            if (preg_match('/\b(will|shall)\s+(?:return|display|show|create|update)\b/i', $blockText)) {
+                $this->issueHolder->addIssue(
+                    'Future tense detected',
+                    "Use present tense (e.g., 'The API returns') instead of future (e.g., 'The API will return')",
                 );
             }
         }
 
-        // Check for passive voice indicators - heuristic
-        if (preg_match('/\b(is|was|were|been|be|being)\s+(?:configured|installed|created|updated|deleted|processed|generated|used|done|made)\b/i', $content)) {
-            $this->issueHolder->addIssue(
-                'Passive voice detected',
-                "Use active voice (e.g., 'Click Save') instead of passive (e.g., 'Save should be clicked')",
-            );
-        }
-
-        // Check for future tense
-        if (preg_match('/\b(will|shall)\s+(?:return|display|show|create|update)\b/i', $content)) {
-            $this->issueHolder->addIssue(
-                'Future tense detected',
-                "Use present tense (e.g., 'The API returns') instead of future (e.g., 'The API will return')",
-            );
-        }
-
-        // Check list punctuation consistency
-        $this->checkListPunctuation($file, $lines);
+        $this->checkListPunctuation($file, $document);
     }
 
-    /**
-     * @param array<int, string> $lines
-     */
-    private function checkListPunctuation(string $file, array $lines): void
+    private function checkListPunctuation(string $file, Document $document): void
     {
-        $inList = false;
-        $listType = null; // 'fragment' or 'sentence'
         $this->issueHolder->setCurrentFile($file);
 
-        foreach ($lines as $i => $line) {
-            if (preg_match('/^[\s]*[-*+]\s+(.+)$/', (string) $line, $matches)) {
-                $text = $matches[1];
-                $hasPeriod = str_ends_with($text, '.');
+        foreach ($document->iterator() as $node) {
+            if (!$node instanceof ListBlock) {
+                continue;
+            }
 
-                if (!$inList) {
-                    $inList = true;
+            $listType = null; // 'fragment' or 'sentence'
+            foreach ($node->children() as $item) {
+                if (!$item instanceof ListItem) {
+                    continue;
+                }
+
+                $itemText = trim($this->extractText($item));
+                if ($itemText === '') {
+                    continue;
+                }
+
+                $hasPeriod = str_ends_with($itemText, '.');
+
+                if ($listType === null) {
                     $listType = $hasPeriod ? 'sentence' : 'fragment';
                 } else {
                     $currentType = $hasPeriod ? 'sentence' : 'fragment';
                     if ($currentType !== $listType) {
                         $this->issueHolder->addIssue(
-                            'Inconsistent list punctuation at line ' . ($i + 1),
+                            'Inconsistent list punctuation at line ' . $item->getStartLine(),
                             'Use consistent punctuation: either all items end with periods or none do',
                         );
                         break;
                     }
                 }
-            } elseif (!preg_match('/^\s*$/', (string) $line)) {
-                $inList = false;
             }
         }
     }
 
-    private function checkLinks(string $file, string $content): void
+    private function checkLinks(string $file, Document $document): void
     {
         $this->issueHolder->setCurrentFile($file);
 
-        // Check for "click here"
-        if (preg_match('/\[click here\]/i', $content)) {
-            $this->issueHolder->addIssue(
-                "Non-descriptive link text: 'click here'",
-                'Use descriptive link text that indicates the destination',
-            );
-        }
+        foreach ($document->iterator() as $node) {
+            if (!$node instanceof Link) {
+                continue;
+            }
 
-        // Check for bare URLs
-        if (preg_match('/(?<!\[)[^(\[]https?:\/\/\S+/i', $content)) {
-            $this->issueHolder->addIssue(
-                'Bare URL detected',
-                'Use [text](url) format instead of bare URLs for better readability',
-            );
-        }
+            $linkText = $this->extractText($node);
+            $url = $node->getUrl();
 
-        // Check relative links for local files
-        preg_match_all('/\[([^\]]+)\]\(([^)]+)\)/', $content, $matches, PREG_SET_ORDER);
-        foreach ($matches as $match) {
-            $link = $match[2];
+            // Check for "click here"
+            if (preg_match('/click here/i', $linkText)) {
+                $this->issueHolder->addIssue(
+                    "Non-descriptive link text: '" . $linkText . "'",
+                    'Use descriptive link text that indicates the destination',
+                );
+            }
 
-            // Skip external and anchor links
-            if (preg_match('/^(https?:|mailto:|#)/', $link)) {
+            // Check bare URLs (if the link text explicitly matches the destination URL)
+            if ($linkText === $url) {
+                $this->issueHolder->addIssue(
+                    'Bare URL detected',
+                    'Use [text](url) format instead of bare URLs for better readability',
+                );
+            }
+
+            // Resolve relative link for local files
+            if (preg_match('/^(https?:|mailto:|#)/', $url)) {
                 continue;
             }
 
             // Remove anchor
-            $linkPath = preg_replace('/#.*/', '', $link);
+            $linkPath = preg_replace('/#.*/', '', $url);
             if (empty($linkPath)) {
                 continue;
             }
@@ -433,10 +434,9 @@ class DocStandardsChecker
             $targetPath = preg_replace('#/+#', '/', $targetPath); // normalize
 
             // Check if exists
-            if (!in_array($targetPath, $this->files) &&
-                !in_array($targetPath . '.md', $this->files)) {
+            if (!in_array($targetPath, $this->files) && !in_array($targetPath . '.md', $this->files)) {
                 $this->issueHolder->addIssue(
-                    "Broken internal link: '" . $link . "'",
+                    "Broken internal link: '" . $url . "'",
                     'Link points to a non-existent file',
                 );
             }
@@ -457,25 +457,21 @@ class DocStandardsChecker
         }
     }
 
-    private function checkFrontmatter(string $file, string $content): void
+    private function checkFrontmatter(string $file, string $content, Document $document): void
     {
         $this->issueHolder->setCurrentFile($file);
 
-        // Check for YAML frontmatter
-        if (preg_match('/^---\s*\n/', $content)) {
-            if (!preg_match('/^---\s*\n.*?\n---\s*\n/s', $content)) {
-                $this->issueHolder->addIssue(
-                    'Invalid YAML frontmatter',
-                    'YAML frontmatter must be properly closed with ---',
-                );
-            } elseif (!preg_match('/^title:/m', $content)) {
-                // Check for recommended fields
+        // V2 of CommonMark stores FrontMatter in the Document node's `data` array
+        if ($document->data->has('front_matter')) {
+            $frontMatter = $document->data->get('front_matter');
+
+            if (!isset($frontMatter['title'])) {
                 $this->issueHolder->addIssue(
                     'Missing title in frontmatter',
                     "Add 'title' to YAML frontmatter for better documentation metadata",
                 );
             }
-        } elseif (str_word_count($content) > 300 && !preg_match('/^# /', $content)) {
+        } elseif (str_word_count($content) > 300) {
             // For long docs, recommend frontmatter
             $this->issueHolder->addIssue(
                 'Consider adding YAML frontmatter',
@@ -484,19 +480,22 @@ class DocStandardsChecker
         }
     }
 
-    private function buildLinkGraph(string $file, string $content): void
+    private function buildLinkGraph(string $file, Document $document): void
     {
         $this->linkGraph[$file] = ['outgoing' => [], 'incoming' => []];
 
-        preg_match_all('/\[([^\]]+)\]\(([^)]+)\)/', $content, $matches, PREG_SET_ORDER);
-        foreach ($matches as $match) {
-            $link = $match[2];
-
-            if (preg_match('/^(https?:|mailto:|#)/', $link)) {
+        foreach ($document->iterator() as $node) {
+            if (!$node instanceof Link) {
                 continue;
             }
 
-            $linkPath = preg_replace('/#.*/', '', $link);
+            $url = $node->getUrl();
+
+            if (preg_match('/^(https?:|mailto:|#)/', $url)) {
+                continue;
+            }
+
+            $linkPath = preg_replace('/#.*/', '', $url);
             if (empty($linkPath)) {
                 continue;
             }
@@ -510,7 +509,7 @@ class DocStandardsChecker
                 $targetPath .= '.md';
             }
 
-            $this->linkGraph[$file]['outgoing'][] = (string) $targetPath;
+            $this->linkGraph[$file]['outgoing'][] = $targetPath;
 
             if (!isset($this->linkGraph[$targetPath])) {
                 $this->linkGraph[$targetPath] = ['outgoing' => [], 'incoming' => []];
@@ -541,6 +540,18 @@ class DocStandardsChecker
                 );
             }
         }
+    }
+
+    private function extractText(Node $node): string
+    {
+        $text = '';
+        foreach ($node->iterator() as $child) {
+            if (method_exists($child, 'getLiteral')) {
+                $text .= $child->getLiteral();
+            }
+        }
+
+        return $text;
     }
 
     private function getFileContent(string $file): string
