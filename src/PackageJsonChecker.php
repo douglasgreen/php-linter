@@ -28,7 +28,7 @@ class PackageJsonChecker
      *
      * @see https://docs.npmjs.com/cli/v10/configuring-npm/package-json
      */
-    private const KEY_ORDER = [
+    private const array KEY_ORDER = [
         'name',
         'version',
         'description',
@@ -76,10 +76,6 @@ class PackageJsonChecker
     /** @var array<string, mixed>|null */
     private ?array $composer = null;
 
-    private IssueHolder $issueHolder;
-
-    private bool $fixMode;
-
     /** @var array<int, string> */
     private array $fileInventory = [];
 
@@ -116,12 +112,10 @@ class PackageJsonChecker
         'assets/xml/' => ['*.xml', '*.xsd', '*.xsl', '*.xslt', '*.wsdl'],
     ];
 
-    public function __construct(string $directory, IssueHolder $issueHolder, string $configFile = '', bool $fixMode = false)
+    public function __construct(string $directory, private readonly IssueHolder $issueHolder, string $configFile = '', private readonly bool $fixMode = false)
     {
         $realPath = realpath($directory);
         $this->rootDir = $realPath !== false ? $realPath : (string) getcwd();
-        $this->issueHolder = $issueHolder;
-        $this->fixMode = $fixMode;
         $this->loadPackageJson();
         $this->loadComposerJson();
         $this->scanFileInventory();
@@ -604,6 +598,7 @@ class PackageJsonChecker
             if (str_contains((string) $file, 'vendor')) {
                 continue;
             }
+
             if (str_contains((string) $file, '/.')) {
                 continue;
             }
@@ -1355,7 +1350,7 @@ class PackageJsonChecker
             }
         }
 
-        if (!empty($outOfOrder)) {
+        if ($outOfOrder !== []) {
             $this->addIssue(
                 self::SHOULD,
                 'Key order',
@@ -1395,7 +1390,7 @@ class PackageJsonChecker
         );
 
         if ($jsonContent === false) {
-            fwrite(STDERR, "Error encoding package.json: " . json_last_error_msg() . "\n");
+            fwrite(STDERR, 'Error encoding package.json: ' . json_last_error_msg() . "\n");
             return;
         }
 

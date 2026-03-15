@@ -12,13 +12,7 @@ namespace DouglasGreen\PhpLinter;
 
 class DocStandardsChecker
 {
-    private readonly string $rootDir;
-
-    private readonly IssueHolder $issueHolder;
-
-    private readonly IgnoreList $ignoreList;
-
-    private Repository $repository;
+    private readonly Repository $repository;
 
     /** @var array<int, string> */
     private array $files = [];
@@ -57,12 +51,9 @@ class DocStandardsChecker
         '/\b\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\b/' => 'IP address (verify not sensitive)',
     ];
 
-    public function __construct(string $directory, IssueHolder $issueHolder, IgnoreList $ignoreList)
+    public function __construct(private readonly string $rootDir, private readonly IssueHolder $issueHolder, private readonly IgnoreList $ignoreList)
     {
-        $this->issueHolder = $issueHolder;
-        $this->ignoreList = $ignoreList;
         $this->repository = new Repository();
-        $this->rootDir = $directory;
     }
 
     public function run(): void
@@ -263,7 +254,7 @@ class DocStandardsChecker
             if ($level <= 3 && preg_match('/[A-Z]{2,}/', $text) && !preg_match('/^[A-Z][a-z]+( [a-z]+)*$/', $text) && preg_match('/^[A-Z][a-z]+ [A-Z]/', $text)) {
                 $this->issueHolder->addIssue(
                     'Title Case heading at line ' . ($i + 1) . ": '" . $text . "'",
-                    "Use sentence case for better readability",
+                    'Use sentence case for better readability',
                 );
             }
         }

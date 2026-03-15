@@ -4,35 +4,35 @@ declare(strict_types=1);
 
 namespace DouglasGreen\PhpLinter\Linter;
 
-use PhpParser\Node\Stmt\Class_;
-use PhpParser\Node\Stmt\Interface_;
-use PhpParser\Node\Stmt\Trait_;
-use PhpParser\Node\Identifier;
-use PhpParser\Node\Expr\New_;
-use PhpParser\Node\Name;
-use PhpParser\Node\Expr\Instanceof_;
-use PhpParser\Node\Expr\StaticCall;
-use PhpParser\Node\Expr\StaticPropertyFetch;
-use PhpParser\Node\Expr\ClassConstFetch;
-use PhpParser\Node\Stmt\TraitUse;
-use PhpParser\Node\Stmt\Catch_;
-use PhpParser\Node\Attribute;
-use PhpParser\Node\Stmt\Function_;
-use PhpParser\Node\Stmt\ClassMethod;
-use PhpParser\Node\Expr\Closure;
-use PhpParser\Node\Expr\ArrowFunction;
-use PhpParser\Node\Stmt\Property;
-use PhpParser\Node\NullableType;
-use PhpParser\Node\UnionType;
-use PhpParser\Node\IntersectionType;
-use PhpParser\Parser;
 use DouglasGreen\PhpLinter\IgnoreList;
 use DouglasGreen\PhpLinter\IssueHolder;
 use PhpParser\Error;
 use PhpParser\Node;
+use PhpParser\Node\Attribute;
+use PhpParser\Node\Expr\ArrowFunction;
+use PhpParser\Node\Expr\ClassConstFetch;
+use PhpParser\Node\Expr\Closure;
+use PhpParser\Node\Expr\Instanceof_;
+use PhpParser\Node\Expr\New_;
+use PhpParser\Node\Expr\StaticCall;
+use PhpParser\Node\Expr\StaticPropertyFetch;
+use PhpParser\Node\Identifier;
+use PhpParser\Node\IntersectionType;
+use PhpParser\Node\Name;
+use PhpParser\Node\NullableType;
+use PhpParser\Node\Stmt\Catch_;
+use PhpParser\Node\Stmt\Class_;
+use PhpParser\Node\Stmt\ClassMethod;
+use PhpParser\Node\Stmt\Function_;
+use PhpParser\Node\Stmt\Interface_;
+use PhpParser\Node\Stmt\Property;
+use PhpParser\Node\Stmt\Trait_;
+use PhpParser\Node\Stmt\TraitUse;
+use PhpParser\Node\UnionType;
 use PhpParser\NodeTraverser;
 use PhpParser\NodeVisitor\NameResolver;
 use PhpParser\NodeVisitorAbstract;
+use PhpParser\Parser;
 use PhpParser\ParserFactory;
 
 /**
@@ -63,7 +63,7 @@ class UnusedClassAnalyzer extends NodeVisitorAbstract
     public function run(array $phpFiles): void
     {
         // Filter out ignored files
-        $phpFiles = array_filter($phpFiles, fn(string $file): bool => !$this->ignoreList->shouldIgnore($file));
+        $phpFiles = array_filter($phpFiles, fn (string $file): bool => !$this->ignoreList->shouldIgnore($file));
 
         $parserFactory = new ParserFactory();
 
@@ -96,6 +96,7 @@ class UnusedClassAnalyzer extends NodeVisitorAbstract
             } elseif ($node instanceof Trait_) {
                 $type = 'trait';
             }
+
             $this->definitions[$fqcn] = [
                 'file' => $this->currentFile,
                 'line' => $node->getStartLine(),

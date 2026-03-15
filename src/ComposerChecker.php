@@ -26,7 +26,7 @@ class ComposerChecker
      *
      * @see https://getcomposer.org/doc/04-schema.md
      */
-    private const KEY_ORDER = [
+    private const array KEY_ORDER = [
         'name',
         'description',
         'version',
@@ -69,10 +69,6 @@ class ComposerChecker
     /** @var array<string, mixed> */
     private array $composer;
 
-    private IssueHolder $issueHolder;
-
-    private bool $fixMode;
-
     /** @var array<string, mixed>|null */
     private ?array $lockData = null;
 
@@ -100,11 +96,9 @@ class ComposerChecker
         '/\/usr\/bin\//', // System binaries (should use vendor/bin)
     ];
 
-    public function __construct(string $directory, IssueHolder $issueHolder, string $configFile = '', bool $fixMode = false)
+    public function __construct(string $directory, private readonly IssueHolder $issueHolder, string $configFile = '', private readonly bool $fixMode = false)
     {
         $this->rootDir = (string) (realpath($directory) ?: getcwd());
-        $this->issueHolder = $issueHolder;
-        $this->fixMode = $fixMode;
         $this->loadComposerJson();
         $this->loadComposerLock();
         $this->loadConfig($configFile);
@@ -1190,7 +1184,7 @@ class ComposerChecker
             }
         }
 
-        if (!empty($outOfOrder)) {
+        if ($outOfOrder !== []) {
             $this->addIssue(
                 self::SHOULD,
                 'Key order',
@@ -1230,7 +1224,7 @@ class ComposerChecker
         );
 
         if ($jsonContent === false) {
-            fwrite(STDERR, "Error encoding composer.json: " . json_last_error_msg() . "\n");
+            fwrite(STDERR, 'Error encoding composer.json: ' . json_last_error_msg() . "\n");
             return;
         }
 

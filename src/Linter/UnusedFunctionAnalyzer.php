@@ -4,23 +4,23 @@ declare(strict_types=1);
 
 namespace DouglasGreen\PhpLinter\Linter;
 
-use PhpParser\Node\Identifier;
-use PhpParser\Node\Stmt\ClassMethod;
-use PhpParser\Node\Stmt\Function_;
-use PhpParser\Node\Expr\FuncCall;
-use PhpParser\Node\Name;
-use PhpParser\Node\Expr\MethodCall;
-use PhpParser\Node\Expr\NullsafeMethodCall;
-use PhpParser\Node\Expr\StaticCall;
-use PhpParser\Parser;
 use DouglasGreen\PhpLinter\IgnoreList;
 use DouglasGreen\PhpLinter\IssueHolder;
 use PhpParser\Error;
 use PhpParser\Node;
+use PhpParser\Node\Expr\FuncCall;
+use PhpParser\Node\Expr\MethodCall;
+use PhpParser\Node\Expr\NullsafeMethodCall;
+use PhpParser\Node\Expr\StaticCall;
+use PhpParser\Node\Identifier;
+use PhpParser\Node\Name;
 use PhpParser\Node\Stmt\ClassLike;
+use PhpParser\Node\Stmt\ClassMethod;
+use PhpParser\Node\Stmt\Function_;
 use PhpParser\NodeTraverser;
 use PhpParser\NodeVisitor\NameResolver;
 use PhpParser\NodeVisitorAbstract;
+use PhpParser\Parser;
 use PhpParser\ParserFactory;
 
 /**
@@ -54,7 +54,7 @@ class UnusedFunctionAnalyzer extends NodeVisitorAbstract
     public function run(array $phpFiles): void
     {
         // Filter out ignored files
-        $phpFiles = array_filter($phpFiles, fn(string $file): bool => !$this->ignoreList->shouldIgnore($file));
+        $phpFiles = array_filter($phpFiles, fn (string $file): bool => !$this->ignoreList->shouldIgnore($file));
 
         $parserFactory = new ParserFactory();
 
