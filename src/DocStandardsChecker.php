@@ -217,9 +217,23 @@ class DocStandardsChecker
     {
         $hasH1 = false;
         $prevLevel = 0;
+        $inCodeBlock = false;
         $this->issueHolder->setCurrentFile($file);
 
         foreach ($lines as $i => $line) {
+            $trimmedLine = trim((string) $line);
+            
+            // Check for code block fence
+            if (str_starts_with($trimmedLine, '```') || str_starts_with($trimmedLine, '~~~')) {
+                $inCodeBlock = !$inCodeBlock;
+                continue;
+            }
+            
+            // Skip lines inside code blocks
+            if ($inCodeBlock) {
+                continue;
+            }
+
             if (!preg_match('/^(#{1,6})\s+(.+)$/', (string) $line, $matches)) {
                 continue;
             }
