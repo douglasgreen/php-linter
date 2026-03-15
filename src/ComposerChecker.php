@@ -27,6 +27,7 @@ class ComposerChecker
      * @see https://getcomposer.org/doc/04-schema.md
      */
     private const array KEY_ORDER = [
+        'modified',
         'name',
         'description',
         'version',

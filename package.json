@@ -1,16 +1,16 @@
 {
-  "modified": "2026-02-26",
-  "name": "douglasgreen/php-linter",
-  "version": "1.0.0",
-  "description": "Code linter for PHP based on Nikic parser",
-  "type": "module",
-  "scripts": {
-    "lint": "npm run lint:md",
-    "lint:md": "markdownlint '**/*.md'",
-    "format": "prettier --write . && markdownlint '**/*.md' --fix"
-  },
-  "devDependencies": {
-    "markdownlint-cli": "^0.47.0",
-    "prettier": "^3.8.1"
-  }
+    "modified": "2026-02-26",
+    "name": "douglasgreen/php-linter",
+    "version": "1.0.0",
+    "description": "Code linter for PHP based on Nikic parser",
+    "type": "module",
+    "scripts": {
+        "lint": "npm run lint:md",
+        "lint:md": "markdownlint '**/*.md'",
+        "format": "prettier --write . && markdownlint '**/*.md' --fix"
+    },
+    "devDependencies": {
+        "markdownlint-cli": "^0.47.0",
+        "prettier": "^3.8.1"
+    }
 }
