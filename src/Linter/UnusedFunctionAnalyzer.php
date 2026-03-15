@@ -57,15 +57,7 @@ class UnusedFunctionAnalyzer extends NodeVisitorAbstract
         $phpFiles = array_filter($phpFiles, fn (string $file): bool => !$this->ignoreList->shouldIgnore($file));
 
         $parserFactory = new ParserFactory();
-
-        // Version compatible instantiation (supports php-parser v4 and v5)
-        if (method_exists($parserFactory, 'createForHostVersion')) {
-            $parser = $parserFactory->createForHostVersion();
-        } else {
-            // @phpstan-ignore-next-line
-            $parser = $parserFactory->create(ParserFactory::PREFER_PHP7);
-        }
-
+        $parser = $parserFactory->createForHostVersion();
         foreach ($phpFiles as $file) {
             $this->currentFile = $file;
             $this->parseFile($parser, $file);

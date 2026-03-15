@@ -41,6 +41,7 @@
       "rector process --dry-run"
     ],
     "lint:fix": [
+      "php-linter --fix",
       "php-cs-fixer fix",
       "rector process"
     ],
