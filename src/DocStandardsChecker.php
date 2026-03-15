@@ -271,14 +271,30 @@ class DocStandardsChecker
     {
         $this->issueHolder->setCurrentFile($file);
 
-        // Check for fenced code blocks without language
-        if (preg_match_all('/^```\s*$/m', $content, $matches, PREG_OFFSET_CAPTURE)) {
-            foreach ($matches[0] as $match) {
-                $line = substr_count(substr($content, 0, $match[1]), "\n") + 1;
-                $this->issueHolder->addIssue(
-                    'Code block at line ' . $line . ' missing language specification',
-                    'Specify a language for syntax highlighting (e.g., ```php)',
-                );
+        // Check for fenced code blocks without language (only opening markers)
+        $lines = explode("\n", $content);
+        $inCodeBlock = false;
+
+        foreach ($lines as $i => $line) {
+            $trimmedLine = trim($line);
+
+            // Check if this line starts a code block
+            if (str_starts_with($trimmedLine, '```')) {
+                if (!$inCodeBlock) {
+                    // This is an opening code block marker
+                    $inCodeBlock = true;
+
+                    // Check if it has a language specification
+                    if ($trimmedLine === '```' || $trimmedLine === '``` ') {
+                        $this->issueHolder->addIssue(
+                            'Code block at line ' . ($i + 1) . ' missing language specification',
+                            'Specify a language for syntax highlighting (e.g., ```php)',
+                        );
+                    }
+                } else {
+                    // This is a closing code block marker
+                    $inCodeBlock = false;
+                }
             }
         }
 
