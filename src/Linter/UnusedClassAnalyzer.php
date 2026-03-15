@@ -144,10 +144,8 @@ class UnusedClassAnalyzer extends NodeVisitorAbstract
 
     /**
      * Parses a single PHP file.
-     *
-     * @param Parser $parser
      */
-    private function parseFile($parser, string $file): void
+    private function parseFile(Parser $parser, string $file): void
     {
         $content = @file_get_contents($file);
         if ($content === false) {
