@@ -6,7 +6,7 @@
     "license": "MIT",
     "require": {
         "php": "^8.3",
-        "justinrainbow/json-schema": "^6.7",
+        "justinrainbow/json-schema": ">=5.3",
         "league/commonmark": "^2.8",
         "nikic/php-parser": "^5.7",
         "pdepend/pdepend": "^2.16.2",
