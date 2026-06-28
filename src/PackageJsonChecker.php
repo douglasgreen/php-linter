@@ -90,6 +90,28 @@ class PackageJsonChecker
         'module', 'commonjs', 'module-commonjs', 'esm', 'cjs',
     ];
 
+    /** @var string[] Allowed config files which might appear in root directory */
+    private array $allowedConfigs = [
+        'composer.json',
+        'ecs.php',
+        'eslint.config.mjs',
+        '.gitignore',
+        '.markdownlintignore',
+        '.markdownlint.json',
+        'package.json',
+        '.php-cs-fixer.php',
+        'phpstan.neon.dist',
+        'phpunit.xml.dist',
+        'playwright.config.ts',
+        '.prettierignore',
+        '.prettierrc.json',
+        'rector.php',
+        '.shellcheckrc',
+        '.stylelintignore',
+        '.stylelintrc.json',
+        '.yamllint.yml',
+    ];
+
     /** @var array<string, string> */
     private array $deprecatedConfigs = [
         '.eslintrc.js' => 'Migrate to eslint.config.mjs (flat config)',
@@ -654,6 +676,12 @@ class PackageJsonChecker
                         '.dist files should only be used for configuration templates',
                     );
                 }
+            }
+
+            // Allow known configuration files to be located in project root
+            $basename = basename((string) $file);
+            if (in_array($basename, $this->allowedConfigs)) {
+                continue;
             }
 
             // Check each file type against expected locations
