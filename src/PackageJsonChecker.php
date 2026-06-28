@@ -11,8 +11,6 @@ declare(strict_types=1);
 
 namespace DouglasGreen\PhpLinter;
 
-use RecursiveDirectoryIterator;
-use RecursiveIteratorIterator;
 
 class PackageJsonChecker
 {
@@ -253,16 +251,8 @@ class PackageJsonChecker
 
     private function scanFileInventory(): void
     {
-        $iterator = new RecursiveIteratorIterator(
-            new RecursiveDirectoryIterator($this->rootDir, RecursiveDirectoryIterator::SKIP_DOTS),
-        );
-
-        foreach ($iterator as $file) {
-            if ($file->isFile()) {
-                $relative = str_replace($this->rootDir . '/', '', $file->getPathname());
-                $this->fileInventory[] = $relative;
-            }
-        }
+        $repository = new Repository();
+        $this->fileInventory = $repository->getAllFiles();
 
         echo 'Scanned ' . count($this->fileInventory) . " files\n";
     }
@@ -639,19 +629,6 @@ class PackageJsonChecker
     private function validateFileLocations(): void
     {
         foreach ($this->fileInventory as $file) {
-            // Skip node_modules, vendor files, and hidden files
-            if (str_contains((string) $file, 'node_modules')) {
-                continue;
-            }
-
-            if (str_contains((string) $file, 'vendor')) {
-                continue;
-            }
-
-            if (str_contains((string) $file, '/.')) {
-                continue;
-            }
-
             // Check .dist files
             if (str_ends_with((string) $file, '.dist')) {
                 $base = substr((string) $file, 0, -5);
