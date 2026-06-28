@@ -211,7 +211,6 @@ The AST linter analyzes your code for the following stylistic and structural iss
 - **Writing style:** Flags fluff words, passive voice, and future tense.
 - **Links:** Validates internal links, flags bare URLs and non-descriptive link text.
 - **Security:** Detects exposed API keys, tokens, passwords, and other credentials.
-- **Frontmatter:** Validates YAML frontmatter structure and recommended fields.
 - **Orphaned files:** Identifies Markdown files not linked from other documentation.
 
 ### Package.json standards

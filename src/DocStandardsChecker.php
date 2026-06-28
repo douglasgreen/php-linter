@@ -228,7 +228,6 @@ class DocStandardsChecker
             $this->checkWritingStyle($file, $document);
             $this->checkLinks($file, $document);
             $this->checkSecurity($file, $content); // Security is still checked against the raw string
-            $this->checkFrontmatter($file, $content, $document);
             $this->buildLinkGraph($file, $document);
         }
     }
@@ -417,28 +416,6 @@ class DocStandardsChecker
         }
     }
 
-    private function checkFrontmatter(string $file, string $content, Document $document): void
-    {
-        $this->issueHolder->setCurrentFile($file);
-
-        // V2 of CommonMark stores FrontMatter in the Document node's `data` array
-        if ($document->data->has('front_matter')) {
-            $frontMatter = $document->data->get('front_matter');
-
-            if (!isset($frontMatter['title'])) {
-                $this->issueHolder->addIssue(
-                    'Missing title in frontmatter',
-                    "Add 'title' to YAML frontmatter for better documentation metadata",
-                );
-            }
-        } elseif (str_word_count($content) > 300) {
-            // For long docs, recommend frontmatter
-            $this->issueHolder->addIssue(
-                'Consider adding YAML frontmatter',
-                'Add YAML frontmatter with title, description, and last_reviewed for better documentation organization',
-            );
-        }
-    }
 
     private function buildLinkGraph(string $file, Document $document): void
     {
