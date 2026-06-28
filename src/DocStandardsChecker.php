@@ -347,46 +347,6 @@ class DocStandardsChecker
                 );
             }
         }
-
-        $this->checkListPunctuation($file, $document);
-    }
-
-    private function checkListPunctuation(string $file, Document $document): void
-    {
-        $this->issueHolder->setCurrentFile($file);
-
-        foreach ($document->iterator() as $node) {
-            if (!$node instanceof ListBlock) {
-                continue;
-            }
-
-            $listType = null; // 'fragment' or 'sentence'
-            foreach ($node->children() as $item) {
-                if (!$item instanceof ListItem) {
-                    continue;
-                }
-
-                $itemText = trim($this->extractText($item));
-                if ($itemText === '') {
-                    continue;
-                }
-
-                $hasPeriod = str_ends_with($itemText, '.');
-
-                if ($listType === null) {
-                    $listType = $hasPeriod ? 'sentence' : 'fragment';
-                } else {
-                    $currentType = $hasPeriod ? 'sentence' : 'fragment';
-                    if ($currentType !== $listType) {
-                        $this->issueHolder->addIssue(
-                            'Inconsistent list punctuation at line ' . $item->getStartLine(),
-                            'Use consistent punctuation: either all items end with periods or none do',
-                        );
-                        break;
-                    }
-                }
-            }
-        }
     }
 
     private function checkLinks(string $file, Document $document): void
