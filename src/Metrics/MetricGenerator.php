@@ -68,7 +68,7 @@ class MetricGenerator
 
         // Run PDepend with the file list
         $command = sprintf(
-            'vendor/bin/pdepend --summary-xml=%s/summary.xml %s',
+            'vendor/bin/pdepend --quiet --summary-xml=%s/summary.xml %s',
             $summaryCacheDir,
             escapeshellarg($dirList),
         );
