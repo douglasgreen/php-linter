@@ -227,16 +227,6 @@ class ClassVisitor extends AbstractVisitorChecker
     }
 
     /**
-     * Returns the list of defined methods.
-     *
-     * @return array<string, array{visibility: string, static: bool, used: bool}>
-     */
-    public function getMethods(): array
-    {
-        return $this->methods;
-    }
-
-    /**
      * Extracts the method name from a method call node.
      *
      * @param MethodCall|StaticCall $node The method call node.

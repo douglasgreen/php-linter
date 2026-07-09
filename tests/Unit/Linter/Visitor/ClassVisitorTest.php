@@ -32,15 +32,6 @@ final class ClassVisitorTest extends TestCase
     }
 
     #[Test]
-    public function testItCreatesClassVisitorWithName(): void
-    {
-        // Act
-        $visitor = new ClassVisitor($this->issueHolder, 'TestClass');
-        // Assert
-        $this->assertSame([], $visitor->getMethods());
-    }
-
-    #[Test]
     public function testItTracksPropertyDefinitions(): void
     {
         // Arrange
@@ -53,20 +44,6 @@ final class ClassVisitorTest extends TestCase
 
         // Assert
         $this->addToAssertionCount(1);
-    }
-
-    #[Test]
-    public function testItTracksMethodDefinitions(): void
-    {
-        // Arrange
-        $visitor = new ClassVisitor($this->issueHolder, 'TestClass');
-        $method = new ClassMethod(new Identifier('testMethod'));
-        // Act
-        $visitor->checkNode($method);
-
-        // Assert
-        $methods = $visitor->getMethods();
-        $this->assertArrayHasKey('testMethod', $methods);
     }
 
     #[Test]
