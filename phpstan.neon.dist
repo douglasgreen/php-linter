@@ -7,8 +7,7 @@ parameters:
     min: 80300
     max: 80500
   paths:
-    - bin
-    - public
+    - bin/php-linter
     - src
     - tests
   excludePaths:
