@@ -169,7 +169,7 @@ class DocStandardsChecker
             // Check kebab-case
             if (
                 !preg_match('/^[a-z0-9]+(-[a-z0-9]+)*\.md$/', $basename)
-                && !in_array($basename, ['README.md', 'CHANGELOG.md', 'LICENSE.md', 'CONTRIBUTING.md'], true)
+                && !in_array($basename, ['README.md', 'CHANGELOG.md', 'LICENSE.md', 'CONTRIBUTING.md', 'AGENT.md', 'CLAUDE.md'], true)
             ) {
                 $this->issueHolder->addIssue(
                     'Invalid filename: use kebab-case',
