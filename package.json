@@ -1,7 +1,8 @@
 {
-  "name": "douglasgreen/php-linter",
-  "version": "1.0",
+  "name": "douglasgreen_php-linter",
+  "version": "1.0.0",
   "description": "Code linter for PHP based on Nikic parser",
+  "license": "MIT",
   "type": "module",
   "scripts": {
     "lint": "npm run lint:md && prettier --check .",
