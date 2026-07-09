@@ -15,10 +15,10 @@ use League\CommonMark\Extension\CommonMark\CommonMarkCoreExtension;
 use League\CommonMark\Extension\CommonMark\Node\Block\FencedCode;
 use League\CommonMark\Extension\CommonMark\Node\Block\Heading;
 use League\CommonMark\Extension\CommonMark\Node\Block\IndentedCode;
-use League\CommonMark\Extension\CommonMark\Node\Block\Paragraph;
 use League\CommonMark\Extension\CommonMark\Node\Inline\Link;
 use League\CommonMark\Extension\FrontMatter\FrontMatterExtension;
 use League\CommonMark\Node\Block\Document;
+use League\CommonMark\Node\Block\Paragraph;
 use League\CommonMark\Node\Node;
 use League\CommonMark\Parser\MarkdownParser;
 
