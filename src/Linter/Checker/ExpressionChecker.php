@@ -41,7 +41,9 @@ class ExpressionChecker extends AbstractNodeChecker
         }
 
         if ($this->node instanceof Global_) {
-            $this->addIssue('Remove the "global" keyword and pass variables as function arguments to ensure explicit dependencies');
+            $this->addIssue(
+                'Remove the "global" keyword and pass variables as function arguments to ensure explicit dependencies',
+            );
         }
 
         if ($this->node instanceof Goto_) {
@@ -51,7 +53,11 @@ class ExpressionChecker extends AbstractNodeChecker
         if ($this->node instanceof Include_) {
             $type = static::getIncludeType($this->node->type);
             if ($type !== 'require_once') {
-                $this->addIssue('Replace ' . $type . ' with require_once to ensure the file is loaded and halt execution on failure');
+                $this->addIssue(
+                    'Replace '
+                    . $type
+                    . ' with require_once to ensure the file is loaded and halt execution on failure',
+                );
             }
         }
 

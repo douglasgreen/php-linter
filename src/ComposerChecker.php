@@ -75,8 +75,13 @@ class ComposerChecker
 
     /** @var array<int, string> */
     private array $allowedTypes = [
-        'library', 'project', 'composer-plugin', 'metapackage',
-        'symfony-bundle', 'wordpress-plugin', 'wordpress-theme',
+        'library',
+        'project',
+        'composer-plugin',
+        'metapackage',
+        'symfony-bundle',
+        'wordpress-plugin',
+        'wordpress-theme',
     ];
 
     /** @var array<string, string> */
@@ -92,13 +97,17 @@ class ComposerChecker
 
     /** @var array<int, string> */
     private array $insecurePaths = [
-        '/\.\.\//',  // Parent directory traversal
+        '/\.\.\//', // Parent directory traversal
         '/\/etc\//', // System config
         '/\/usr\/bin\//', // System binaries (should use vendor/bin)
     ];
 
-    public function __construct(string $directory, private readonly IssueHolder $issueHolder, string $configFile = '', private readonly bool $fixMode = false)
-    {
+    public function __construct(
+        string $directory,
+        private readonly IssueHolder $issueHolder,
+        string $configFile = '',
+        private readonly bool $fixMode = false,
+    ) {
         $this->rootDir = (string) (realpath($directory) ?: getcwd());
         $this->loadComposerJson();
         $this->loadComposerLock();
@@ -307,8 +316,7 @@ class ComposerChecker
 
         if (!empty($this->config['expectedLicense'])) {
             $expected = $this->config['expectedLicense'];
-            if ((is_array($license) && !in_array($expected, $license)) ||
-                (!is_array($license) && $license !== $expected)) {
+            if (is_array($license) && !in_array($expected, $license) || !is_array($license) && $license !== $expected) {
                 $this->addIssue(
                     self::MUST,
                     'License mismatch',
@@ -324,12 +332,7 @@ class ComposerChecker
         $keywords = $this->composer['keywords'] ?? null;
 
         if ($this->config['requireKeywords'] && (empty($keywords) || !is_array($keywords))) {
-            $this->addIssue(
-                self::MUST,
-                'Missing keywords',
-                'keywords',
-                'Keywords array is required',
-            );
+            $this->addIssue(self::MUST, 'Missing keywords', 'keywords', 'Keywords array is required');
             return;
         }
 
@@ -349,12 +352,7 @@ class ComposerChecker
             // Check all are strings
             foreach ($keywords as $kw) {
                 if (!is_string($kw) || empty(trim($kw))) {
-                    $this->addIssue(
-                        self::MUST,
-                        'Invalid keyword',
-                        'keywords',
-                        'Keywords must be non-empty strings',
-                    );
+                    $this->addIssue(self::MUST, 'Invalid keyword', 'keywords', 'Keywords must be non-empty strings');
                     break;
                 }
             }
@@ -390,12 +388,7 @@ class ComposerChecker
         $phpConstraint = $this->composer['require']['php'] ?? '';
 
         if (empty($phpConstraint)) {
-            $this->addIssue(
-                self::MUST,
-                'Missing PHP version',
-                'require.php',
-                'PHP version constraint is required',
-            );
+            $this->addIssue(self::MUST, 'Missing PHP version', 'require.php', 'PHP version constraint is required');
             return;
         }
 
@@ -550,10 +543,7 @@ class ComposerChecker
     private function validateMinimumVersions(): void
     {
         $required = $this->config['minimumPackageVersions'] ?? [];
-        $require = array_merge(
-            $this->composer['require'] ?? [],
-            $this->composer['require-dev'] ?? [],
-        );
+        $require = array_merge($this->composer['require'] ?? [], $this->composer['require-dev'] ?? []);
 
         foreach ($required as $package => $minimum) {
             if (!isset($require[$package])) {
@@ -804,8 +794,10 @@ class ComposerChecker
             }
 
             foreach ($commands as $cmd) {
-                if (preg_match('/\brm\s+-rf\b/', (string) $cmd) ||
-                    preg_match('/\bsocket_|exec|system|passthru|shell_exec/', (string) $cmd)) {
+                if (
+                    preg_match('/\brm\s+-rf\b/', (string) $cmd)
+                    || preg_match('/\bsocket_|exec|system|passthru|shell_exec/', (string) $cmd)
+                ) {
                     $this->addIssue(
                         self::MUST,
                         'Dangerous script command',
@@ -826,12 +818,7 @@ class ComposerChecker
         }
 
         if (!is_array($bin)) {
-            $this->addIssue(
-                self::MUST,
-                'Invalid bin format',
-                'bin',
-                'Bin must be an array of paths',
-            );
+            $this->addIssue(self::MUST, 'Invalid bin format', 'bin', 'Bin must be an array of paths');
             return;
         }
 
@@ -908,12 +895,7 @@ class ComposerChecker
         }
 
         if (!empty($support['source']) && !filter_var($support['source'], FILTER_VALIDATE_URL)) {
-            $this->addIssue(
-                self::SHOULD,
-                'Invalid source URL',
-                'support.source',
-                'Source URL appears invalid',
-            );
+            $this->addIssue(self::SHOULD, 'Invalid source URL', 'support.source', 'Source URL appears invalid');
         }
     }
 
@@ -938,7 +920,16 @@ class ComposerChecker
                 );
             }
 
-            if (!in_array($type, ['github', 'open_collective', 'tidelift', 'community_bridge', 'liberapay', 'issuehunt', 'ko_fi', 'other'])) {
+            if (!in_array($type, [
+                'github',
+                'open_collective',
+                'tidelift',
+                'community_bridge',
+                'liberapay',
+                'issuehunt',
+                'ko_fi',
+                'other',
+            ])) {
                 $this->addIssue(
                     self::MAY,
                     'Unknown funding type',
@@ -989,35 +980,35 @@ class ComposerChecker
         $project = explode('/', $name)[1] ?? '';
 
         if (empty($homepage)) {
-            $this->addIssue(
-                self::MUST,
-                'Missing homepage',
-                'homepage',
-                'Public packages require homepage URL',
-            );
-        } elseif (!preg_match('/^https:\/\/github\.com\/' . preg_quote((string) $this->config['owner'], '/') . '\/' . preg_quote($project, '/') . '$/i', (string) $homepage)) {
+            $this->addIssue(self::MUST, 'Missing homepage', 'homepage', 'Public packages require homepage URL');
+        } elseif (!preg_match(
+            '/^https:\/\/github\.com\/'
+            . preg_quote((string) $this->config['owner'], '/')
+            . '\/'
+            . preg_quote($project, '/')
+            . '$/i',
+            (string) $homepage,
+        )) {
             $this->addIssue(
                 self::MUST,
                 'Invalid homepage format',
                 'homepage: ' . $homepage,
-                sprintf('Public project homepage must match: https://github.com/%s/%s', $this->config['owner'], $project),
+                sprintf(
+                    'Public project homepage must match: https://github.com/%s/%s',
+                    $this->config['owner'],
+                    $project,
+                ),
             );
         }
 
         // Authors check
         $authors = $this->composer['authors'] ?? [];
         if (empty($authors) || !is_array($authors)) {
-            $this->addIssue(
-                self::MUST,
-                'Missing authors',
-                'authors',
-                'Public projects must include authors array',
-            );
+            $this->addIssue(self::MUST, 'Missing authors', 'authors', 'Public projects must include authors array');
         } else {
             $foundAuthor = false;
             foreach ($authors as $author) {
-                if (($author['name'] ?? '') === 'Douglas Green' &&
-                    ($author['email'] ?? '') === 'douglas@nurd.site') {
+                if (($author['name'] ?? '') === 'Douglas Green' && ($author['email'] ?? '') === 'douglas@nurd.site') {
                     $foundAuthor = true;
 
                     // Validate other fields
@@ -1119,12 +1110,7 @@ class ComposerChecker
 
         $schemaData = json_decode($schema);
         if (!$schemaData) {
-            $this->addIssue(
-                self::MAY,
-                'Invalid schema',
-                'validation',
-                'Could not parse Composer schema JSON',
-            );
+            $this->addIssue(self::MAY, 'Invalid schema', 'validation', 'Could not parse Composer schema JSON');
             return;
         }
 
@@ -1141,11 +1127,7 @@ class ComposerChecker
 
     private function toStudlyCase(string $string): string
     {
-        return str_replace(
-            ['-', '_'],
-            '',
-            ucwords(strtolower($string), '-_'),
-        );
+        return str_replace(['-', '_'], '', ucwords(strtolower($string), '-_'));
     }
 
     private function addIssue(string $level, string $category, string $context, string $message): void
@@ -1190,10 +1172,10 @@ class ComposerChecker
                 self::SHOULD,
                 'Key order',
                 'composer.json',
-                sprintf(
-                    'Keys are not in conventional order. Out of order: %s. Run with --fix to sort automatically.',
-                    implode(', ', $outOfOrder),
-                ),
+                sprintf('Keys are not in conventional order. Out of order: %s. Run with --fix to sort automatically.', implode(
+                    ', ',
+                    $outOfOrder,
+                )),
             );
         }
     }
@@ -1219,10 +1201,7 @@ class ComposerChecker
         }
 
         // Encode and write back
-        $jsonContent = json_encode(
-            $sortedData,
-            JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES,
-        );
+        $jsonContent = json_encode($sortedData, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
 
         if ($jsonContent === false) {
             fwrite(STDERR, 'Error encoding composer.json: ' . json_last_error_msg() . "\n");

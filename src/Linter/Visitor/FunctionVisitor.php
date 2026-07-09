@@ -51,7 +51,7 @@ class FunctionVisitor extends AbstractVisitorChecker
         // Check that each parameter is used.
         foreach ($this->params as $paramName => $paramInfo) {
             // Abstract functions don't have implementations to check.
-            if (! empty($this->attribs['abstract'])) {
+            if (!empty($this->attribs['abstract'])) {
                 continue;
             }
 
@@ -76,7 +76,7 @@ class FunctionVisitor extends AbstractVisitorChecker
 
         // Check that each variable is used more than once.
         foreach ($this->variableCounts as $variable => $count) {
-            if ($count === 1 && ! isset($this->params[$variable])) {
+            if ($count === 1 && !isset($this->params[$variable])) {
                 $issue = sprintf(
                     'Remove or inline variable "%s" in function "%s()"; it is referenced only once.',
                     $variable,
@@ -95,7 +95,7 @@ class FunctionVisitor extends AbstractVisitorChecker
     public function checkNode(Node $node): void
     {
         // Check if the variable is not part of a property fetch
-        if ($node instanceof Variable && ! static::isPropertyFetch($node)) {
+        if ($node instanceof Variable && !static::isPropertyFetch($node)) {
             $variableName = static::getVariableName($node);
             if ($variableName !== null) {
                 $this->incrementVariableCount($variableName);
@@ -134,8 +134,8 @@ class FunctionVisitor extends AbstractVisitorChecker
     {
         // Exclude $this as it's a special case
         if (is_string($variable->name) && $variable->name !== 'this') {
-            return $variable->name;
             // Return without $ prefix
+            return $variable->name;
         }
 
         return null;

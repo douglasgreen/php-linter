@@ -180,7 +180,12 @@ class ElementVisitor extends NodeVisitorAbstract
             $this->currentNamespace = null;
         }
 
-        if ($node instanceof Class_ || $node instanceof Trait_ || $node instanceof Interface_ || $node instanceof Enum_) {
+        if (
+            $node instanceof Class_
+            || $node instanceof Trait_
+            || $node instanceof Interface_
+            || $node instanceof Enum_
+        ) {
             $this->classVisitor->checkClass();
 
             $this->currentClassName = null;
@@ -227,7 +232,12 @@ class ElementVisitor extends NodeVisitorAbstract
      */
     private function handleClassOrTrait(Node $node): void
     {
-        if ($node instanceof Class_ || $node instanceof Trait_ || $node instanceof Interface_ || $node instanceof Enum_) {
+        if (
+            $node instanceof Class_
+            || $node instanceof Trait_
+            || $node instanceof Interface_
+            || $node instanceof Enum_
+        ) {
             $this->inClassLike = true;
             $this->currentClassName = $node->name instanceof Identifier ? $node->name->name : null;
             $this->isReadonlyClass = $node instanceof Class_ && $node->isReadonly();
@@ -254,21 +264,17 @@ class ElementVisitor extends NodeVisitorAbstract
                     $this->currentNamespace . '\\' . $this->currentClassName,
                 );
                 if ($expectedFile !== null && $expectedFile !== $this->phpFile) {
-                    $this->issueHolder->addIssue(
-                        sprintf(
-                            'Rename the file "%s" to "%s" to match the class namespace according to PSR-4 autoloading standards.',
-                            $this->phpFile,
-                            $expectedFile,
-                        ),
-                    );
+                    $this->issueHolder->addIssue(sprintf(
+                        'Rename the file "%s" to "%s" to match the class namespace according to PSR-4 autoloading standards.',
+                        $this->phpFile,
+                        $expectedFile,
+                    ));
                 } elseif ($expectedFile === null) {
-                    $this->issueHolder->addIssue(
-                        sprintf(
-                            'Class namespace "%s\\%s" does not match any PSR-4 autoload path in composer.json.',
-                            $this->currentNamespace,
-                            $this->currentClassName,
-                        ),
-                    );
+                    $this->issueHolder->addIssue(sprintf(
+                        'Class namespace "%s\\%s" does not match any PSR-4 autoload path in composer.json.',
+                        $this->currentNamespace,
+                        $this->currentClassName,
+                    ));
                 }
             }
         }
@@ -424,12 +430,10 @@ class ElementVisitor extends NodeVisitorAbstract
     private function checkTopLevelFunction(Node $node): void
     {
         if ($node instanceof Function_ && !$this->inClassLike) {
-            $this->issueHolder->addIssue(
-                sprintf(
-                    'Function "%s" should be moved inside a class as a method according to PSR-1.',
-                    $node->name->name,
-                ),
-            );
+            $this->issueHolder->addIssue(sprintf(
+                'Function "%s" should be moved inside a class as a method according to PSR-1.',
+                $node->name->name,
+            ));
         }
     }
 
@@ -442,12 +446,10 @@ class ElementVisitor extends NodeVisitorAbstract
     {
         if ($node instanceof Const_ && !$this->inClassLike) {
             foreach ($node->consts as $const) {
-                $this->issueHolder->addIssue(
-                    sprintf(
-                        'Constant "%s" should be moved inside a class as a class constant according to PSR-1.',
-                        $const->name->name,
-                    ),
-                );
+                $this->issueHolder->addIssue(sprintf(
+                    'Constant "%s" should be moved inside a class as a class constant according to PSR-1.',
+                    $const->name->name,
+                ));
             }
         }
     }
@@ -459,7 +461,11 @@ class ElementVisitor extends NodeVisitorAbstract
      */
     private function checkTopLevelDefine(Node $node): void
     {
-        if ($node instanceof FuncCall && !$this->inClassLike && ($node->name instanceof Name && $node->name->toString() === 'define')) {
+        if (
+            $node instanceof FuncCall
+            && !$this->inClassLike
+            && ($node->name instanceof Name && $node->name->toString() === 'define')
+        ) {
             $this->issueHolder->addIssue(
                 'Global define() call should be moved inside a class as a class constant according to PSR-1.',
             );
@@ -473,8 +479,15 @@ class ElementVisitor extends NodeVisitorAbstract
      */
     private function checkDocBlock(Node $node): void
     {
-        if ($node instanceof Class_ || $node instanceof Trait_ || $node instanceof Interface_ || $node instanceof Enum_ ||
-            $node instanceof ClassMethod || $node instanceof Function_ || $node instanceof Property) {
+        if (
+            $node instanceof Class_
+            || $node instanceof Trait_
+            || $node instanceof Interface_
+            || $node instanceof Enum_
+            || $node instanceof ClassMethod
+            || $node instanceof Function_
+            || $node instanceof Property
+        ) {
             $docChecker = new DocBlockChecker($node, $this->issueHolder, $this->docLexer, $this->docParser);
             $this->issueHolder->addIssues($docChecker->check());
         }

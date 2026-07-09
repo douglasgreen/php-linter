@@ -54,7 +54,7 @@ class UnusedFunctionAnalyzer extends NodeVisitorAbstract
     public function run(array $phpFiles): void
     {
         // Filter out ignored files
-        $phpFiles = array_filter($phpFiles, fn (string $file): bool => !$this->ignoreList->shouldIgnore($file));
+        $phpFiles = array_filter($phpFiles, fn(string $file): bool => !$this->ignoreList->shouldIgnore($file));
 
         $parserFactory = new ParserFactory();
         $parser = $parserFactory->createForHostVersion();
@@ -90,7 +90,12 @@ class UnusedFunctionAnalyzer extends NodeVisitorAbstract
             }
         } elseif ($node instanceof Function_) {
             if (isset($node->namespacedName)) {
-                $this->addDefinition($node->namespacedName->toString(), $this->currentFile, $node->getStartLine(), 'function');
+                $this->addDefinition(
+                    $node->namespacedName->toString(),
+                    $this->currentFile,
+                    $node->getStartLine(),
+                    'function',
+                );
             }
         }
 
@@ -191,13 +196,7 @@ class UnusedFunctionAnalyzer extends NodeVisitorAbstract
 
             if ($callCount === 0 && !$this->isSpecialMethod($funcName)) {
                 $this->issueHolder->setCurrentFile($info['file']);
-                $this->issueHolder->addIssue(
-                    sprintf(
-                        'Unused %s "%s" found.',
-                        $info['type'],
-                        $funcName,
-                    ),
-                );
+                $this->issueHolder->addIssue(sprintf('Unused %s "%s" found.', $info['type'], $funcName));
             }
         }
     }
@@ -206,10 +205,23 @@ class UnusedFunctionAnalyzer extends NodeVisitorAbstract
     {
         // Check for magic methods and constructors
         $specialMethods = [
-            '__construct', '__destruct', '__call', '__callStatic',
-            '__get', '__set', '__isset', '__unset', '__sleep',
-            '__wakeup', '__serialize', '__unserialize', '__toString',
-            '__invoke', '__set_state', '__clone', '__debugInfo',
+            '__construct',
+            '__destruct',
+            '__call',
+            '__callStatic',
+            '__get',
+            '__set',
+            '__isset',
+            '__unset',
+            '__sleep',
+            '__wakeup',
+            '__serialize',
+            '__unserialize',
+            '__toString',
+            '__invoke',
+            '__set_state',
+            '__clone',
+            '__debugInfo',
         ];
 
         foreach ($specialMethods as $method) {

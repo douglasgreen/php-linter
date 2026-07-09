@@ -101,7 +101,7 @@ class Repository
         $command = sprintf('file -b %s', escapeshellarg($path));
         exec($command, $output, $returnCode);
 
-        if ($returnCode !== 0 || ! isset($output[0])) {
+        if ($returnCode !== 0 || !isset($output[0])) {
             return null;
         }
 

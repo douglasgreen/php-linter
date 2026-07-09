@@ -83,10 +83,7 @@ final class MetricDataTest extends TestCase
     public function testItCreatesMetricDataWithPartialValues(): void
     {
         // Act
-        $metricData = new MetricData(
-            name: 'PartialClass',
-            loc: 100,
-        );
+        $metricData = new MetricData(name: 'PartialClass', loc: 100);
 
         // Assert
         $this->assertSame('PartialClass', $metricData->name);

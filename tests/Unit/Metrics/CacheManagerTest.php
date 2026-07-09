@@ -43,18 +43,9 @@ final class CacheManagerTest extends TestCase
         // Arrange
         $cacheManager = new CacheManager($this->tempDir);
         // Act & Assert
-        $this->assertSame(
-            $this->tempDir . '/var/cache/pdepend',
-            $cacheManager->getCacheDir(),
-        );
-        $this->assertSame(
-            $this->tempDir . '/var/cache/pdepend/files',
-            $cacheManager->getFileCacheDir(),
-        );
-        $this->assertSame(
-            $this->tempDir . '/var/cache/pdepend/summary.xml',
-            $cacheManager->getSummaryFile(),
-        );
+        $this->assertSame($this->tempDir . '/var/cache/pdepend', $cacheManager->getCacheDir());
+        $this->assertSame($this->tempDir . '/var/cache/pdepend/files', $cacheManager->getFileCacheDir());
+        $this->assertSame($this->tempDir . '/var/cache/pdepend/summary.xml', $cacheManager->getSummaryFile());
     }
 
     #[Test]
@@ -68,7 +59,10 @@ final class CacheManagerTest extends TestCase
         $cacheManager->copyFile($sourceFile, 'subdir/dest.txt');
         // Assert
         $this->assertFileExists($this->tempDir . '/var/cache/pdepend/files/subdir/dest.txt');
-        $this->assertSame('test content', file_get_contents($this->tempDir . '/var/cache/pdepend/files/subdir/dest.txt'));
+        $this->assertSame(
+            'test content',
+            file_get_contents($this->tempDir . '/var/cache/pdepend/files/subdir/dest.txt'),
+        );
     }
 
     #[Test]
@@ -85,10 +79,7 @@ final class CacheManagerTest extends TestCase
     public function testItReturnsCacheFileWhenNotInCacheDirectory(): void
     {
         // Act & Assert
-        $this->assertSame(
-            'src/Controller.php',
-            CacheManager::getOriginalFile('src/Controller.php'),
-        );
+        $this->assertSame('src/Controller.php', CacheManager::getOriginalFile('src/Controller.php'));
     }
 
     private function removeDirectory(string $dir): void

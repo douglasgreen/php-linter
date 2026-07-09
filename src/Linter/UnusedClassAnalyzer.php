@@ -63,7 +63,7 @@ class UnusedClassAnalyzer extends NodeVisitorAbstract
     public function run(array $phpFiles): void
     {
         // Filter out ignored files
-        $phpFiles = array_filter($phpFiles, fn (string $file): bool => !$this->ignoreList->shouldIgnore($file));
+        $phpFiles = array_filter($phpFiles, fn(string $file): bool => !$this->ignoreList->shouldIgnore($file));
 
         $parserFactory = new ParserFactory();
         $parser = $parserFactory->createForHostVersion();
@@ -78,7 +78,10 @@ class UnusedClassAnalyzer extends NodeVisitorAbstract
     public function enterNode(Node $node)
     {
         // 1. Definition Tracking
-        if (($node instanceof Class_ || $node instanceof Interface_ || $node instanceof Trait_) && ($node->name instanceof Identifier && isset($node->namespacedName))) {
+        if (
+            ($node instanceof Class_ || $node instanceof Interface_ || $node instanceof Trait_)
+            && ($node->name instanceof Identifier && isset($node->namespacedName))
+        ) {
             $fqcn = $node->namespacedName->toString();
             $type = 'unknown';
             if ($node instanceof Class_) {
@@ -101,7 +104,10 @@ class UnusedClassAnalyzer extends NodeVisitorAbstract
             $this->addUsage($node->class);
         } elseif ($node instanceof Instanceof_ && $node->class instanceof Name) {
             $this->addUsage($node->class);
-        } elseif (($node instanceof StaticCall || $node instanceof StaticPropertyFetch || $node instanceof ClassConstFetch) && $node->class instanceof Name) {
+        } elseif (
+            ($node instanceof StaticCall || $node instanceof StaticPropertyFetch || $node instanceof ClassConstFetch)
+            && $node->class instanceof Name
+        ) {
             $this->addUsage($node->class);
         } elseif ($node instanceof Class_) {
             if ($node->extends instanceof Name) {
@@ -128,7 +134,12 @@ class UnusedClassAnalyzer extends NodeVisitorAbstract
         }
 
         // 3. Type hints Tracking
-        if ($node instanceof Function_ || $node instanceof ClassMethod || $node instanceof Closure || $node instanceof ArrowFunction) {
+        if (
+            $node instanceof Function_
+            || $node instanceof ClassMethod
+            || $node instanceof Closure
+            || $node instanceof ArrowFunction
+        ) {
             $this->recordType($node->getReturnType());
             foreach ($node->getParams() as $param) {
                 $this->recordType($param->type);
@@ -205,13 +216,7 @@ class UnusedClassAnalyzer extends NodeVisitorAbstract
 
             if ($count === 0) {
                 $this->issueHolder->setCurrentFile($info['file']);
-                $this->issueHolder->addIssue(
-                    sprintf(
-                        'Unused %s "%s" found.',
-                        $info['type'],
-                        $fqcn,
-                    ),
-                );
+                $this->issueHolder->addIssue(sprintf('Unused %s "%s" found.', $info['type'], $fqcn));
             }
         }
     }

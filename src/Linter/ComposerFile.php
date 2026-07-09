@@ -48,17 +48,11 @@ class ComposerFile
 
                 if (is_array($paths)) {
                     foreach ($paths as $path) {
-                        $fullPath = rtrim(
-                            $path,
-                            DIRECTORY_SEPARATOR,
-                        ) . DIRECTORY_SEPARATOR . $relativePath;
+                        $fullPath = rtrim($path, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR . $relativePath;
                         return ltrim($fullPath, DIRECTORY_SEPARATOR);
                     }
                 } else {
-                    $fullPath = rtrim(
-                        $paths,
-                        DIRECTORY_SEPARATOR,
-                    ) . DIRECTORY_SEPARATOR . $relativePath;
+                    $fullPath = rtrim($paths, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR . $relativePath;
                     return ltrim($fullPath, DIRECTORY_SEPARATOR);
                 }
             }

@@ -48,18 +48,18 @@ final class XmlParserTest extends TestCase
     {
         // Arrange
         $xmlContent = <<<XML
-<?xml version="1.0"?>
-<pdepend>
-    <files>
-        <file name="test.php" cloc="10" eloc="50" loc="60"/>
-    </files>
-    <package name="TestPackage">
-        <class name="TestClass" file="test.php" loc="100" csz="10">
-            <method name="testMethod" loc="20" ccn2="5"/>
-        </class>
-    </package>
-</pdepend>
-XML;
+            <?xml version="1.0"?>
+            <pdepend>
+                <files>
+                    <file name="test.php" cloc="10" eloc="50" loc="60"/>
+                </files>
+                <package name="TestPackage">
+                    <class name="TestClass" file="test.php" loc="100" csz="10">
+                        <method name="testMethod" loc="20" ccn2="5"/>
+                    </class>
+                </package>
+            </pdepend>
+            XML;
         $xmlPath = $this->tempDir . '/summary.xml';
         file_put_contents($xmlPath, $xmlContent);
 
@@ -79,15 +79,15 @@ XML;
     {
         // Arrange
         $xmlContent = <<<XML
-<?xml version="1.0"?>
-<pdepend>
-    <files>
-        <file name="file1.php" cloc="5" eloc="25" loc="30"/>
-        <file name="file2.php" cloc="10" eloc="50" loc="60"/>
-    </files>
-    <package name="TestPackage"/>
-</pdepend>
-XML;
+            <?xml version="1.0"?>
+            <pdepend>
+                <files>
+                    <file name="file1.php" cloc="5" eloc="25" loc="30"/>
+                    <file name="file2.php" cloc="10" eloc="50" loc="60"/>
+                </files>
+                <package name="TestPackage"/>
+            </pdepend>
+            XML;
         $xmlPath = $this->tempDir . '/summary.xml';
         file_put_contents($xmlPath, $xmlContent);
 

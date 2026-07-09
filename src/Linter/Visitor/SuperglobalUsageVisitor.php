@@ -86,15 +86,18 @@ class SuperglobalUsageVisitor extends NodeVisitorAbstract
         }
 
         // 3. Detect superglobal usage
-        if ($node instanceof Variable && is_string($node->name) && in_array($node->name, $this->superglobals, true) && ! $this->isAllowedContext()) {
+        if (
+            $node instanceof Variable
+            && is_string($node->name)
+            && in_array($node->name, $this->superglobals, true)
+            && !$this->isAllowedContext()
+        ) {
             $context = $this->getContextName();
-            $this->issueHolder->addIssue(
-                sprintf(
-                    'Move superglobal $%s access out of %s. Superglobals should only be accessed in the global scope or within classes ending in Controller or Middleware to ensure proper encapsulation.',
-                    $node->name,
-                    $context,
-                ),
-            );
+            $this->issueHolder->addIssue(sprintf(
+                'Move superglobal $%s access out of %s. Superglobals should only be accessed in the global scope or within classes ending in Controller or Middleware to ensure proper encapsulation.',
+                $node->name,
+                $context,
+            ));
         }
 
         return null;
@@ -153,7 +156,7 @@ class SuperglobalUsageVisitor extends NodeVisitorAbstract
 
         // Inside a function/method, check if it's an allowed class
         $currentClass = end($this->classStack);
-        if (! $currentClass) {
+        if (!$currentClass) {
             return false; // Function outside a class is not allowed
         }
 

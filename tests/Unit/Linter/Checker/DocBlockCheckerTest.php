@@ -46,17 +46,10 @@ final class DocBlockCheckerTest extends TestCase
         yield 'interface' => [new Interface_(new Identifier('TestInterface'))];
         yield 'trait' => [new Trait_(new Identifier('TestTrait'))];
         yield 'public method' => [
-            new ClassMethod(
-                new Identifier('publicMethod'),
-                ['flags' => Class_::MODIFIER_PUBLIC],
-            ),
+            new ClassMethod(new Identifier('publicMethod'), ['flags' => Class_::MODIFIER_PUBLIC]),
         ];
         yield 'public property' => [
-            new Property(
-                Class_::MODIFIER_PUBLIC,
-                [new PropertyProperty('testProp')],
-                [],
-            ),
+            new Property(Class_::MODIFIER_PUBLIC, [new PropertyProperty('testProp')], []),
         ];
     }
 
@@ -129,14 +122,14 @@ final class DocBlockCheckerTest extends TestCase
     {
         // Arrange
         $doc = new Doc(<<<'DOC'
-/**
- * A valid summary.
- *
- * @package Test
- * @api
- * @since 1.0.0
- */
-DOC);
+            /**
+             * A valid summary.
+             *
+             * @package Test
+             * @api
+             * @since 1.0.0
+             */
+            DOC);
         $node = new Class_(new Identifier('ValidClass'), [], ['comments' => [$doc]]);
         $lexer = ParserFactory::createLexer();
         $parser = ParserFactory::createPhpDocParser();
@@ -211,12 +204,12 @@ DOC);
     {
         // Arrange
         $doc = new Doc(<<<'DOC'
-/**
- * Summary.
- *
- * @param array $items
- */
-DOC);
+            /**
+             * Summary.
+             *
+             * @param array $items
+             */
+            DOC);
         $node = new ClassMethod(new Identifier('test'), [], ['comments' => [$doc]]);
         $lexer = ParserFactory::createLexer();
         $parser = ParserFactory::createPhpDocParser();
@@ -228,7 +221,10 @@ DOC);
         $issues = $this->issueHolder->getIssues();
 
         // Assert
-        $this->assertArrayHasKey('Use typed generics syntax (e.g., list<Foo> or array<string, int>) instead of bare "array".', $issues);
+        $this->assertArrayHasKey(
+            'Use typed generics syntax (e.g., list<Foo> or array<string, int>) instead of bare "array".',
+            $issues,
+        );
     }
 
     /**
@@ -239,13 +235,13 @@ DOC);
         // Arrange
         // @param (4) should come after @api (1)
         $doc = new Doc(<<<'DOC'
-/**
- * Summary.
- *
- * @param string $arg
- * @api
- */
-DOC);
+            /**
+             * Summary.
+             *
+             * @param string $arg
+             * @api
+             */
+            DOC);
         $node = new ClassMethod(new Identifier('test'), [], ['comments' => [$doc]]);
         $lexer = ParserFactory::createLexer();
         $parser = ParserFactory::createPhpDocParser();

@@ -23,7 +23,9 @@ class OperatorChecker extends AbstractNodeChecker
     public function check(): array
     {
         if ($this->node instanceof ErrorSuppress) {
-            $this->addIssue('Remove the error suppression operator "@". Suppressing errors hides potential bugs and prevents proper error handling.');
+            $this->addIssue(
+                'Remove the error suppression operator "@". Suppressing errors hides potential bugs and prevents proper error handling.',
+            );
         }
 
         return $this->getIssues();

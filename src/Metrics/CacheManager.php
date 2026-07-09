@@ -63,7 +63,7 @@ class CacheManager
         $this->summaryFile = $currentDir . DIRECTORY_SEPARATOR . self::SUMMARY_FILE;
 
         // Ensure the cache directory exists
-        if (! is_dir($this->cacheDir)) {
+        if (!is_dir($this->cacheDir)) {
             mkdir($this->cacheDir, self::DIRECTORY_MODE, true);
         }
 
@@ -124,7 +124,7 @@ class CacheManager
         $newFileDir = dirname($newFilePath);
 
         // Ensure the directory exists
-        if (! is_dir($newFileDir)) {
+        if (!is_dir($newFileDir)) {
             mkdir($newFileDir, self::DIRECTORY_MODE, true);
         }
 

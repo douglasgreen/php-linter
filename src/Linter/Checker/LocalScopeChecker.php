@@ -26,9 +26,10 @@ class LocalScopeChecker extends AbstractNodeChecker
         if ($this->node instanceof Exit_) {
             $kind = $this->node->getAttribute('kind');
             $name = $kind === Exit_::KIND_EXIT ? 'exit' : 'die';
-            $this->addIssue(
-                sprintf("Replace the '%s' expression with an exception throw to allow proper error handling.", $name),
-            );
+            $this->addIssue(sprintf(
+                "Replace the '%s' expression with an exception throw to allow proper error handling.",
+                $name,
+            ));
         }
 
         return $this->getIssues();

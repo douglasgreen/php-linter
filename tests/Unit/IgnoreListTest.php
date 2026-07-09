@@ -82,10 +82,7 @@ final class IgnoreListTest extends TestCase
     public function testItSkipsEmptyLinesAndComments(): void
     {
         // Arrange
-        file_put_contents(
-            $this->tempDir . '/.phplintignore',
-            "# This is a comment\n\nvendor/*\n",
-        );
+        file_put_contents($this->tempDir . '/.phplintignore', "# This is a comment\n\nvendor/*\n");
         // Act
         $ignoreList = new IgnoreList($this->tempDir);
 

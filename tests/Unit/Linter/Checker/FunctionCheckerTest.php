@@ -66,10 +66,7 @@ final class FunctionCheckerTest extends TestCase
     public function testItSuggestsBooleanPrefixForBoolReturn(): void
     {
         // Arrange
-        $node = new Function_(
-            new Identifier('checkValidity'),
-            ['returnType' => new Identifier('bool')],
-        );
+        $node = new Function_(new Identifier('checkValidity'), ['returnType' => new Identifier('bool')]);
         // Act
         $checker = new FunctionChecker($node, $this->issueHolder);
         $checker->check();
@@ -81,10 +78,7 @@ final class FunctionCheckerTest extends TestCase
     public function testItAcceptsValidBooleanPrefix(): void
     {
         // Arrange
-        $node = new Function_(
-            new Identifier('isValid'),
-            ['returnType' => new Identifier('bool')],
-        );
+        $node = new Function_(new Identifier('isValid'), ['returnType' => new Identifier('bool')]);
 
         // Act
         $checker = new FunctionChecker($node, $this->issueHolder);
@@ -98,14 +92,8 @@ final class FunctionCheckerTest extends TestCase
     public function testItReturnsParameterMetadata(): void
     {
         // Arrange
-        $param = new Param(
-            new Variable('testParam'),
-            type: new Identifier('string'),
-        );
-        $node = new Function_(
-            new Identifier('testFunction'),
-            ['params' => [$param]],
-        );
+        $param = new Param(new Variable('testParam'), type: new Identifier('string'));
+        $node = new Function_(new Identifier('testFunction'), ['params' => [$param]]);
 
         // Act
         $checker = new FunctionChecker($node, $this->issueHolder);

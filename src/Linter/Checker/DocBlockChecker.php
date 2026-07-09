@@ -30,16 +30,26 @@ class DocBlockChecker extends AbstractNodeChecker
     /** Order priority for PHPDoc tags. */
     private const array TAG_ORDER = [
         '@package' => 1,
-        '@api' => 1, '@internal' => 1,
-        '@template' => 2, '@template-covariant' => 2, '@phpstan-type' => 2,
-        '@extends' => 3, '@implements' => 3, '@use' => 3, '@mixin' => 3,
+        '@api' => 1,
+        '@internal' => 1,
+        '@template' => 2,
+        '@template-covariant' => 2,
+        '@phpstan-type' => 2,
+        '@extends' => 3,
+        '@implements' => 3,
+        '@use' => 3,
+        '@mixin' => 3,
         '@param' => 4,
         '@return' => 5,
         '@throws' => 6,
-        '@pure' => 7, '@immutable' => 7,
-        '@see' => 8, '@link' => 8,
-        '@since' => 9, '@deprecated' => 9,
-        '@copyright' => 10, '@license' => 10,
+        '@pure' => 7,
+        '@immutable' => 7,
+        '@see' => 8,
+        '@link' => 8,
+        '@since' => 9,
+        '@deprecated' => 9,
+        '@copyright' => 10,
+        '@license' => 10,
     ];
 
     /**
@@ -88,7 +98,12 @@ class DocBlockChecker extends AbstractNodeChecker
         // Rule 7.3: Public API elements MUST NOT be undocumented.
         // For now, we check if it's a class-like structure or a public method.
         $isPublicApi = false;
-        if ($this->node instanceof Class_ || $this->node instanceof Interface_ || $this->node instanceof Trait_ || $this->node instanceof Enum_) {
+        if (
+            $this->node instanceof Class_
+            || $this->node instanceof Interface_
+            || $this->node instanceof Trait_
+            || $this->node instanceof Enum_
+        ) {
             $isPublicApi = true;
         } elseif (($this->node instanceof ClassMethod || $this->node instanceof Property) && $this->node->isPublic()) {
             $isPublicApi = true;
@@ -148,7 +163,12 @@ class DocBlockChecker extends AbstractNodeChecker
      */
     private function validateMandatoryTags(PhpDocNode $phpDocNode): void
     {
-        if ($this->node instanceof Class_ || $this->node instanceof Interface_ || $this->node instanceof Trait_ || $this->node instanceof Enum_) {
+        if (
+            $this->node instanceof Class_
+            || $this->node instanceof Interface_
+            || $this->node instanceof Trait_
+            || $this->node instanceof Enum_
+        ) {
             $this->checkClassTags($phpDocNode);
         } elseif ($this->node instanceof Property) {
             $this->checkPropertyTags($phpDocNode);
@@ -244,7 +264,9 @@ class DocBlockChecker extends AbstractNodeChecker
             // \barray\b matches the word "array"
             // array[<\{] checks if it's already using generics (array<T> or array{...})
             if (preg_match('/\barray\b/', $typeString) && !preg_match('/array[<\{]/', $typeString)) {
-                $this->addIssue('Use typed generics syntax (e.g., list<Foo> or array<string, int>) instead of bare "array".');
+                $this->addIssue(
+                    'Use typed generics syntax (e.g., list<Foo> or array<string, int>) instead of bare "array".',
+                );
             }
         }
     }

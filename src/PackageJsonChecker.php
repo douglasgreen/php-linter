@@ -84,7 +84,11 @@ class PackageJsonChecker
 
     /** @var array<int, string> */
     private array $allowedTypes = [
-        'module', 'commonjs', 'module-commonjs', 'esm', 'cjs',
+        'module',
+        'commonjs',
+        'module-commonjs',
+        'esm',
+        'cjs',
     ];
 
     /** @var string[] Allowed config files which might appear in root directory */
@@ -158,8 +162,12 @@ class PackageJsonChecker
         'assets/xml/' => ['*.xml', '*.xsd', '*.xsl', '*.xslt', '*.wsdl'],
     ];
 
-    public function __construct(string $directory, private readonly IssueHolder $issueHolder, string $configFile = '', private readonly bool $fixMode = false)
-    {
+    public function __construct(
+        string $directory,
+        private readonly IssueHolder $issueHolder,
+        string $configFile = '',
+        private readonly bool $fixMode = false,
+    ) {
         $realPath = realpath($directory);
         $this->rootDir = $realPath !== false ? $realPath : (string) getcwd();
         $this->loadPackageJson();
@@ -369,7 +377,14 @@ class PackageJsonChecker
         }
 
         // Check for module consistency
-        if ($type === 'module' && !empty($this->package['main']) && (!str_ends_with((string) $this->package['main'], '.mjs') && !str_ends_with((string) $this->package['main'], '.js'))) {
+        if (
+            $type === 'module'
+            && !empty($this->package['main'])
+            && (
+                !str_ends_with((string) $this->package['main'], '.mjs')
+                && !str_ends_with((string) $this->package['main'], '.js')
+            )
+        ) {
             $this->addIssue(
                 self::SHOULD,
                 'Module extension',
@@ -405,12 +420,7 @@ class PackageJsonChecker
         $license = $this->package['license'] ?? '';
 
         if (empty($license)) {
-            $this->addIssue(
-                self::MUST,
-                'Missing license',
-                'license',
-                'License field is required',
-            );
+            $this->addIssue(self::MUST, 'Missing license', 'license', 'License field is required');
             return;
         }
 
@@ -449,11 +459,27 @@ class PackageJsonChecker
         }
 
         // SPDX license list validation (simplified check)
-        $validLicenses = ['MIT', 'Apache-2.0', 'BSD-2-Clause', 'BSD-3-Clause', 'GPL-2.0', 'GPL-3.0', 'LGPL-2.1', 'LGPL-3.0', 'ISC', 'MPL-2.0', 'Unlicense', 'Proprietary'];
+        $validLicenses = [
+            'MIT',
+            'Apache-2.0',
+            'BSD-2-Clause',
+            'BSD-3-Clause',
+            'GPL-2.0',
+            'GPL-3.0',
+            'LGPL-2.1',
+            'LGPL-3.0',
+            'ISC',
+            'MPL-2.0',
+            'Unlicense',
+            'Proprietary',
+        ];
 
         $licenses = is_array($license) ? $license : [$license];
         foreach ($licenses as $lic) {
-            if (!in_array($lic, $validLicenses, true) && !preg_match('/^proprietary|commercial|custom:/i', (string) $lic)) {
+            if (
+                !in_array($lic, $validLicenses, true)
+                && !preg_match('/^proprietary|commercial|custom:/i', (string) $lic)
+            ) {
                 $this->addIssue(
                     self::MAY,
                     'Non-standard license',
@@ -469,22 +495,12 @@ class PackageJsonChecker
         $keywords = $this->package['keywords'] ?? [];
 
         if ($this->config['requireKeywords'] && (empty($keywords) || !is_array($keywords))) {
-            $this->addIssue(
-                self::MUST,
-                'Missing keywords',
-                'keywords',
-                'Keywords array is required',
-            );
+            $this->addIssue(self::MUST, 'Missing keywords', 'keywords', 'Keywords array is required');
             return;
         }
 
         if (!is_array($keywords)) {
-            $this->addIssue(
-                self::MUST,
-                'Invalid keywords',
-                'keywords',
-                'Keywords must be an array of strings',
-            );
+            $this->addIssue(self::MUST, 'Invalid keywords', 'keywords', 'Keywords must be an array of strings');
             return;
         }
 
@@ -503,12 +519,7 @@ class PackageJsonChecker
         // Check all are strings
         foreach ($keywords as $kw) {
             if (!is_string($kw) || empty(trim($kw))) {
-                $this->addIssue(
-                    self::MUST,
-                    'Invalid keyword',
-                    'keywords',
-                    'Keywords must be non-empty strings',
-                );
+                $this->addIssue(self::MUST, 'Invalid keyword', 'keywords', 'Keywords must be non-empty strings');
                 break;
             }
         }
@@ -584,12 +595,7 @@ class PackageJsonChecker
         }
 
         if (!is_array($exports) && !is_string($exports)) {
-            $this->addIssue(
-                self::MUST,
-                'Invalid exports format',
-                'exports',
-                'Exports must be a string or object',
-            );
+            $this->addIssue(self::MUST, 'Invalid exports format', 'exports', 'Exports must be a string or object');
             return;
         }
 
@@ -632,8 +638,14 @@ class PackageJsonChecker
             if (str_ends_with((string) $file, '.dist')) {
                 $base = substr((string) $file, 0, -5);
                 $allowedDist = [
-                    '.env', '.env.local', '.env.production', 'phpunit.xml',
-                    'phpcs.xml', 'ecs.php', 'phpstan.neon', 'psalm.xml',
+                    '.env',
+                    '.env.local',
+                    '.env.production',
+                    'phpunit.xml',
+                    'phpcs.xml',
+                    'ecs.php',
+                    'phpstan.neon',
+                    'psalm.xml',
                 ];
 
                 $isAllowed = false;
@@ -665,10 +677,10 @@ class PackageJsonChecker
                 foreach ($patterns as $pattern) {
                     if (fnmatch($pattern, basename((string) $file))) {
                         if (
-                            !str_starts_with((string) $file, (string) $expectedDir) &&
-                            !str_starts_with((string) $file, 'src/' . $expectedDir) &&
-                            !str_starts_with((string) $file, 'tests/') &&
-                            !str_starts_with((string) $file, 'vendor/')
+                            !str_starts_with((string) $file, (string) $expectedDir)
+                            && !str_starts_with((string) $file, 'src/' . $expectedDir)
+                            && !str_starts_with((string) $file, 'tests/')
+                            && !str_starts_with((string) $file, 'vendor/')
                         ) {
                             $this->addIssue(
                                 self::SHOULD,
@@ -716,7 +728,7 @@ class PackageJsonChecker
         } elseif ($configFile !== null && str_ends_with($configFile, '.json')) {
             $jsonContent = file_get_contents($this->rootDir . '/' . $configFile);
             $content = $jsonContent !== false ? json_decode($jsonContent, true) : null;
-            $plugins = is_array($content) ? ($content['plugins'] ?? []) : [];
+            $plugins = is_array($content) ? $content['plugins'] ?? [] : [];
         }
 
         // Check installed plugins match config
@@ -746,7 +758,14 @@ class PackageJsonChecker
         }
 
         // Check for legacy config files
-        $legacyConfigs = ['.eslintrc.js', '.eslintrc.cjs', '.eslintrc.yaml', '.eslintrc.yml', '.eslintrc.json', '.eslintrc'];
+        $legacyConfigs = [
+            '.eslintrc.js',
+            '.eslintrc.cjs',
+            '.eslintrc.yaml',
+            '.eslintrc.yml',
+            '.eslintrc.json',
+            '.eslintrc',
+        ];
         $flatConfigs = ['eslint.config.js', 'eslint.config.mjs', 'eslint.config.cjs'];
 
         $hasLegacy = false;
@@ -778,12 +797,7 @@ class PackageJsonChecker
         }
 
         if (!$hasFlat && !$hasLegacy) {
-            $this->addIssue(
-                self::SHOULD,
-                'Missing ESLint config',
-                'eslint',
-                'Create eslint.config.js for ESLint v9+',
-            );
+            $this->addIssue(self::SHOULD, 'Missing ESLint config', 'eslint', 'Create eslint.config.js for ESLint v9+');
         }
 
         // Check plugins are configured
@@ -916,19 +930,9 @@ class PackageJsonChecker
         }
 
         if (empty($npm)) {
-            $this->addIssue(
-                self::MUST,
-                'Missing npm version',
-                'engines.npm',
-                'npm version constraint is required',
-            );
+            $this->addIssue(self::MUST, 'Missing npm version', 'engines.npm', 'npm version constraint is required');
         } elseif (!preg_match('/>=?\s*1\d|>=?\s*10|^\^1\d/', (string) $npm)) {
-            $this->addIssue(
-                self::MUST,
-                'npm version too low',
-                'engines.npm: ' . $npm,
-                'Requires npm >= 10',
-            );
+            $this->addIssue(self::MUST, 'npm version too low', 'engines.npm: ' . $npm, 'Requires npm >= 10');
         }
     }
 
@@ -939,9 +943,23 @@ class PackageJsonChecker
         $peerDeps = $this->package['peerDependencies'] ?? [];
 
         // Check for dev tools in production dependencies
-        $devTools = ['eslint', 'prettier', 'stylelint', 'jest', 'vitest', 'cypress',
-                     'playwright', '@types/', 'typescript', 'ts-node', 'nodemon',
-                     'webpack-cli', 'vite', 'husky', 'lint-staged'];
+        $devTools = [
+            'eslint',
+            'prettier',
+            'stylelint',
+            'jest',
+            'vitest',
+            'cypress',
+            'playwright',
+            '@types/',
+            'typescript',
+            'ts-node',
+            'nodemon',
+            'webpack-cli',
+            'vite',
+            'husky',
+            'lint-staged',
+        ];
 
         foreach ($deps as $pkg => $version) {
             foreach ($devTools as $tool) {
@@ -981,7 +999,11 @@ class PackageJsonChecker
                     self::SHOULD,
                     'Version inconsistency',
                     $pkg,
-                    sprintf("Version '%s' in devDependencies differs from '%s' in dependencies", $ver, $seen[$pkg]['ver']),
+                    sprintf(
+                        "Version '%s' in devDependencies differs from '%s' in dependencies",
+                        $ver,
+                        $seen[$pkg]['ver'],
+                    ),
                 );
             }
         }
@@ -1180,8 +1202,11 @@ class PackageJsonChecker
         $pkgDesc = $this->package['description'] ?? '';
         $composerDesc = $this->composer['description'] ?? '';
 
-        if (!empty($pkgDesc) && !empty($composerDesc) &&
-            strtolower(trim((string) $pkgDesc)) !== strtolower(trim((string) $composerDesc))) {
+        if (
+            !empty($pkgDesc)
+            && !empty($composerDesc)
+            && strtolower(trim((string) $pkgDesc)) !== strtolower(trim((string) $composerDesc))
+        ) {
             $this->addIssue(
                 self::MAY,
                 'Description mismatch',
@@ -1198,8 +1223,11 @@ class PackageJsonChecker
             $composerLicense = implode(', ', $composerLicense);
         }
 
-        if (!empty($pkgLicense) && !empty($composerLicense) &&
-            strtolower((string) $pkgLicense) !== strtolower((string) $composerLicense)) {
+        if (
+            !empty($pkgLicense)
+            && !empty($composerLicense)
+            && strtolower((string) $pkgLicense) !== strtolower((string) $composerLicense)
+        ) {
             $this->addIssue(
                 self::SHOULD,
                 'License mismatch',
@@ -1220,12 +1248,7 @@ class PackageJsonChecker
         $project = end($parts);
 
         if (empty($homepage)) {
-            $this->addIssue(
-                self::MUST,
-                'Missing homepage',
-                'homepage',
-                'Public packages require homepage URL',
-            );
+            $this->addIssue(self::MUST, 'Missing homepage', 'homepage', 'Public packages require homepage URL');
         } else {
             $expected = sprintf('https://github.com/%s/%s', $this->config['owner'], $project);
             if (!str_starts_with((string) $homepage, $expected)) {
@@ -1245,12 +1268,7 @@ class PackageJsonChecker
         }
 
         if (empty($repo) || empty($repo['url'])) {
-            $this->addIssue(
-                self::MUST,
-                'Missing repository',
-                'repository',
-                'Public packages require repository',
-            );
+            $this->addIssue(self::MUST, 'Missing repository', 'repository', 'Public packages require repository');
         } else {
             $url = $repo['url'];
             if (!str_contains((string) $url, sprintf('github.com/%s/', $this->config['owner']))) {
@@ -1386,10 +1404,10 @@ class PackageJsonChecker
                 self::SHOULD,
                 'Key order',
                 'package.json',
-                sprintf(
-                    'Keys are not in conventional order. Out of order: %s. Run with --fix to sort automatically.',
-                    implode(', ', $outOfOrder),
-                ),
+                sprintf('Keys are not in conventional order. Out of order: %s. Run with --fix to sort automatically.', implode(
+                    ', ',
+                    $outOfOrder,
+                )),
             );
         }
     }
@@ -1415,10 +1433,7 @@ class PackageJsonChecker
         }
 
         // Encode and write back
-        $jsonContent = json_encode(
-            $sortedData,
-            JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES,
-        );
+        $jsonContent = json_encode($sortedData, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
 
         if ($jsonContent === false) {
             fwrite(STDERR, 'Error encoding package.json: ' . json_last_error_msg() . "\n");

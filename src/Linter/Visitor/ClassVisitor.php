@@ -97,14 +97,13 @@ class ClassVisitor extends AbstractVisitorChecker
             $type = $prop['static'] ? 'static' : 'non-static';
 
             if ($prop['visibility'] === 'private') {
-                $issue = sprintf(
-                    'Remove unused private %s property %s to reduce dead code.',
-                    $type,
-                    $propName,
-                );
+                $issue = sprintf('Remove unused private %s property %s to reduce dead code.', $type, $propName);
                 $this->addIssue($issue);
             } elseif ($prop['visibility'] === 'public') {
-                $issue = sprintf('Change public property %s to private or protected to improve encapsulation.', $propName);
+                $issue = sprintf(
+                    'Change public property %s to private or protected to improve encapsulation.',
+                    $propName,
+                );
                 $this->addIssue($issue);
             }
         }
@@ -113,7 +112,7 @@ class ClassVisitor extends AbstractVisitorChecker
         $visibilities = [];
         foreach ($this->methods as $methodName => $method) {
             $visibilities[$methodName] = $method['visibility'];
-            if ($method['visibility'] === 'private' && ! $method['used']) {
+            if ($method['visibility'] === 'private' && !$method['used']) {
                 $type = $method['static'] ? 'static' : 'non-static';
                 $className = $this->className ?? '<anonymous>';
                 $issue = sprintf(
@@ -177,13 +176,11 @@ class ClassVisitor extends AbstractVisitorChecker
 
             // Check for PHP 4 style constructors.
             if (strcasecmp($methodName, (string) $this->className) === 0) {
-                $this->addIssue(
-                    sprintf(
-                        'Rename method %s() to __construct() in class %s to use modern PHP constructor syntax.',
-                        $methodName,
-                        $this->className,
-                    ),
-                );
+                $this->addIssue(sprintf(
+                    'Rename method %s() to __construct() in class %s to use modern PHP constructor syntax.',
+                    $methodName,
+                    $this->className,
+                ));
             }
         }
     }
@@ -223,13 +220,11 @@ class ClassVisitor extends AbstractVisitorChecker
         }
 
         if ($badOrder !== null) {
-            $this->addIssue(
-                sprintf(
-                    'Reorder %ss to place public members first, followed by protected, then private, correcting position of %s.',
-                    $type,
-                    $badOrder,
-                ),
-            );
+            $this->addIssue(sprintf(
+                'Reorder %ss to place public members first, followed by protected, then private, correcting position of %s.',
+                $type,
+                $badOrder,
+            ));
         }
     }
 

@@ -45,10 +45,9 @@ final class ClassVisitorTest extends TestCase
     {
         // Arrange
         $visitor = new ClassVisitor($this->issueHolder, 'TestClass');
-        $property = new Property(
-            flags: Class_::MODIFIER_PUBLIC,
-            props: [new PropertyItem(new VarLikeIdentifier('testProp'))],
-        );
+        $property = new Property(flags: Class_::MODIFIER_PUBLIC, props: [new PropertyItem(
+            new VarLikeIdentifier('testProp'),
+        )]);
         // Act
         $visitor->checkNode($property);
 
@@ -75,10 +74,7 @@ final class ClassVisitorTest extends TestCase
     {
         // Arrange
         $visitor = new ClassVisitor($this->issueHolder, 'TestClass');
-        $methodCall = new MethodCall(
-            new Variable('this'),
-            new Identifier('someMethod'),
-        );
+        $methodCall = new MethodCall(new Variable('this'), new Identifier('someMethod'));
 
         // Act
         $visitor->checkNode($methodCall);
@@ -91,10 +87,7 @@ final class ClassVisitorTest extends TestCase
     {
         // Arrange
         $visitor = new ClassVisitor($this->issueHolder, 'TestClass');
-        $propertyFetch = new PropertyFetch(
-            new Variable('this'),
-            new Identifier('someProperty'),
-        );
+        $propertyFetch = new PropertyFetch(new Variable('this'), new Identifier('someProperty'));
         // Act
         $visitor->checkNode($propertyFetch);
 

@@ -28,7 +28,7 @@ final class AbstractNodeCheckerTest extends TestCase
     {
         // Arrange
         $node = new Nop();
-        $checker = new class ($node, $this->issueHolder) extends AbstractNodeChecker {
+        $checker = new class($node, $this->issueHolder) extends AbstractNodeChecker {
             public function check(): array
             {
                 $this->addIssue('Test issue');
@@ -46,7 +46,7 @@ final class AbstractNodeCheckerTest extends TestCase
     {
         // Arrange
         $node = new Nop();
-        $checker = new class ($node, $this->issueHolder) extends AbstractNodeChecker {
+        $checker = new class($node, $this->issueHolder) extends AbstractNodeChecker {
             public function check(): array
             {
                 $this->addIssues(['Issue 1' => true, 'Issue 2' => true]);

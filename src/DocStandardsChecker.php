@@ -65,8 +65,11 @@ class DocStandardsChecker
         '/\b\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\b/' => 'IP address (verify not sensitive)',
     ];
 
-    public function __construct(private readonly string $rootDir, private readonly IssueHolder $issueHolder, private readonly IgnoreList $ignoreList)
-    {
+    public function __construct(
+        private readonly string $rootDir,
+        private readonly IssueHolder $issueHolder,
+        private readonly IgnoreList $ignoreList,
+    ) {
         $this->repository = new Repository();
 
         // Initialize the League CommonMark parser environment
@@ -82,9 +85,12 @@ class DocStandardsChecker
         $this->files = $this->repository->getAllFiles();
 
         // Filter out ignored files
-        $this->files = array_filter($this->files, fn (string $file): bool => !$this->ignoreList->shouldIgnore($file));
+        $this->files = array_filter($this->files, fn(string $file): bool => !$this->ignoreList->shouldIgnore($file));
 
-        $this->markdownFiles = array_filter($this->files, fn (string $file): bool => (bool) preg_match('/\.md$/i', $file));
+        $this->markdownFiles = array_filter(
+            $this->files,
+            fn(string $file): bool => (bool) preg_match('/\.md$/i', $file),
+        );
 
         $this->checkRequiredFiles();
         $this->checkFileNaming();
@@ -100,9 +106,7 @@ class DocStandardsChecker
         foreach ($this->requiredFiles['root'] as $file => $description) {
             if (!in_array($file, $this->files)) {
                 $this->issueHolder->setCurrentFile($file);
-                $this->issueHolder->addIssue(
-                    'Missing required file: ' . $description,
-                );
+                $this->issueHolder->addIssue('Missing required file: ' . $description);
             }
         }
 
@@ -110,9 +114,7 @@ class DocStandardsChecker
         foreach ($this->requiredFiles['docs'] as $file => $description) {
             if (!in_array($file, $this->files)) {
                 $this->issueHolder->setCurrentFile($file);
-                $this->issueHolder->addIssue(
-                    'Missing required documentation: ' . $description,
-                );
+                $this->issueHolder->addIssue('Missing required documentation: ' . $description);
             }
         }
 
@@ -165,8 +167,10 @@ class DocStandardsChecker
             $this->issueHolder->setCurrentFile($file);
 
             // Check kebab-case
-            if (!preg_match('/^[a-z0-9]+(-[a-z0-9]+)*\.md$/', $basename) &&
-                !in_array($basename, ['README.md', 'CHANGELOG.md', 'LICENSE.md', 'CONTRIBUTING.md'], true)) {
+            if (
+                !preg_match('/^[a-z0-9]+(-[a-z0-9]+)*\.md$/', $basename)
+                && !in_array($basename, ['README.md', 'CHANGELOG.md', 'LICENSE.md', 'CONTRIBUTING.md'], true)
+            ) {
                 $this->issueHolder->addIssue(
                     'Invalid filename: use kebab-case',
                     'Filenames should use kebab-case (e.g., deployment-guide.md) for consistency',
@@ -192,9 +196,7 @@ class DocStandardsChecker
             // Check for UTF-8
             $content = (string) file_get_contents($fullPath);
             if (!mb_check_encoding($content, 'UTF-8')) {
-                $this->issueHolder->addIssue(
-                    'Invalid encoding: file must be UTF-8',
-                );
+                $this->issueHolder->addIssue('Invalid encoding: file must be UTF-8');
             }
 
             // Check for CRLF line endings
@@ -258,7 +260,7 @@ class DocStandardsChecker
             }
 
             // Check no skipped levels
-            if ($prevLevel > 0 && $level > $prevLevel + 1) {
+            if ($prevLevel > 0 && $level > ($prevLevel + 1)) {
                 $this->issueHolder->addIssue(
                     sprintf('Skipped heading level at line %s: H%d -> H%d', $lineNum, $prevLevel, $level),
                     'Use sequential heading levels for proper document structure',
@@ -268,7 +270,12 @@ class DocStandardsChecker
             $prevLevel = $level;
 
             // Check sentence case
-            if ($level <= 3 && preg_match('/[A-Z]{2,}/', $text) && !preg_match('/^[A-Z][a-z]+([a-z]+)*$/', $text) && preg_match('/^[A-Z][a-z]+ [A-Z]/', $text)) {
+            if (
+                $level <= 3
+                && preg_match('/[A-Z]{2,}/', $text)
+                && !preg_match('/^[A-Z][a-z]+([a-z]+)*$/', $text)
+                && preg_match('/^[A-Z][a-z]+ [A-Z]/', $text)
+            ) {
                 $this->issueHolder->addIssue(
                     'Title Case heading at line ' . $lineNum . ": '" . $text . "'",
                     'Use sentence case for better readability',
@@ -329,7 +336,10 @@ class DocStandardsChecker
             }
 
             // Check for passive voice indicators - heuristic
-            if (preg_match('/\b(is|was|were|been|be|being)\s+(?:configured|installed|created|updated|deleted|processed|generated|used|done|made)\b/i', $blockText)) {
+            if (preg_match(
+                '/\b(is|was|were|been|be|being)\s+(?:configured|installed|created|updated|deleted|processed|generated|used|done|made)\b/i',
+                $blockText,
+            )) {
                 $this->issueHolder->addIssue(
                     'Passive voice detected',
                     "Use active voice (e.g., 'Click Save') instead of passive (e.g., 'Save should be clicked')",

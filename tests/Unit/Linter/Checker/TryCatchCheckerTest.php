@@ -47,7 +47,7 @@ final class TryCatchCheckerTest extends TestCase
     public function testItDetectsCatchBlockWithNop(): void
     {
         // Arrange
-        $catch = new Catch_([], );
+        $catch = new Catch_([]);
         $node = new TryCatch([], [$catch]);
         // Act
         $checker = new TryCatchChecker($node, $this->issueHolder);

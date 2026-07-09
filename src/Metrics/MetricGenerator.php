@@ -83,11 +83,11 @@ class MetricGenerator
 
         if (is_resource($process)) {
             // Read the output in real-time
-            while (! feof($pipes[1])) {
+            while (!feof($pipes[1])) {
                 echo fgets($pipes[1]);
             }
 
-            while (! feof($pipes[2])) {
+            while (!feof($pipes[2])) {
                 echo fgets($pipes[2]);
             }
 

@@ -212,12 +212,10 @@ class NameChecker extends AbstractNodeChecker
     protected function checkAllCapName(string $name): void
     {
         if (preg_match('/^[A-Z]+(_[A-Z]+)*$/', $name) === 0) {
-            $this->addIssue(
-                sprintf(
-                    "Rename constant '%s' to use UPPER_SNAKE_CASE. Constants should be uppercase to distinguish them from variables.",
-                    $name,
-                ),
-            );
+            $this->addIssue(sprintf(
+                "Rename constant '%s' to use UPPER_SNAKE_CASE. Constants should be uppercase to distinguish them from variables.",
+                $name,
+            ));
         }
     }
 
@@ -230,23 +228,19 @@ class NameChecker extends AbstractNodeChecker
     protected function checkGlobalNameLength(string $name, string $type): void
     {
         if (strlen($name) > 32) {
-            $this->addIssue(
-                sprintf(
-                    "Rename %s '%s' to be 32 characters or fewer. Long names harm readability.",
-                    $type,
-                    $name,
-                ),
-            );
+            $this->addIssue(sprintf(
+                "Rename %s '%s' to be 32 characters or fewer. Long names harm readability.",
+                $type,
+                $name,
+            ));
         }
 
-        if (strlen($name) < 3 && ! in_array($name, self::VALID_SHORT_NAMES, true)) {
-            $this->addIssue(
-                sprintf(
-                    "Rename %s '%s' to be at least 3 characters long. Short names are often ambiguous unless they are standard abbreviations like 'id' or 'db'.",
-                    $type,
-                    $name,
-                ),
-            );
+        if (strlen($name) < 3 && !in_array($name, self::VALID_SHORT_NAMES, true)) {
+            $this->addIssue(sprintf(
+                "Rename %s '%s' to be at least 3 characters long. Short names are often ambiguous unless they are standard abbreviations like 'id' or 'db'.",
+                $type,
+                $name,
+            ));
         }
     }
 
@@ -259,13 +253,11 @@ class NameChecker extends AbstractNodeChecker
     protected function checkLocalNameLength(string $name, string $type): void
     {
         if (strlen($name) > 24) {
-            $this->addIssue(
-                sprintf(
-                    "Rename %s '%s' to be 24 characters or fewer. Long variable names can make code harder to read.",
-                    $type,
-                    $name,
-                ),
-            );
+            $this->addIssue(sprintf(
+                "Rename %s '%s' to be 24 characters or fewer. Long variable names can make code harder to read.",
+                $type,
+                $name,
+            ));
         }
     }
 
@@ -276,13 +268,11 @@ class NameChecker extends AbstractNodeChecker
      */
     protected function checkLowerName(string $name): void
     {
-        if (! self::isLowerCamelCase($name)) {
-            $this->addIssue(
-                sprintf(
-                    "Rename '%s' to use camelCase. Methods, functions, and variables should start with a lowercase letter.",
-                    $name,
-                ),
-            );
+        if (!self::isLowerCamelCase($name)) {
+            $this->addIssue(sprintf(
+                "Rename '%s' to use camelCase. Methods, functions, and variables should start with a lowercase letter.",
+                $name,
+            ));
         }
     }
 
@@ -300,36 +290,30 @@ class NameChecker extends AbstractNodeChecker
      */
     protected function checkSuffix(string $name, string $type, bool $isAbstract = false): void
     {
-        if (! in_array($type, ['Namespace', 'Class', 'Interface', 'Trait'], true)) {
+        if (!in_array($type, ['Namespace', 'Class', 'Interface', 'Trait'], true)) {
             return;
         }
 
         // Check PSR-required suffixes/prefixes
-        if ($type === 'Interface' && ! str_ends_with($name, 'Interface')) {
-            $this->addIssue(
-                sprintf(
-                    "Rename interface '%s' to add 'Interface' suffix. PSR requires interfaces to be suffixed with 'Interface'.",
-                    $name,
-                ),
-            );
+        if ($type === 'Interface' && !str_ends_with($name, 'Interface')) {
+            $this->addIssue(sprintf(
+                "Rename interface '%s' to add 'Interface' suffix. PSR requires interfaces to be suffixed with 'Interface'.",
+                $name,
+            ));
         }
 
-        if ($type === 'Trait' && ! str_ends_with($name, 'Trait')) {
-            $this->addIssue(
-                sprintf(
-                    "Rename trait '%s' to add 'Trait' suffix. PSR requires traits to be suffixed with 'Trait'.",
-                    $name,
-                ),
-            );
+        if ($type === 'Trait' && !str_ends_with($name, 'Trait')) {
+            $this->addIssue(sprintf(
+                "Rename trait '%s' to add 'Trait' suffix. PSR requires traits to be suffixed with 'Trait'.",
+                $name,
+            ));
         }
 
-        if ($type === 'Class' && $isAbstract && ! str_starts_with($name, 'Abstract')) {
-            $this->addIssue(
-                sprintf(
-                    "Rename abstract class '%s' to add 'Abstract' prefix. PSR requires abstract classes to be prefixed with 'Abstract'.",
-                    $name,
-                ),
-            );
+        if ($type === 'Class' && $isAbstract && !str_starts_with($name, 'Abstract')) {
+            $this->addIssue(sprintf(
+                "Rename abstract class '%s' to add 'Abstract' prefix. PSR requires abstract classes to be prefixed with 'Abstract'.",
+                $name,
+            ));
         }
     }
 
@@ -340,13 +324,11 @@ class NameChecker extends AbstractNodeChecker
      */
     protected function checkUpperName(string $name): void
     {
-        if (! self::isUpperCamelCase($name)) {
-            $this->addIssue(
-                sprintf(
-                    "Rename '%s' to use PascalCase. Classes, interfaces, traits, and namespaces should start with an uppercase letter.",
-                    $name,
-                ),
-            );
+        if (!self::isUpperCamelCase($name)) {
+            $this->addIssue(sprintf(
+                "Rename '%s' to use PascalCase. Classes, interfaces, traits, and namespaces should start with an uppercase letter.",
+                $name,
+            ));
         }
     }
 
@@ -359,7 +341,7 @@ class NameChecker extends AbstractNodeChecker
      */
     protected function getName(Node $node): ?string
     {
-        if (! property_exists($node, 'name')) {
+        if (!property_exists($node, 'name')) {
             return null;
         }
 

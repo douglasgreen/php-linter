@@ -309,12 +309,8 @@ class MetricChecker
      *
      * @return int Status code (STATUS_OK or STATUS_ERROR).
      */
-    protected function checkMax(
-        string $message,
-        float|int $value,
-        float|int $limit,
-        string $hint = '',
-    ): int {
+    protected function checkMax(string $message, float|int $value, float|int $limit, string $hint = ''): int
+    {
         if ($value > $limit) {
             $this->issueHolder->addIssue(sprintf($message, $value, $limit), $hint);
             return self::STATUS_ERROR;
@@ -333,12 +329,8 @@ class MetricChecker
      *
      * @return int Status code (STATUS_OK or STATUS_ERROR).
      */
-    protected function checkMin(
-        string $message,
-        float|int $value,
-        float|int $limit,
-        string $hint = '',
-    ): int {
+    protected function checkMin(string $message, float|int $value, float|int $limit, string $hint = ''): int
+    {
         if ($value < $limit) {
             $this->issueHolder->addIssue(sprintf($message, $value, $limit), $hint);
             return self::STATUS_ERROR;

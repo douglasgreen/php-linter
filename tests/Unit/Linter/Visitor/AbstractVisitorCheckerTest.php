@@ -28,7 +28,7 @@ final class AbstractVisitorCheckerTest extends TestCase
     public function testItAddsIssuesThroughProtectedMethod(): void
     {
         // Arrange
-        $visitor = new class ($this->issueHolder) extends AbstractVisitorChecker {
+        $visitor = new class($this->issueHolder) extends AbstractVisitorChecker {
             public function checkNode(Node $node): void
             {
                 $this->addIssue('Test issue');
@@ -46,7 +46,7 @@ final class AbstractVisitorCheckerTest extends TestCase
     public function testItAddsMultipleIssues(): void
     {
         // Arrange
-        $visitor = new class ($this->issueHolder) extends AbstractVisitorChecker {
+        $visitor = new class($this->issueHolder) extends AbstractVisitorChecker {
             public function checkNode(Node $node): void
             {
                 $this->addIssues(['Issue 1' => true, 'Issue 2' => true]);

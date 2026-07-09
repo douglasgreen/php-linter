@@ -35,7 +35,7 @@ class Config
     {
         $configFile = $configFilePath ?? $currentDir . DIRECTORY_SEPARATOR . 'php-linter.json';
 
-        if (! file_exists($configFile)) {
+        if (!file_exists($configFile)) {
             $this->ignoreIssues = [];
             $this->metricLimits = [];
             return;
@@ -49,7 +49,7 @@ class Config
         }
 
         $data = json_decode($content, true);
-        if (! is_array($data)) {
+        if (!is_array($data)) {
             $this->ignoreIssues = [];
             $this->metricLimits = [];
             return;
@@ -63,7 +63,9 @@ class Config
         }
 
         // Parse metricLimits
-        $this->metricLimits = isset($data['metricLimits']) && is_array($data['metricLimits']) ? $data['metricLimits'] : [];
+        $this->metricLimits = isset($data['metricLimits']) && is_array($data['metricLimits'])
+            ? $data['metricLimits']
+            : [];
     }
 
     /**

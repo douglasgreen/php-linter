@@ -36,14 +36,16 @@ class FunctionCallChecker extends AbstractNodeChecker
     public function check(): array
     {
         if ($this->node instanceof FuncCall) {
-            $functionName =
-                $this->node->name instanceof Name ? $this->node->name->toString() : null;
+            $functionName = $this->node->name instanceof Name ? $this->node->name->toString() : null;
             if ($functionName === null) {
                 return [];
             }
 
             if (in_array(strtolower($functionName), self::DEBUG_FUNCTIONS, true)) {
-                $this->addIssue(sprintf("Remove call to debug function '%s' to prevent information leakage in production.", $functionName));
+                $this->addIssue(sprintf(
+                    "Remove call to debug function '%s' to prevent information leakage in production.",
+                    $functionName,
+                ));
             }
         }
 

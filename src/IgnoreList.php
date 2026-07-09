@@ -103,7 +103,7 @@ class IgnoreList
      */
     protected static function loadIgnoreFile(string $ignoreFile): array
     {
-        if (! file_exists($ignoreFile)) {
+        if (!file_exists($ignoreFile)) {
             return [];
         }
 
