@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace DouglasGreen\PhpLinter\Linter\Visitor;
 
 use DouglasGreen\PhpLinter\IssueHolder;
-use PhpParser\Node;
 
 /**
  * Abstract base class for visitor-style node checks.
