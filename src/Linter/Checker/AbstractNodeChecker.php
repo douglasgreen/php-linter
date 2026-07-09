@@ -15,7 +15,7 @@ use PhpParser\Node;
  *
  * @internal
  */
-abstract class AbstractNodeChecker
+class AbstractNodeChecker
 {
     /**
      * Initializes the checker with the target node and issue holder.
@@ -29,13 +29,6 @@ abstract class AbstractNodeChecker
     ) {}
 
     /**
-     * Performs validation checks on the associated node.
-     *
-     * @return array<string, bool> A map of issue messages to their status.
-     */
-    abstract public function check(): array;
-
-    /**
      * Adds a single issue to the list.
      *
      * @param string $issue The issue description.
@@ -43,16 +36,6 @@ abstract class AbstractNodeChecker
     protected function addIssue(string $issue): void
     {
         $this->issueHolder->addIssue($issue);
-    }
-
-    /**
-     * Adds multiple issues to the list.
-     *
-     * @param array<string, bool> $issues The issues to add.
-     */
-    protected function addIssues(array $issues): void
-    {
-        $this->issueHolder->addIssues($issues);
     }
 
     /**

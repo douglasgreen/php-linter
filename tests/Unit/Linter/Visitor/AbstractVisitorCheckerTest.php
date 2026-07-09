@@ -41,22 +41,4 @@ final class AbstractVisitorCheckerTest extends TestCase
         $this->assertTrue($this->issueHolder->hasIssues());
         $this->assertSame(['Test issue' => true], $this->issueHolder->getIssues());
     }
-
-    #[Test]
-    public function testItAddsMultipleIssues(): void
-    {
-        // Arrange
-        $visitor = new class($this->issueHolder) extends AbstractVisitorChecker {
-            public function checkNode(Node $node): void
-            {
-                $this->addIssues(['Issue 1' => true, 'Issue 2' => true]);
-            }
-        };
-        // Act
-        $visitor->checkNode(new Nop());
-        // Assert
-        $issues = $this->issueHolder->getIssues();
-        $this->assertArrayHasKey('Issue 1', $issues);
-        $this->assertArrayHasKey('Issue 2', $issues);
-    }
 }

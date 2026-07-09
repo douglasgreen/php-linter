@@ -469,66 +469,6 @@ class FunctionChecker extends AbstractNodeChecker
     }
 
     /**
-     * Determines if a class is a "Newable" or an "Injectable".
-     *
-     * A "Newable" is fine to instantiate but an "Injectable" should be DI'd.
-     *
-     * @param string $className The name of the class to check.
-     *
-     * @return bool True if the class is considered safe to instantiate directly.
-     */
-    protected static function isNewable(string $className): bool
-    {
-        // 1. Exceptions and Errors
-        if (str_ends_with($className, 'Exception') || str_ends_with($className, 'Error')) {
-            return true;
-        }
-
-        // 2. Common PHP built-in Value Objects/Containers
-        $builtIns = [
-            'stdClass',
-            'DateTime',
-            'DateTimeImmutable',
-            'DateTimeZone',
-            'DateInterval',
-            'ArrayObject',
-            'ArrayIterator',
-            'SplFileInfo',
-            'ReflectionClass',
-        ];
-        if (in_array($className, $builtIns, true)) {
-            return true;
-        }
-
-        // 3. Data-centric suffixes (DTOs, Entities, Value Objects)
-        $dataSuffixes = ['Dto', 'Entity', 'Value', 'Vo', 'Collection', 'Criteria'];
-        foreach ($dataSuffixes as $suffix) {
-            if (str_ends_with($className, $suffix)) {
-                return true;
-            }
-        }
-
-        // 4. Anonymous classes
-        return $className === 'anonymous or dynamic class';
-    }
-
-    /**
-     * Extracts the class name from a New_ expression node.
-     *
-     * @param New_ $node The instantiation node.
-     *
-     * @return string The class name or a placeholder for anonymous classes.
-     */
-    protected static function getNewClassName(New_ $node): string
-    {
-        if ($node->class instanceof Name) {
-            return (string) $node->class;
-        }
-
-        return 'anonymous or dynamic class';
-    }
-
-    /**
      * Validates the parameter list of a function or method.
      *
      * @param array<Param> $params Array of parameter nodes.

@@ -73,13 +73,6 @@ class ElementVisitor extends NodeVisitorAbstract
     /** Current function or method name. */
     protected ?string $currentFunctionName = null;
 
-    /**
-     * Tracks method calls encountered.
-     *
-     * @var array<string, bool>
-     */
-    protected array $methodCalls = [];
-
     /** Indicates if currently inside a class, trait, method, function, or closure. */
     protected bool $isLocalScope = false;
 
@@ -148,7 +141,6 @@ class ElementVisitor extends NodeVisitorAbstract
         $this->checkFunctionNode($node);
         $this->handleClosure($node);
         $this->checkLocalScope($node);
-        $this->trackMethodCalls($node);
         $this->checkTryCatch($node);
         $this->runGenericCheckers($node);
         $this->checkTopLevelFunction($node);
@@ -243,19 +235,8 @@ class ElementVisitor extends NodeVisitorAbstract
             $this->isReadonlyClass = $node instanceof Class_ && $node->isReadonly();
             $this->issueHolder->setCurrentClass($this->currentClassName);
 
-            if ($node instanceof Class_) {
-                $attribs = [
-                    'abstract' => $node->isAbstract(),
-                    'final' => $node->isFinal(),
-                    'readonly' => $node->isReadonly(),
-                    'anonymous' => $node->isAnonymous(),
-                ];
-            } else {
-                $attribs = [];
-            }
-
             // Start class visitor to examine nodes within class.
-            $this->classVisitor = new ClassVisitor($this->issueHolder, $this->currentClassName, $attribs);
+            $this->classVisitor = new ClassVisitor($this->issueHolder, $this->currentClassName);
             $this->isLocalScope = true;
 
             // Check namespace name, class name, and file path.
@@ -368,19 +349,6 @@ class ElementVisitor extends NodeVisitorAbstract
         if ($this->isLocalScope) {
             $localScopeChecker = new LocalScopeChecker($node, $this->issueHolder);
             $this->issueHolder->addIssues($localScopeChecker->check());
-        }
-    }
-
-    /**
-     * Tracks method calls.
-     *
-     * @param Node $node The current node.
-     */
-    private function trackMethodCalls(Node $node): void
-    {
-        if (($node instanceof MethodCall || $node instanceof StaticCall) && $node->name instanceof Identifier) {
-            $methodName = $node->name->toString();
-            $this->methodCalls[$methodName] = true;
         }
     }
 

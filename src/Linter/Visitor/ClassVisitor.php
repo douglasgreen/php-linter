@@ -57,12 +57,10 @@ class ClassVisitor extends AbstractVisitorChecker
      *
      * @param IssueHolder $issueHolder The issue holder for collecting issues.
      * @param string|null $className The name of the class being visited, or null for anonymous classes.
-     * @param array<string, bool> $attribs Attributes of the class (e.g., 'abstract').
      */
     public function __construct(
         IssueHolder $issueHolder,
         protected readonly ?string $className,
-        protected readonly array $attribs = [],
     ) {
         parent::__construct($issueHolder);
     }
