@@ -22,22 +22,43 @@ use League\CommonMark\Node\Block\Paragraph;
 use League\CommonMark\Node\Node;
 use League\CommonMark\Parser\MarkdownParser;
 
+/**
+ * Validates Markdown documentation for consistency, style, and best practices.
+ *
+ * @api
+ */
 class DocStandardsChecker
 {
     private readonly Repository $repository;
 
     private readonly MarkdownParser $parser;
 
-    /** @var array<int, string> */
+    /**
+     * List of all repository files being checked.
+     *
+     * @var array<int, string>
+     */
     private array $files = [];
 
-    /** @var array<int, string> */
+    /**
+     * List of Markdown files discovered in the repository.
+     *
+     * @var array<int, string>
+     */
     private array $markdownFiles = [];
 
-    /** @var array<string, array{outgoing: array<int, string>, incoming: array<int, string>}> */
+    /**
+     * Graph of incoming and outgoing links between Markdown files.
+     *
+     * @var array<string, array{outgoing: array<int, string>, incoming: array<int, string>}>
+     */
     private array $linkGraph = [];
 
-    /** @var array<string, array<string, string>> */
+    /**
+     * Required documentation files and their purpose descriptions.
+     *
+     * @var array<string, array<string, string>>
+     */
     private array $requiredFiles = [
         'root' => [
             'README.md' => 'Project explanation and installation guide',
@@ -52,10 +73,18 @@ class DocStandardsChecker
         ],
     ];
 
-    /** @var array<int, string> */
+    /**
+     * Words that weaken documentation and should be avoided.
+     *
+     * @var array<int, string>
+     */
     private array $forbiddenWords = ['simply', 'just', 'obviously', 'clearly', 'basically', 'easily'];
 
-    /** @var array<string, string> */
+    /**
+     * Regex patterns used to detect exposed secrets in docs.
+     *
+     * @var array<string, string>
+     */
     private array $securityPatterns = [
         '/\b(sk-[a-zA-Z0-9]{20,})/i' => 'Exposed API key (OpenAI format)',
         '/\b(ghp_[a-zA-Z0-9]{36})/i' => 'Exposed GitHub token',
@@ -65,6 +94,13 @@ class DocStandardsChecker
         '/\b\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\b/' => 'IP address (verify not sensitive)',
     ];
 
+    /**
+     * Constructs a new DocStandardsChecker instance.
+     *
+     * @param string $rootDir The repository root directory.
+     * @param IssueHolder $issueHolder Collector for reported documentation issues.
+     * @param IgnoreList $ignoreList Patterns for files that should be skipped.
+     */
     public function __construct(
         private readonly string $rootDir,
         private readonly IssueHolder $issueHolder,
@@ -80,6 +116,9 @@ class DocStandardsChecker
         $this->parser = new MarkdownParser($environment);
     }
 
+    /**
+     * Runs all documentation standards checks.
+     */
     public function run(): void
     {
         $this->files = $this->repository->getAllFiles();

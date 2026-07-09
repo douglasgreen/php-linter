@@ -104,16 +104,6 @@ class FunctionVisitor extends AbstractVisitorChecker
     }
 
     /**
-     * Returns the variable reference counts.
-     *
-     * @return array<string, int>
-     */
-    public function getVariableCounts(): array
-    {
-        return $this->variableCounts;
-    }
-
-    /**
      * Returns the parameter definitions.
      *
      * @return array<string, array{type: string|null, promoted: bool}>

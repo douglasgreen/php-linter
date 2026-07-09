@@ -36,34 +36,4 @@ final class FunctionVisitorTest extends TestCase
         // Assert
         $this->assertSame($params, $visitor->getParams());
     }
-
-    #[Test]
-    public function testItCountsVariableReferences(): void
-    {
-        // Arrange
-        $visitor = new FunctionVisitor($this->issueHolder, 'testFunction', [], []);
-        $varNode = new Variable('testVar');
-
-        // Act
-        $visitor->checkNode($varNode);
-        $visitor->checkNode($varNode);
-
-        // Assert
-        $counts = $visitor->getVariableCounts();
-        $this->assertSame(2, $counts['testVar']);
-    }
-
-    #[Test]
-    public function testItIgnoresThisVariable(): void
-    {
-        // Arrange
-        $visitor = new FunctionVisitor($this->issueHolder, 'testFunction', [], []);
-        $varNode = new Variable('this');
-
-        // Act
-        $visitor->checkNode($varNode);
-        // Assert
-        $counts = $visitor->getVariableCounts();
-        $this->assertArrayNotHasKey('this', $counts);
-    }
 }
