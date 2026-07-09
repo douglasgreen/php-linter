@@ -216,8 +216,8 @@ The AST linter analyzes your code for the following stylistic and structural iss
 ### Package.json standards
 
 - **Basic structure:** Validates required fields: `name`, `version`, `description`.
-- **Package name:** Ensures lowercase, hyphenated format matching `@scope/package` pattern for scoped
-  packages.
+- **Package name:** Ensures lowercase, hyphenated format matching `@scope/package` pattern for
+  scoped packages.
 - **Package type:** Validates against allowed types (module, commonjs, esm, cjs).
 - **License:** Checks for presence and cross-file consistency with composer.json.
 - **Keywords:** Validates presence, checks for duplicates and forbidden generic terms.
@@ -231,8 +231,8 @@ The AST linter analyzes your code for the following stylistic and structural iss
 - **Deprecated configs:** Flags legacy config files (eslintrc, tslint, etc.) and suggests modern
   alternatives.
 - **File locations:** Validates files are in appropriate directories based on type.
-- **Tooling configs:** Checks Prettier, ESLint, and Stylelint configurations are present and
-  plugins are properly configured.
+- **Tooling configs:** Checks Prettier, ESLint, and Stylelint configurations are present and plugins
+  are properly configured.
 - **Cross-file consistency:** Compares project name, description, and license with composer.json.
 - **Public packages:** Additional validation for homepage, repository, author, and contributors.
 
@@ -288,7 +288,7 @@ The configuration file contains two optional arrays:
 ```json
 {
   "ignoreIssues": [
-    "Remove unused private non-static method MyClass::unusedMethod() to reduce dead code.",
+    "Remove unused private non-static method MyClass::unusedMethod() to reduce dead code."
   ],
   "metricLimits": {
     "classSize": 80,

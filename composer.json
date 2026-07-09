@@ -1,63 +1,63 @@
 {
-    "modified": "2026-03-05",
-    "name": "douglasgreen/php-linter",
-    "description": "Code linter for PHP based on Nikic parser",
-    "type": "library",
-    "license": "MIT",
-    "require": {
-        "php": "^8.3",
-        "justinrainbow/json-schema": ">=5.3",
-        "league/commonmark": "^2.8",
-        "nikic/php-parser": "^5.7",
-        "pdepend/pdepend": "^2.16.2",
-        "phpstan/phpdoc-parser": "^2.3",
-        "symfony/yaml": ">=6.4"
+  "name": "douglasgreen/php-linter",
+  "description": "Code linter for PHP based on Nikic parser",
+  "type": "library",
+  "license": "MIT",
+  "require": {
+    "php": ">=8.3 <8.6",
+    "justinrainbow/json-schema": "^6.10",
+    "league/commonmark": "^2.8",
+    "nikic/php-parser": "^5.7",
+    "pdepend/pdepend": "^2.16.2",
+    "phpstan/phpdoc-parser": "^2.3",
+    "symfony/yaml": "^7.4"
+  },
+  "require-dev": {
+    "friendsofphp/php-cs-fixer": "^3.95",
+    "phpstan/phpstan": "^2.2",
+    "phpunit/phpunit": "^12.5",
+    "rector/rector": "^2.5",
+    "shipmonk/dead-code-detector": "^1.3"
+  },
+  "autoload": {
+    "psr-4": {
+      "DouglasGreen\\PhpLinter\\": "src/"
+    }
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "Tests\\": "tests/"
+    }
+  },
+  "config": {
+    "platform": {
+      "php": "8.3"
     },
-    "require-dev": {
-        "friendsofphp/php-cs-fixer": "^3.94.2",
-        "phpstan/phpstan": "^2.1.39",
-        "phpunit/phpunit": "^12.5.14",
-        "rector/rector": "^2.3.8"
-    },
-    "autoload": {
-        "psr-4": {
-            "DouglasGreen\\PhpLinter\\": "src/"
-        }
-    },
-    "autoload-dev": {
-        "psr-4": {
-            "Tests\\": "tests/"
-        }
-    },
-    "config": {
-        "platform": {
-            "php": "8.3"
-        },
-        "sort-packages": true
-    },
-    "scripts": {
-        "lint": [
-            "php-linter",
-            "php-cs-fixer fix --dry-run --verbose",
-            "phpstan analyse",
-            "rector process --dry-run"
-        ],
-        "lint:fix": [
-            "php-cs-fixer fix",
-            "rector process"
-        ],
-        "test": [
-            "phpunit"
-        ],
-        "test:unit": [
-            "phpunit --testsuite=Unit"
-        ],
-        "qa": [
-            "@lint",
-            "@test"
-        ]
-    },
-    "bin": [
-        "bin/php-linter"
+    "sort-packages": true
+  },
+  "scripts": {
+    "lint": [
+      "php-linter",
+      "php-cs-fixer fix --dry-run --verbose",
+      "phpstan analyse",
+      "rector process --dry-run"
+    ],
+    "lint:fix": [
+      "php-cs-fixer fix",
+      "rector process"
+    ],
+    "test": [
+      "phpunit"
+    ],
+    "test:unit": [
+      "phpunit --testsuite=Unit"
+    ],
+    "qa": [
+      "@lint",
+      "@test"
     ]
+  },
+  "bin": [
+    "bin/php-linter"
+  ]
 }
