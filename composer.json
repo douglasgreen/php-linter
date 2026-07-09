@@ -13,6 +13,7 @@
     "symfony/yaml": "^7.4"
   },
   "require-dev": {
+    "carthage-software/mago": "^1.43.0",
     "friendsofphp/php-cs-fixer": "^3.95",
     "phpstan/phpstan": "^2.2",
     "phpunit/phpunit": "^12.5",
