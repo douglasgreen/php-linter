@@ -30,17 +30,32 @@ use PhpParser\ParserFactory;
  */
 class UnusedFunctionAnalyzer extends NodeVisitorAbstract
 {
-    /** @var array<string, array{file: string, line: int, type: string}> */
+    /**
+     * Map of function/method names to their definition metadata.
+     *
+     * @var array<string, array{file: string, line: int, type: string}>
+     */
     private array $definitions = [];
 
-    /** @var array<string, int> */
+    /**
+     * Call counts keyed by function or method name.
+     *
+     * @var array<string, int>
+     */
     private array $calls = [];
 
-    /** @var array<int, string|null> */
+    /**
+     * Stack of class names currently being traversed.
+     *
+     * @var array<int, string|null>
+     */
     private array $classStack = [];
 
     private string $currentFile = '';
 
+    /**
+     * Initializes the analyzer with issue and ignore list handlers.
+     */
     public function __construct(
         protected readonly IssueHolder $issueHolder,
         protected readonly IgnoreList $ignoreList,
@@ -66,6 +81,11 @@ class UnusedFunctionAnalyzer extends NodeVisitorAbstract
         $this->reportUnusedFunctions();
     }
 
+    /**
+     * Enters a node to track definitions and call usage.
+     *
+     * @param Node $node The node being entered.
+     */
     public function enterNode(Node $node)
     {
         // Track current class, handling nested or anonymous classes via a stack
@@ -121,6 +141,11 @@ class UnusedFunctionAnalyzer extends NodeVisitorAbstract
         return null;
     }
 
+    /**
+     * Leaves a node to update the class context stack.
+     *
+     * @param Node $node The node being left.
+     */
     public function leaveNode(Node $node)
     {
         if ($node instanceof ClassLike) {
@@ -135,7 +160,7 @@ class UnusedFunctionAnalyzer extends NodeVisitorAbstract
      */
     private function parseFile(Parser $parser, string $file): void
     {
-        $content = @file_get_contents($file);
+        $content = file_get_contents($file);
         if ($content === false) {
             return;
         }
@@ -150,8 +175,8 @@ class UnusedFunctionAnalyzer extends NodeVisitorAbstract
             if ($ast !== null) {
                 $traverser->traverse($ast);
             }
-        } catch (Error) {
-            // Silently ignore parse errors
+        } catch (Error $error) {
+            echo 'Parse Error: ', $error->getMessage();
         }
     }
 
