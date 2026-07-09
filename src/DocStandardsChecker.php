@@ -15,8 +15,6 @@ use League\CommonMark\Extension\CommonMark\CommonMarkCoreExtension;
 use League\CommonMark\Extension\CommonMark\Node\Block\FencedCode;
 use League\CommonMark\Extension\CommonMark\Node\Block\Heading;
 use League\CommonMark\Extension\CommonMark\Node\Block\IndentedCode;
-use League\CommonMark\Extension\CommonMark\Node\Block\ListBlock;
-use League\CommonMark\Extension\CommonMark\Node\Block\ListItem;
 use League\CommonMark\Extension\CommonMark\Node\Block\Paragraph;
 use League\CommonMark\Extension\CommonMark\Node\Inline\Link;
 use League\CommonMark\Extension\FrontMatter\FrontMatterExtension;
@@ -168,7 +166,7 @@ class DocStandardsChecker
 
             // Check kebab-case
             if (!preg_match('/^[a-z0-9]+(-[a-z0-9]+)*\.md$/', $basename) &&
-                !in_array($basename, ['README.md', 'CHANGELOG.md', 'LICENSE.md', 'CONTRIBUTING.md'])) {
+                !in_array($basename, ['README.md', 'CHANGELOG.md', 'LICENSE.md', 'CONTRIBUTING.md'], true)) {
                 $this->issueHolder->addIssue(
                     'Invalid filename: use kebab-case',
                     'Filenames should use kebab-case (e.g., deployment-guide.md) for consistency',
@@ -415,7 +413,6 @@ class DocStandardsChecker
             }
         }
     }
-
 
     private function buildLinkGraph(string $file, Document $document): void
     {

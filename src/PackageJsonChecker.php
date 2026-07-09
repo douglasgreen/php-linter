@@ -11,7 +11,6 @@ declare(strict_types=1);
 
 namespace DouglasGreen\PhpLinter;
 
-
 class PackageJsonChecker
 {
     // RFC 2119 levels
