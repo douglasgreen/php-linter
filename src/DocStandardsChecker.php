@@ -446,7 +446,7 @@ class DocStandardsChecker
 
             $dir = dirname($file);
             $targetPath = $dir === '.' ? $linkPath : $dir . '/' . $linkPath;
-            $targetPath = preg_replace('#/+#', '/', $targetPath);
+            $targetPath = (string) preg_replace('#/+#', '/', $targetPath);
 
             // Try with .md extension
             if (!in_array($targetPath, $this->files) && in_array($targetPath . '.md', $this->files)) {
