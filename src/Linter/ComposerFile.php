@@ -50,10 +50,10 @@ class ComposerFile
             $relativePath = str_replace('\\', DIRECTORY_SEPARATOR, $relativeClass) . '.php';
 
             if (is_array($paths)) {
-                foreach ($paths as $path) {
-                    $fullPath = rtrim($path, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR . $relativePath;
-                    return ltrim($fullPath, DIRECTORY_SEPARATOR);
-                }
+                // Only the first path is supported
+                $path = array_shift($paths);
+                $fullPath = rtrim($path, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR . $relativePath;
+                return ltrim($fullPath, DIRECTORY_SEPARATOR);
             } else {
                 $fullPath = rtrim($paths, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR . $relativePath;
                 return ltrim($fullPath, DIRECTORY_SEPARATOR);
