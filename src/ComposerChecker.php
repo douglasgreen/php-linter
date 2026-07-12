@@ -1113,7 +1113,7 @@ class ComposerChecker
     private function validateJsonSchema(): void
     {
         $schemaUrl = 'https://getcomposer.org/schema.json';
-        $schema = @file_get_contents($schemaUrl);
+        $schema = file_get_contents($schemaUrl);
 
         if ($schema === false) {
             $this->addIssue(
