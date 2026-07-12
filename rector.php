@@ -7,6 +7,7 @@ use Rector\TypeDeclaration\Rector\StmtsAwareInterface\DeclareStrictTypesRector;
 use Rector\ValueObject\PhpVersion;
 
 return RectorConfig::configure()
+    ->withoutParallel()
     ->withPaths([
         __DIR__ . '/src',
         __DIR__ . '/tests',

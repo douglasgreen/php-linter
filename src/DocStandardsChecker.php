@@ -63,10 +63,21 @@ class DocStandardsChecker
         'root' => [
             'README.md' => 'Project explanation and installation guide',
             'LICENSE.md' => 'Legal terms',
+            'AGENTS.md' => 'Project instructions for coding agents',
         ],
         'docs' => [
             'docs/ARCHITECTURE.md' => 'System architecture explanation',
         ],
+    ];
+
+    /**
+     * Alternative filenames that satisfy a required file.
+     *
+     * @var array<string, list<string>>
+     */
+    private array $requiredFileAlternatives = [
+        'LICENSE.md' => ['LICENSE', 'LICENSE.txt'],
+        'AGENTS.md' => ['CLAUDE.md'],
     ];
 
     /**
@@ -96,13 +107,15 @@ class DocStandardsChecker
      * @param string $rootDir The repository root directory.
      * @param IssueHolder $issueHolder Collector for reported documentation issues.
      * @param IgnoreList $ignoreList Patterns for files that should be skipped.
+     * @param Repository|null $repository Repository used to discover files.
      */
     public function __construct(
         private readonly string $rootDir,
         private readonly IssueHolder $issueHolder,
         private readonly IgnoreList $ignoreList,
+        ?Repository $repository = null,
     ) {
-        $this->repository = new Repository();
+        $this->repository = $repository ?? new Repository();
 
         // Initialize the League CommonMark parser environment
         $environment = new Environment([]);
@@ -139,7 +152,7 @@ class DocStandardsChecker
     {
         // Check root files
         foreach ($this->requiredFiles['root'] as $file => $description) {
-            if (in_array($file, $this->files, strict: true)) {
+            if ($this->hasRequiredFile($file)) {
                 continue;
             }
 
@@ -149,7 +162,7 @@ class DocStandardsChecker
 
         // Check docs structure
         foreach ($this->requiredFiles['docs'] as $file => $description) {
-            if (in_array($file, $this->files, strict: true)) {
+            if ($this->hasRequiredFile($file)) {
                 continue;
             }
 
@@ -179,6 +192,19 @@ class DocStandardsChecker
                 'Architecture Decision Records help track important design decisions (pattern: NNNN-decision-title.md)',
             );
         }
+    }
+
+    private function hasRequiredFile(string $file): bool
+    {
+        $acceptedFiles = array_merge([$file], $this->requiredFileAlternatives[$file] ?? []);
+
+        foreach ($acceptedFiles as $acceptedFile) {
+            if (in_array($acceptedFile, $this->files, strict: true)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     private function checkDirectoryStructure(): void

@@ -51,13 +51,12 @@ class ComposerFile
 
             if (is_array($paths)) {
                 // Only the first path is supported
-                $path = array_shift($paths);
+                $path = (string) array_shift($paths);
                 $fullPath = rtrim($path, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR . $relativePath;
                 return ltrim($fullPath, DIRECTORY_SEPARATOR);
-            } else {
-                $fullPath = rtrim($paths, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR . $relativePath;
-                return ltrim($fullPath, DIRECTORY_SEPARATOR);
             }
+            $fullPath = rtrim($paths, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR . $relativePath;
+            return ltrim($fullPath, DIRECTORY_SEPARATOR);
         }
 
         return null;
