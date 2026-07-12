@@ -202,7 +202,7 @@ The AST linter analyzes your code for the following stylistic and structural iss
 
 ### Documentation standards
 
-- **Required files:** Checks for essential files like README.md, CHANGELOG.md, LICENSE, and
+- **Required files:** Checks for essential files like README.md, CHANGELOG.md, LICENSE.md, and
   documentation structure.
 - **File naming:** Validates kebab-case naming convention for Markdown files.
 - **File encoding:** Ensures UTF-8 encoding and Unix line endings (LF).

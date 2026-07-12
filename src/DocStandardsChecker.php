@@ -63,13 +63,10 @@ class DocStandardsChecker
         'root' => [
             'README.md' => 'Project explanation and installation guide',
             'CHANGELOG.md' => 'Version history reference',
-            'LICENSE' => 'Legal terms',
+            'LICENSE.md' => 'Legal terms',
         ],
         'docs' => [
-            'docs/index.md' => 'Documentation navigation hub',
-            'docs/development/setup.md' => 'Development environment setup',
-            'docs/development/testing.md' => 'Testing procedures',
-            'docs/architecture.md' => 'System architecture explanation',
+            'docs/ARCHITECTURE.md' => 'System architecture explanation',
         ],
     ];
 
@@ -208,7 +205,15 @@ class DocStandardsChecker
             // Check kebab-case
             if (
                 !preg_match('/^[a-z0-9]+(-[a-z0-9]+)*\.md$/', $basename)
-                && !in_array($basename, ['README.md', 'CHANGELOG.md', 'LICENSE.md', 'CONTRIBUTING.md', 'AGENTS.md', 'CLAUDE.md'], true)
+                && !in_array($basename, [
+                    'AGENTS.md',
+                    'ARCHITECTURE.md',
+                    'CHANGELOG.md',
+                    'CLAUDE.md',
+                    'CONTRIBUTING.md',
+                    'LICENSE.md',
+                    'README.md',
+                ], true)
             ) {
                 $this->issueHolder->addIssue(
                     'Invalid filename: use kebab-case',
