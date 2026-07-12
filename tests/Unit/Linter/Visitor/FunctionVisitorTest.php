@@ -33,6 +33,6 @@ final class FunctionVisitorTest extends TestCase
         // Act
         $visitor = new FunctionVisitor($this->issueHolder, 'testFunction', [], $params);
         // Assert
-        $this->assertSame($params, $visitor->getParams());
+        static::assertSame($params, $visitor->getParams());
     }
 }

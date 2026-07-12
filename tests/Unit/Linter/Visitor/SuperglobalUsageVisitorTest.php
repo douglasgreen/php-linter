@@ -52,7 +52,7 @@ final class SuperglobalUsageVisitorTest extends TestCase
         // Act
         $visitor->enterNode($varNode);
         // Assert
-        $this->assertFalse($this->issueHolder->hasIssues());
+        static::assertFalse($this->issueHolder->hasIssues());
     }
 
     #[Test]
@@ -68,7 +68,7 @@ final class SuperglobalUsageVisitorTest extends TestCase
         $visitor->enterNode($function);
         $visitor->enterNode($varNode);
         // Assert
-        $this->assertTrue($this->issueHolder->hasIssues());
+        static::assertTrue($this->issueHolder->hasIssues());
     }
 
     #[Test]
@@ -83,7 +83,7 @@ final class SuperglobalUsageVisitorTest extends TestCase
         $visitor->enterNode($class);
         $visitor->enterNode($varNode);
         // Assert
-        $this->assertFalse($this->issueHolder->hasIssues());
+        static::assertFalse($this->issueHolder->hasIssues());
     }
 
     #[Test]
@@ -99,6 +99,6 @@ final class SuperglobalUsageVisitorTest extends TestCase
         $visitor->enterNode($varNode);
 
         // Assert
-        $this->assertFalse($this->issueHolder->hasIssues());
+        static::assertFalse($this->issueHolder->hasIssues());
     }
 }

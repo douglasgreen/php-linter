@@ -23,6 +23,6 @@ final class MetricGeneratorTest extends TestCase
         // Act
         $generator = new MetricGenerator($cache, []);
         // Assert
-        $this->assertInstanceOf(MetricGenerator::class, $generator);
+        static::assertInstanceOf(MetricGenerator::class, $generator);
     }
 }

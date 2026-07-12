@@ -34,7 +34,7 @@ final class LocalScopeCheckerTest extends TestCase
         $checker->check();
 
         // Assert
-        $this->assertTrue($this->issueHolder->hasIssues());
+        static::assertTrue($this->issueHolder->hasIssues());
     }
 
     #[Test]
@@ -47,7 +47,7 @@ final class LocalScopeCheckerTest extends TestCase
         $checker->check();
 
         // Assert
-        $this->assertTrue($this->issueHolder->hasIssues());
+        static::assertTrue($this->issueHolder->hasIssues());
     }
 
     #[Test]
@@ -61,6 +61,6 @@ final class LocalScopeCheckerTest extends TestCase
         $checker->check();
 
         // Assert
-        $this->assertFalse($this->issueHolder->hasIssues());
+        static::assertFalse($this->issueHolder->hasIssues());
     }
 }

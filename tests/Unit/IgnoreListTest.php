@@ -47,8 +47,8 @@ final class IgnoreListTest extends TestCase
         $ignoreList = new IgnoreList($this->tempDir);
 
         // Assert
-        $this->assertTrue($ignoreList->shouldIgnore('vendor/autoload.php'));
-        $this->assertFalse($ignoreList->shouldIgnore('src/Controller.php'));
+        static::assertTrue($ignoreList->shouldIgnore('vendor/autoload.php'));
+        static::assertFalse($ignoreList->shouldIgnore('src/Controller.php'));
     }
 
     #[Test]
@@ -60,9 +60,9 @@ final class IgnoreListTest extends TestCase
         $ignoreList = new IgnoreList($this->tempDir);
 
         // Assert
-        $this->assertTrue($ignoreList->shouldIgnore('test1.php'));
-        $this->assertTrue($ignoreList->shouldIgnore('testA.php'));
-        $this->assertFalse($ignoreList->shouldIgnore('test10.php'));
+        static::assertTrue($ignoreList->shouldIgnore('test1.php'));
+        static::assertTrue($ignoreList->shouldIgnore('testA.php'));
+        static::assertFalse($ignoreList->shouldIgnore('test10.php'));
     }
 
     #[Test]
@@ -74,8 +74,8 @@ final class IgnoreListTest extends TestCase
         $ignoreList = new IgnoreList($this->tempDir);
 
         // Assert
-        $this->assertTrue($ignoreList->shouldIgnore('cache/file1.php'));
-        $this->assertTrue($ignoreList->shouldIgnore('cache/subdir/file2.php'));
+        static::assertTrue($ignoreList->shouldIgnore('cache/file1.php'));
+        static::assertTrue($ignoreList->shouldIgnore('cache/subdir/file2.php'));
     }
 
     #[Test]
@@ -87,7 +87,7 @@ final class IgnoreListTest extends TestCase
         $ignoreList = new IgnoreList($this->tempDir);
 
         // Assert
-        $this->assertTrue($ignoreList->shouldIgnore('vendor/test.php'));
+        static::assertTrue($ignoreList->shouldIgnore('vendor/test.php'));
     }
 
     #[Test]
@@ -96,7 +96,7 @@ final class IgnoreListTest extends TestCase
         // Act
         $ignoreList = new IgnoreList($this->tempDir);
         // Assert
-        $this->assertFalse($ignoreList->shouldIgnore('any/file.php'));
+        static::assertFalse($ignoreList->shouldIgnore('any/file.php'));
     }
 
     #[Test]
@@ -107,7 +107,7 @@ final class IgnoreListTest extends TestCase
         $result = IgnoreList::addSubpath($base, $sub);
 
         // Assert
-        $this->assertSame($expected, $result);
+        static::assertSame($expected, $result);
     }
 
     /**

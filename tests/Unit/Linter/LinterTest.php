@@ -41,7 +41,7 @@ final class LinterTest extends TestCase
         $linter = new Linter($composerFile, $ignoreList, $issueHolder);
 
         // Assert
-        $this->assertInstanceOf(Linter::class, $linter);
+        static::assertInstanceOf(Linter::class, $linter);
     }
 
     private function removeDirectory(string $dir): void

@@ -37,8 +37,8 @@ final class ConfigTest extends TestCase
         $config = new Config($this->tempDir, $configPath);
 
         // Assert
-        $this->assertSame([], $config->getIgnoreIssues());
-        $this->assertSame([], $config->getMetricLimits());
+        static::assertSame([], $config->getIgnoreIssues());
+        static::assertSame([], $config->getMetricLimits());
     }
 
     #[Test]
@@ -53,7 +53,7 @@ final class ConfigTest extends TestCase
         // Act
         $config = new Config($this->tempDir, $configPath);
         // Assert
-        $this->assertSame(['Test issue 1', 'Test issue 2'], $config->getIgnoreIssues());
+        static::assertSame(['Test issue 1', 'Test issue 2'], $config->getIgnoreIssues());
     }
 
     #[Test]
@@ -73,7 +73,7 @@ final class ConfigTest extends TestCase
         $config = new Config($this->tempDir, $configPath);
 
         // Assert
-        $this->assertSame(['classSize' => 50, 'methodLoc' => 100], $config->getMetricLimits());
+        static::assertSame(['classSize' => 50, 'methodLoc' => 100], $config->getMetricLimits());
     }
 
     #[Test]
@@ -87,7 +87,7 @@ final class ConfigTest extends TestCase
         $config = new Config($this->tempDir);
 
         // Assert
-        $this->assertSame(['Default path issue'], $config->getIgnoreIssues());
+        static::assertSame(['Default path issue'], $config->getIgnoreIssues());
     }
 
     #[Test]
@@ -104,7 +104,7 @@ final class ConfigTest extends TestCase
         $config = new Config($this->tempDir, $configPath);
 
         // Assert
-        $this->assertSame(['Valid issue', 'Another valid issue'], $config->getIgnoreIssues());
+        static::assertSame(['Valid issue', 'Another valid issue'], $config->getIgnoreIssues());
     }
 
     private function removeDirectory(string $dir): void

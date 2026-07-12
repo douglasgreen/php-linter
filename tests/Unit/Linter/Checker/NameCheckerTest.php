@@ -58,7 +58,7 @@ final class NameCheckerTest extends TestCase
         $checker = new NameChecker($node, $this->issueHolder);
         $checker->check();
         // Assert
-        $this->assertFalse($this->issueHolder->hasIssues());
+        static::assertFalse($this->issueHolder->hasIssues());
     }
 
     #[Test]
@@ -73,7 +73,7 @@ final class NameCheckerTest extends TestCase
         $checker->check();
 
         // Assert
-        $this->assertTrue($this->issueHolder->hasIssues());
+        static::assertTrue($this->issueHolder->hasIssues());
     }
 
     #[Test]
@@ -85,7 +85,7 @@ final class NameCheckerTest extends TestCase
         $checker = new NameChecker($node, $this->issueHolder);
         $checker->check();
         // Assert
-        $this->assertTrue($this->issueHolder->hasIssues());
+        static::assertTrue($this->issueHolder->hasIssues());
     }
 
     #[Test]
@@ -97,7 +97,7 @@ final class NameCheckerTest extends TestCase
         $checker = new NameChecker($node, $this->issueHolder);
         $checker->check();
         // Assert
-        $this->assertTrue($this->issueHolder->hasIssues());
+        static::assertTrue($this->issueHolder->hasIssues());
     }
 
     #[Test]
@@ -111,6 +111,6 @@ final class NameCheckerTest extends TestCase
         $checker->check();
 
         // Assert
-        $this->assertFalse($this->issueHolder->hasIssues());
+        static::assertFalse($this->issueHolder->hasIssues());
     }
 }

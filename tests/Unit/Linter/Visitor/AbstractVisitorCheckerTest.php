@@ -38,7 +38,7 @@ final class AbstractVisitorCheckerTest extends TestCase
         $visitor->checkNode(new Nop());
 
         // Assert
-        $this->assertTrue($this->issueHolder->hasIssues());
-        $this->assertSame(['Test issue' => true], $this->issueHolder->getIssues());
+        static::assertTrue($this->issueHolder->hasIssues());
+        static::assertSame(['Test issue' => true], $this->issueHolder->getIssues());
     }
 }

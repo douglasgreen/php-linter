@@ -112,7 +112,7 @@ final class DocBlockCheckerTest extends TestCase
         $issues = $this->issueHolder->getIssues();
 
         // Assert
-        $this->assertArrayHasKey('Public API elements MUST have a DocBlock.', $issues);
+        static::assertArrayHasKey('Public API elements MUST have a DocBlock.', $issues);
     }
 
     /**
@@ -141,7 +141,7 @@ final class DocBlockCheckerTest extends TestCase
         $issues = $this->issueHolder->getIssues();
 
         // Assert
-        $this->assertEmpty($issues);
+        static::assertEmpty($issues);
     }
 
     /**
@@ -168,10 +168,10 @@ final class DocBlockCheckerTest extends TestCase
             // We only check that the specific summary issue is NOT present.
             // Other issues (like missing tags) might exist, so we don't assertEmpty.
             foreach (array_keys($issues) as $message) {
-                $this->assertStringNotContainsString('summary', $message);
+                static::assertStringNotContainsString('summary', $message);
             }
         } else {
-            $this->assertArrayHasKey($expectedIssue, $issues);
+            static::assertArrayHasKey($expectedIssue, $issues);
         }
     }
 
@@ -194,7 +194,7 @@ final class DocBlockCheckerTest extends TestCase
         $issues = $this->issueHolder->getIssues();
 
         // Assert
-        $this->assertArrayHasKey($expectedIssue, $issues);
+        static::assertArrayHasKey($expectedIssue, $issues);
     }
 
     /**
@@ -221,7 +221,7 @@ final class DocBlockCheckerTest extends TestCase
         $issues = $this->issueHolder->getIssues();
 
         // Assert
-        $this->assertArrayHasKey(
+        static::assertArrayHasKey(
             'Use typed generics syntax (e.g., list<Foo> or array<string, int>) instead of bare "array".',
             $issues,
         );
@@ -253,6 +253,6 @@ final class DocBlockCheckerTest extends TestCase
         $issues = $this->issueHolder->getIssues();
 
         // Assert
-        $this->assertArrayHasKey('Tag @api is out of order. Follow the standard tag ordering.', $issues);
+        static::assertArrayHasKey('Tag @api is out of order. Follow the standard tag ordering.', $issues);
     }
 }

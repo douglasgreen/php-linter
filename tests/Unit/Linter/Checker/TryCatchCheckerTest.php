@@ -40,7 +40,7 @@ final class TryCatchCheckerTest extends TestCase
         $checker->check();
 
         // Assert
-        $this->assertTrue($this->issueHolder->hasIssues());
+        static::assertTrue($this->issueHolder->hasIssues());
     }
 
     #[Test]
@@ -54,7 +54,7 @@ final class TryCatchCheckerTest extends TestCase
         $checker->check();
 
         // Assert
-        $this->assertTrue($this->issueHolder->hasIssues());
+        static::assertTrue($this->issueHolder->hasIssues());
     }
 
     #[Test]
@@ -68,7 +68,7 @@ final class TryCatchCheckerTest extends TestCase
         $checker = new TryCatchChecker($node, $this->issueHolder);
         $checker->check();
         // Assert
-        $this->assertFalse($this->issueHolder->hasIssues());
+        static::assertFalse($this->issueHolder->hasIssues());
     }
 
     #[Test]
@@ -82,7 +82,7 @@ final class TryCatchCheckerTest extends TestCase
         $issues = $checker->check();
 
         // Assert
-        $this->assertSame([], $issues);
-        $this->assertFalse($this->issueHolder->hasIssues());
+        static::assertSame([], $issues);
+        static::assertFalse($this->issueHolder->hasIssues());
     }
 }

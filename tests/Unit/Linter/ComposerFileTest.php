@@ -45,7 +45,7 @@ final class ComposerFileTest extends TestCase
         $composerFile = new ComposerFile($composerPath);
 
         // Assert
-        $this->assertSame('src/Controller.php', $composerFile->convertClassNameToFileName('App\\Controller'));
+        static::assertSame('src/Controller.php', $composerFile->convertClassNameToFileName('App\\Controller'));
     }
 
     #[Test]
@@ -66,7 +66,7 @@ final class ComposerFileTest extends TestCase
         $composerFile = new ComposerFile($composerPath);
 
         // Assert
-        $this->assertSame('src/Controller.php', $composerFile->convertClassNameToFileName('App\\Controller'));
+        static::assertSame('src/Controller.php', $composerFile->convertClassNameToFileName('App\\Controller'));
     }
 
     #[Test]
@@ -87,7 +87,7 @@ final class ComposerFileTest extends TestCase
         $composerFile = new ComposerFile($composerPath);
 
         // Assert
-        $this->assertNull($composerFile->convertClassNameToFileName('Vendor\\Package\\Class'));
+        static::assertNull($composerFile->convertClassNameToFileName('Vendor\\Package\\Class'));
     }
 
     #[Test]
@@ -108,7 +108,7 @@ final class ComposerFileTest extends TestCase
         $composerFile = new ComposerFile($composerPath);
 
         // Assert
-        $this->assertSame(
+        static::assertSame(
             'src/Service/User/Manager.php',
             $composerFile->convertClassNameToFileName('App\\Service\\User\\Manager'),
         );
@@ -130,7 +130,7 @@ final class ComposerFileTest extends TestCase
         $composerFile = new ComposerFile($composerPath);
 
         // Assert
-        $this->assertNull($composerFile->convertClassNameToFileName('App\\Controller'));
+        static::assertNull($composerFile->convertClassNameToFileName('App\\Controller'));
     }
 
     private function removeDirectory(string $dir): void
