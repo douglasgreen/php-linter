@@ -32,8 +32,8 @@ final class MetricCheckerTest extends TestCase
         // Act
         $result = $checker->checkMaxLinesOfCode(100);
         // Assert
-        static::assertSame(MetricChecker::STATUS_OK, $result);
-        static::assertFalse($this->issueHolder->hasIssues());
+        $this->assertSame(MetricChecker::STATUS_OK, $result);
+        $this->assertFalse($this->issueHolder->hasIssues());
     }
 
     #[Test]
@@ -45,8 +45,8 @@ final class MetricCheckerTest extends TestCase
         // Act
         $result = $checker->checkMaxLinesOfCode(100);
         // Assert
-        static::assertSame(MetricChecker::STATUS_ERROR, $result);
-        static::assertTrue($this->issueHolder->hasIssues());
+        $this->assertSame(MetricChecker::STATUS_ERROR, $result);
+        $this->assertTrue($this->issueHolder->hasIssues());
     }
 
     #[Test]
@@ -59,7 +59,7 @@ final class MetricCheckerTest extends TestCase
         $result = $checker->checkMaxCyclomaticComplexity(25);
 
         // Assert
-        static::assertSame(MetricChecker::STATUS_ERROR, $result);
+        $this->assertSame(MetricChecker::STATUS_ERROR, $result);
     }
 
     #[Test]
@@ -73,7 +73,7 @@ final class MetricCheckerTest extends TestCase
         $result = $checker->checkMinMaintainabilityIndex(25.0);
 
         // Assert
-        static::assertSame(MetricChecker::STATUS_ERROR, $result);
+        $this->assertSame(MetricChecker::STATUS_ERROR, $result);
     }
 
     #[Test]
@@ -86,7 +86,7 @@ final class MetricCheckerTest extends TestCase
         $result = $checker->checkMinCommentRatio(0.05);
 
         // Assert
-        static::assertSame(MetricChecker::STATUS_OK, $result);
+        $this->assertSame(MetricChecker::STATUS_OK, $result);
     }
 
     #[Test]
@@ -103,8 +103,8 @@ final class MetricCheckerTest extends TestCase
         $issues = $this->issueHolder->getIssues();
 
         // Assert
-        static::assertNotEmpty($issues);
-        static::assertArrayHasKey('Test message', $issues);
+        $this->assertNotEmpty($issues);
+        $this->assertArrayHasKey('Test message', $issues);
     }
 
     #[Test]
@@ -121,8 +121,8 @@ final class MetricCheckerTest extends TestCase
         $issues = $this->issueHolder->getIssues();
 
         // Assert
-        static::assertNotEmpty($issues);
-        static::assertArrayHasKey('Test message', $issues);
+        $this->assertNotEmpty($issues);
+        $this->assertArrayHasKey('Test message', $issues);
     }
 
     #[Test]
@@ -139,7 +139,7 @@ final class MetricCheckerTest extends TestCase
         $issues = $this->issueHolder->getIssues();
 
         // Assert
-        static::assertNotEmpty($issues);
-        static::assertArrayHasKey('Test message', $issues);
+        $this->assertNotEmpty($issues);
+        $this->assertArrayHasKey('Test message', $issues);
     }
 }

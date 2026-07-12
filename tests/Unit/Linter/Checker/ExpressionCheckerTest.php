@@ -41,7 +41,7 @@ final class ExpressionCheckerTest extends TestCase
         $checker = new ExpressionChecker($node, $this->issueHolder);
         $checker->check();
         // Assert
-        static::assertTrue($this->issueHolder->hasIssues());
+        $this->assertTrue($this->issueHolder->hasIssues());
     }
 
     #[Test]
@@ -55,7 +55,7 @@ final class ExpressionCheckerTest extends TestCase
         $checker->check();
 
         // Assert
-        static::assertTrue($this->issueHolder->hasIssues());
+        $this->assertTrue($this->issueHolder->hasIssues());
     }
 
     #[Test]
@@ -67,7 +67,7 @@ final class ExpressionCheckerTest extends TestCase
         $checker = new ExpressionChecker($node, $this->issueHolder);
         $checker->check();
         // Assert
-        static::assertTrue($this->issueHolder->hasIssues());
+        $this->assertTrue($this->issueHolder->hasIssues());
     }
 
     #[Test]
@@ -81,7 +81,7 @@ final class ExpressionCheckerTest extends TestCase
         $checker->check();
 
         // Assert
-        static::assertTrue($this->issueHolder->hasIssues());
+        $this->assertTrue($this->issueHolder->hasIssues());
     }
 
     #[Test]
@@ -95,7 +95,7 @@ final class ExpressionCheckerTest extends TestCase
         $checker->check();
 
         // Assert
-        static::assertFalse($this->issueHolder->hasIssues());
+        $this->assertFalse($this->issueHolder->hasIssues());
     }
 
     #[Test]
@@ -110,6 +110,6 @@ final class ExpressionCheckerTest extends TestCase
         $checker->check();
 
         // Assert
-        static::assertTrue($this->issueHolder->hasIssues());
+        $this->assertTrue($this->issueHolder->hasIssues());
     }
 }

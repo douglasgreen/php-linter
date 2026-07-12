@@ -481,9 +481,11 @@ class PackageJsonChecker
             if (in_array($lic, $validLicenses, true)) {
                 continue;
             }
+
             if (preg_match('/^proprietary|commercial|custom:/i', (string) $lic)) {
                 continue;
             }
+
             $this->addIssue(
                 self::MAY,
                 'Non-standard license',
@@ -1026,9 +1028,11 @@ class PackageJsonChecker
             if (!isset($seen[$pkg])) {
                 continue;
             }
+
             if ($seen[$pkg]['ver'] === $ver) {
                 continue;
             }
+
             $this->addIssue(
                 self::SHOULD,
                 'Version inconsistency',
@@ -1045,9 +1049,11 @@ class PackageJsonChecker
             if (!isset($seen[$pkg])) {
                 continue;
             }
+
             if ($seen[$pkg]['ver'] === $ver) {
                 continue;
             }
+
             $this->addIssue(
                 self::SHOULD,
                 'Peer dependency mismatch',
@@ -1367,9 +1373,11 @@ class PackageJsonChecker
                 if (!is_array($contributor)) {
                     continue;
                 }
+
                 if (($contributor['name'] ?? '') !== 'Douglas Green') {
                     continue;
                 }
+
                 $foundDouglas = true;
                 if (($contributor['role'] ?? '') !== 'Developer') {
                     $this->addIssue(

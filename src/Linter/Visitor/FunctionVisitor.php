@@ -79,9 +79,11 @@ class FunctionVisitor extends AbstractVisitorChecker
             if ($count !== 1) {
                 continue;
             }
+
             if (isset($this->params[$variable])) {
                 continue;
             }
+
             $issue = sprintf(
                 'Remove or inline variable "%s" in function "%s()"; it is referenced only once.',
                 $variable,

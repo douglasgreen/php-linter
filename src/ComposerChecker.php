@@ -1020,9 +1020,11 @@ class ComposerChecker
                 if (($author['name'] ?? '') !== 'Douglas Green') {
                     continue;
                 }
+
                 if (($author['email'] ?? '') !== 'douglas@nurd.site') {
                     continue;
                 }
+
                 $foundAuthor = true;
 
                 // Validate other fields

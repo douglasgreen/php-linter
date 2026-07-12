@@ -164,9 +164,11 @@ class DocStandardsChecker
             if (!str_starts_with((string) $file, 'docs/adr/')) {
                 continue;
             }
+
             if (!preg_match('/^\d{4}-/', basename((string) $file))) {
                 continue;
             }
+
             $hasAdr = true;
             break;
         }

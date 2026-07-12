@@ -27,8 +27,8 @@ final class IssueHolderTest extends TestCase
         // Act
         $this->issueHolder->addIssue('Test issue');
         // Assert
-        static::assertTrue($this->issueHolder->hasIssues());
-        static::assertArrayHasKey('Test issue', $this->issueHolder->getIssues());
+        $this->assertTrue($this->issueHolder->hasIssues());
+        $this->assertArrayHasKey('Test issue', $this->issueHolder->getIssues());
     }
 
     #[Test]
@@ -41,8 +41,8 @@ final class IssueHolderTest extends TestCase
         $this->issueHolder->clearIssues();
 
         // Assert
-        static::assertFalse($this->issueHolder->hasIssues());
-        static::assertSame([], $this->issueHolder->getIssues());
+        $this->assertFalse($this->issueHolder->hasIssues());
+        $this->assertSame([], $this->issueHolder->getIssues());
     }
 
     #[Test]
@@ -53,7 +53,7 @@ final class IssueHolderTest extends TestCase
         // Assert
         // Issue should be ignored when added
         $this->issueHolder->addIssue('Ignored issue');
-        static::assertFalse($this->issueHolder->hasIssues());
+        $this->assertFalse($this->issueHolder->hasIssues());
     }
 
     #[Test]
@@ -64,7 +64,7 @@ final class IssueHolderTest extends TestCase
 
         // Assert
         $issues = $this->issueHolder->getIssues();
-        static::assertArrayHasKey('Issue 1', $issues);
-        static::assertArrayHasKey('Issue 2', $issues);
+        $this->assertArrayHasKey('Issue 1', $issues);
+        $this->assertArrayHasKey('Issue 2', $issues);
     }
 }

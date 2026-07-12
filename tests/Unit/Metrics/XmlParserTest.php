@@ -69,9 +69,9 @@ final class XmlParserTest extends TestCase
         $data = $parser->getData();
 
         // Assert
-        static::assertArrayHasKey('files', $data);
-        static::assertArrayHasKey('packages', $data);
-        static::assertArrayHasKey('metrics', $data);
+        $this->assertArrayHasKey('files', $data);
+        $this->assertArrayHasKey('packages', $data);
+        $this->assertArrayHasKey('metrics', $data);
     }
 
     #[Test]
@@ -97,9 +97,9 @@ final class XmlParserTest extends TestCase
         $files = $parser->getFiles();
 
         // Assert
-        static::assertCount(2, $files);
-        static::assertSame('file1.php', $files[0]->name);
-        static::assertSame(30, $files[0]->loc);
+        $this->assertCount(2, $files);
+        $this->assertSame('file1.php', $files[0]->name);
+        $this->assertSame(30, $files[0]->loc);
     }
 
     private function removeDirectory(string $dir): void

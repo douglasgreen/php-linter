@@ -27,7 +27,7 @@ final class ElementVisitorTest extends TestCase
         $visitor = new ElementVisitor($composerFile, 'test.php', $issueHolder);
 
         // Assert
-        static::assertInstanceOf(ElementVisitor::class, $visitor);
+        $this->assertInstanceOf(ElementVisitor::class, $visitor);
     }
 
     #[Test]
@@ -39,6 +39,6 @@ final class ElementVisitorTest extends TestCase
         $visitor = new ElementVisitor($composerFile, 'test.php', $issueHolder);
 
         // Assert
-        static::assertFalse($visitor->isLocalScope());
+        $this->assertFalse($visitor->isLocalScope());
     }
 }

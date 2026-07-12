@@ -21,10 +21,10 @@ final class MetricDataTest extends TestCase
         $metricData = new MetricData();
 
         // Assert
-        static::assertNull($metricData->name);
-        static::assertNull($metricData->filename);
-        static::assertSame([], $metricData->methods);
-        static::assertNull($metricData->loc);
+        $this->assertNull($metricData->name);
+        $this->assertNull($metricData->filename);
+        $this->assertSame([], $metricData->methods);
+        $this->assertNull($metricData->loc);
     }
 
     #[Test]
@@ -57,26 +57,26 @@ final class MetricDataTest extends TestCase
             varsnp: 4,
         );
         // Assert
-        static::assertSame('TestClass', $metricData->name);
-        static::assertSame('TestClass.php', $metricData->filename);
-        static::assertSame($methodData, $metricData->methods);
-        static::assertSame(5, $metricData->ca);
-        static::assertSame(3, $metricData->ce);
-        static::assertSame(8, $metricData->cbo);
-        static::assertSame(10, $metricData->ccn2);
-        static::assertEqualsWithDelta(1.5, $metricData->cr, PHP_FLOAT_EPSILON);
-        static::assertSame(15, $metricData->csz);
-        static::assertSame(50, $metricData->cloc);
-        static::assertSame(2, $metricData->dit);
-        static::assertSame(200, $metricData->eloc);
-        static::assertSame(5000, $metricData->he);
-        static::assertSame(250, $metricData->loc);
-        static::assertEqualsWithDelta(85.5, $metricData->mi, PHP_FLOAT_EPSILON);
-        static::assertSame(3, $metricData->nocc);
-        static::assertSame(8, $metricData->npm);
-        static::assertSame(500, $metricData->npath);
-        static::assertSame(10, $metricData->vars);
-        static::assertSame(4, $metricData->varsnp);
+        $this->assertSame('TestClass', $metricData->name);
+        $this->assertSame('TestClass.php', $metricData->filename);
+        $this->assertSame($methodData, $metricData->methods);
+        $this->assertSame(5, $metricData->ca);
+        $this->assertSame(3, $metricData->ce);
+        $this->assertSame(8, $metricData->cbo);
+        $this->assertSame(10, $metricData->ccn2);
+        $this->assertEqualsWithDelta(1.5, $metricData->cr, PHP_FLOAT_EPSILON);
+        $this->assertSame(15, $metricData->csz);
+        $this->assertSame(50, $metricData->cloc);
+        $this->assertSame(2, $metricData->dit);
+        $this->assertSame(200, $metricData->eloc);
+        $this->assertSame(5000, $metricData->he);
+        $this->assertSame(250, $metricData->loc);
+        $this->assertEqualsWithDelta(85.5, $metricData->mi, PHP_FLOAT_EPSILON);
+        $this->assertSame(3, $metricData->nocc);
+        $this->assertSame(8, $metricData->npm);
+        $this->assertSame(500, $metricData->npath);
+        $this->assertSame(10, $metricData->vars);
+        $this->assertSame(4, $metricData->varsnp);
     }
 
     #[Test]
@@ -86,9 +86,9 @@ final class MetricDataTest extends TestCase
         $metricData = new MetricData(name: 'PartialClass', loc: 100);
 
         // Assert
-        static::assertSame('PartialClass', $metricData->name);
-        static::assertNull($metricData->filename);
-        static::assertSame(100, $metricData->loc);
-        static::assertNull($metricData->ca);
+        $this->assertSame('PartialClass', $metricData->name);
+        $this->assertNull($metricData->filename);
+        $this->assertSame(100, $metricData->loc);
+        $this->assertNull($metricData->ca);
     }
 }

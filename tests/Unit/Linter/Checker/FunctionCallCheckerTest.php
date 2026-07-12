@@ -48,7 +48,7 @@ final class FunctionCallCheckerTest extends TestCase
         $checker = new FunctionCallChecker($node, $this->issueHolder);
         $checker->check();
         // Assert
-        static::assertTrue($this->issueHolder->hasIssues());
+        $this->assertTrue($this->issueHolder->hasIssues());
     }
 
     #[Test]
@@ -61,7 +61,7 @@ final class FunctionCallCheckerTest extends TestCase
         $checker->check();
 
         // Assert
-        static::assertFalse($this->issueHolder->hasIssues());
+        $this->assertFalse($this->issueHolder->hasIssues());
     }
 
     #[Test]
@@ -74,6 +74,6 @@ final class FunctionCallCheckerTest extends TestCase
         $checker->check();
 
         // Assert
-        static::assertFalse($this->issueHolder->hasIssues());
+        $this->assertFalse($this->issueHolder->hasIssues());
     }
 }

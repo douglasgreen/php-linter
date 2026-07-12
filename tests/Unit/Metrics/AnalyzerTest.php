@@ -44,7 +44,7 @@ final class AnalyzerTest extends TestCase
         $analyzer = new Analyzer($this->tempDir, $cache, $ignoreList, $config, $issueHolder);
 
         // Assert
-        static::assertInstanceOf(Analyzer::class, $analyzer);
+        $this->assertInstanceOf(Analyzer::class, $analyzer);
     }
 
     private function removeDirectory(string $dir): void

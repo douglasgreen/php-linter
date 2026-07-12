@@ -33,8 +33,8 @@ final class CacheManagerTest extends TestCase
         // Act
         new CacheManager($this->tempDir);
         // Assert
-        static::assertDirectoryExists($this->tempDir . '/var/cache/pdepend');
-        static::assertDirectoryExists($this->tempDir . '/var/cache/pdepend/files');
+        $this->assertDirectoryExists($this->tempDir . '/var/cache/pdepend');
+        $this->assertDirectoryExists($this->tempDir . '/var/cache/pdepend/files');
     }
 
     #[Test]
@@ -43,9 +43,9 @@ final class CacheManagerTest extends TestCase
         // Arrange
         $cacheManager = new CacheManager($this->tempDir);
         // Act & Assert
-        static::assertSame($this->tempDir . '/var/cache/pdepend', $cacheManager->getCacheDir());
-        static::assertSame($this->tempDir . '/var/cache/pdepend/files', $cacheManager->getFileCacheDir());
-        static::assertSame($this->tempDir . '/var/cache/pdepend/summary.xml', $cacheManager->getSummaryFile());
+        $this->assertSame($this->tempDir . '/var/cache/pdepend', $cacheManager->getCacheDir());
+        $this->assertSame($this->tempDir . '/var/cache/pdepend/files', $cacheManager->getFileCacheDir());
+        $this->assertSame($this->tempDir . '/var/cache/pdepend/summary.xml', $cacheManager->getSummaryFile());
     }
 
     #[Test]
@@ -58,28 +58,22 @@ final class CacheManagerTest extends TestCase
         // Act
         $cacheManager->copyFile($sourceFile, 'subdir/dest.txt');
         // Assert
-        static::assertFileExists($this->tempDir . '/var/cache/pdepend/files/subdir/dest.txt');
-        static::assertSame(
-            'test content',
-            file_get_contents($this->tempDir . '/var/cache/pdepend/files/subdir/dest.txt'),
-        );
+        $this->assertFileExists($this->tempDir . '/var/cache/pdepend/files/subdir/dest.txt');
+        $this->assertSame('test content', file_get_contents($this->tempDir . '/var/cache/pdepend/files/subdir/dest.txt'));
     }
 
     #[Test]
     public function testItResolvesOriginalFileFromCachePath(): void
     {
         // Act & Assert
-        static::assertSame(
-            'src/Controller.php',
-            CacheManager::getOriginalFile('var/cache/pdepend/files/src/Controller.php.php'),
-        );
+        $this->assertSame('src/Controller.php', CacheManager::getOriginalFile('var/cache/pdepend/files/src/Controller.php.php'));
     }
 
     #[Test]
     public function testItReturnsCacheFileWhenNotInCacheDirectory(): void
     {
         // Act & Assert
-        static::assertSame('src/Controller.php', CacheManager::getOriginalFile('src/Controller.php'));
+        $this->assertSame('src/Controller.php', CacheManager::getOriginalFile('src/Controller.php'));
     }
 
     private function removeDirectory(string $dir): void

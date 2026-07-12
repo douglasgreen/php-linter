@@ -40,7 +40,7 @@ final class FunctionCheckerTest extends TestCase
         $checker = new FunctionChecker($node, $this->issueHolder);
         $checker->check();
         // Assert
-        static::assertTrue($this->issueHolder->hasIssues());
+        $this->assertTrue($this->issueHolder->hasIssues());
     }
 
     #[Test]
@@ -59,7 +59,7 @@ final class FunctionCheckerTest extends TestCase
         $checker->check();
 
         // Assert
-        static::assertTrue($this->issueHolder->hasIssues());
+        $this->assertTrue($this->issueHolder->hasIssues());
     }
 
     #[Test]
@@ -71,7 +71,7 @@ final class FunctionCheckerTest extends TestCase
         $checker = new FunctionChecker($node, $this->issueHolder);
         $checker->check();
         // Assert
-        static::assertTrue($this->issueHolder->hasIssues());
+        $this->assertTrue($this->issueHolder->hasIssues());
     }
 
     #[Test]
@@ -85,7 +85,7 @@ final class FunctionCheckerTest extends TestCase
         $checker->check();
 
         // Assert
-        static::assertFalse($this->issueHolder->hasIssues());
+        $this->assertFalse($this->issueHolder->hasIssues());
     }
 
     #[Test]
@@ -102,8 +102,8 @@ final class FunctionCheckerTest extends TestCase
         $params = $checker->getParams();
 
         // Assert
-        static::assertArrayHasKey('testParam', $params);
-        static::assertSame('string', $params['testParam']['type']);
-        static::assertFalse($params['testParam']['promoted']);
+        $this->assertArrayHasKey('testParam', $params);
+        $this->assertSame('string', $params['testParam']['type']);
+        $this->assertFalse($params['testParam']['promoted']);
     }
 }
