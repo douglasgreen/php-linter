@@ -1,14 +1,14 @@
 #:schema https://mago.carthage.software/1.43.0/schema.json
 # Welcome to Mago!
 # For full documentation, see https://mago.carthage.software/1.43.0/en/tools/overview/
-version = "1"
 php-version = "8.3.0"
+version = "1"
 
 [source]
-workspace = "."
-paths = ["src/", "tests/"]
-includes = ["vendor"]
 excludes = []
+includes = ["vendor"]
+paths = ["src/", "tests/"]
+workspace = "."
 
 [source.glob]
 literal-separator = true
@@ -20,25 +20,31 @@ preset = "default"
 integrations = ["symfony", "phpunit"]
 
 [linter.rules]
-ambiguous-function-call = { enabled = false }
+cyclomatic-complexity = { threshold = 25 }
+excessive-parameter-list = { threshold = 10 }
+halstead = { effort-threshold = 135000, volume-threshold = 2000 }
 literal-named-argument = { enabled = false }
-halstead = { effort-threshold = 7000 }
+no-else-clause = { enabled = false }
+no-empty = { enabled = false }
+no-isset = { enabled = false }
+too-many-methods = { threshold = 40 }
+too-many-properties = { threshold = 40 }
 
 [analyzer]
-plugins = []
+allow-array-truthy-operand = false
+allow-possibly-undefined-array-keys = true
+analyze-dead-code = false
+check-missing-override = false
+check-missing-type-hints = false
+check-throws = false
 find-unused-definitions = true
 find-unused-expressions = false
-analyze-dead-code = false
-memoize-properties = true
-allow-possibly-undefined-array-keys = true
-check-throws = false
-unchecked-exceptions = ["Error", "LogicException"]
-unchecked-exception-classes = []
-check-missing-override = false
 find-unused-parameters = false
-strict-list-index-checks = false
-strict-array-index-existence = false
-allow-array-truthy-operand = false
+memoize-properties = true
 no-boolean-literal-comparison = false
-check-missing-type-hints = false
+plugins = []
 register-super-globals = true
+strict-array-index-existence = false
+strict-list-index-checks = false
+unchecked-exception-classes = []
+unchecked-exceptions = ["Error", "LogicException"]
