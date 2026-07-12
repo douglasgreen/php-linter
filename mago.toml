@@ -22,7 +22,8 @@ integrations = ["symfony", "phpunit"]
 [linter.rules]
 cyclomatic-complexity = { threshold = 25 }
 excessive-parameter-list = { threshold = 10 }
-halstead = { effort-threshold = 135000, volume-threshold = 2000 }
+halstead = { difficulty-threshold = 24.0, effort-threshold = 135000, volume-threshold = 2000.0 }
+kan-defect = { threshold = 3.2 }
 literal-named-argument = { enabled = false }
 no-else-clause = { enabled = false }
 no-empty = { enabled = false }
