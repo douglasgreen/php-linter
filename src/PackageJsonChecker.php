@@ -374,7 +374,7 @@ class PackageJsonChecker
                 self::MAY,
                 'Non-standard type',
                 'type: ' . $type,
-                sprintf("Type '%s' is not in standard list: ", $type) . implode(', ', $this->allowedTypes),
+                sprintf("Type '%s' is not in standard list: %s", $type, implode(', ', $this->allowedTypes)),
             );
         }
 
