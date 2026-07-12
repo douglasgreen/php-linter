@@ -20,6 +20,7 @@ preset = "default"
 integrations = ["symfony", "phpunit"]
 
 [linter.rules]
+assertion-style = { style = "this" }
 cyclomatic-complexity = { threshold = 25 }
 excessive-parameter-list = { threshold = 10 }
 halstead = { difficulty-threshold = 24.0, effort-threshold = 135000, volume-threshold = 2000.0 }
