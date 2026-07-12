@@ -7,7 +7,7 @@ version = "1"
 [source]
 excludes = []
 includes = ["vendor"]
-paths = ["src/", "tests/"]
+paths = ["src", "tests"]
 workspace = "."
 
 [source.glob]
