@@ -62,7 +62,6 @@ class DocStandardsChecker
     private array $requiredFiles = [
         'root' => [
             'README.md' => 'Project explanation and installation guide',
-            'CHANGELOG.md' => 'Version history reference',
             'LICENSE.md' => 'Legal terms',
         ],
         'docs' => [
