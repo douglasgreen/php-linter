@@ -318,7 +318,7 @@ class ComposerChecker
 
         if (!empty($this->config['expectedLicense'])) {
             $expected = $this->config['expectedLicense'];
-            if (is_array($license) && !in_array($expected, $license) || !is_array($license) && $license !== $expected) {
+            if (is_array($license) && !in_array($expected, $license, strict: true) || !is_array($license) && $license !== $expected) {
                 $this->addIssue(
                     self::MUST,
                     'License mismatch',
@@ -723,7 +723,7 @@ class ComposerChecker
 
             // Check for duplicates
             if (!empty($url)) {
-                if (in_array($url, $seenUrls)) {
+                if (in_array($url, $seenUrls, strict: true)) {
                     $this->addIssue(
                         self::SHOULD,
                         'Duplicate repository',
@@ -793,7 +793,7 @@ class ComposerChecker
 
         // Check for custom scripts with security issues
         foreach ($scripts as $name => $commands) {
-            if (in_array($name, ['post-install-cmd', 'post-update-cmd', 'post-package-install'])) {
+            if (in_array($name, ['post-install-cmd', 'post-update-cmd', 'post-package-install'], strict: true)) {
                 continue;
             }
 
@@ -938,7 +938,7 @@ class ComposerChecker
                 'issuehunt',
                 'ko_fi',
                 'other',
-            ])) {
+            ], strict: true)) {
                 $this->addIssue(
                     self::MAY,
                     'Unknown funding type',

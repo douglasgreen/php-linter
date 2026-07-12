@@ -573,7 +573,7 @@ class PackageJsonChecker
         $files = $this->package['files'] ?? [];
 
         // Check for common mistakes
-        if (!empty($files) && in_array('src', $files) && !in_array('dist', $files)) {
+        if (!empty($files) && in_array('src', $files, strict: true) && !in_array('dist', $files, strict: true)) {
             $this->addIssue(
                 self::MAY,
                 'Source in files',
@@ -677,7 +677,7 @@ class PackageJsonChecker
 
             // Allow known configuration files to be located in project root
             $basename = basename((string) $file);
-            if (in_array($basename, $this->allowedConfigs)) {
+            if (in_array($basename, $this->allowedConfigs, strict: true)) {
                 continue;
             }
 
@@ -752,7 +752,7 @@ class PackageJsonChecker
             }
 
             $pluginName = str_replace('prettier-plugin-', '', (string) $pkg);
-            if (!in_array($pkg, $plugins) && !in_array($pluginName, $plugins)) {
+            if (!in_array($pkg, $plugins, strict: true) && !in_array($pluginName, $plugins, strict: true)) {
                 $this->addIssue(
                     self::SHOULD,
                     'Unconfigured Prettier plugin',
@@ -900,7 +900,7 @@ class PackageJsonChecker
             $shortName = str_replace('stylelint-', '', (string) $pkg);
             // Check if it's a plugin (stylelint-plugin-*)
             if (str_starts_with((string) $pkg, 'stylelint-plugin-')) {
-                if (!in_array($pkg, $plugins) && !in_array($shortName, $plugins)) {
+                if (!in_array($pkg, $plugins, strict: true) && !in_array($shortName, $plugins, strict: true)) {
                     $this->addIssue(
                         self::SHOULD,
                         'Unconfigured Stylelint plugin',
@@ -908,7 +908,7 @@ class PackageJsonChecker
                         sprintf("Plugin '%s' installed but not in stylelint config plugins", $pkg),
                     );
                 }
-            } elseif (!in_array($pkg, $extends) && !str_contains($shortName, 'config')) {
+            } elseif (!in_array($pkg, $extends, strict: true) && !str_contains($shortName, 'config')) {
                 // It's likely a config or other tool
                 $this->addIssue(
                     self::MAY,

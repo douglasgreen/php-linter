@@ -140,7 +140,7 @@ class DocStandardsChecker
     {
         // Check root files
         foreach ($this->requiredFiles['root'] as $file => $description) {
-            if (in_array($file, $this->files)) {
+            if (in_array($file, $this->files, strict: true)) {
                 continue;
             }
 
@@ -150,7 +150,7 @@ class DocStandardsChecker
 
         // Check docs structure
         foreach ($this->requiredFiles['docs'] as $file => $description) {
-            if (in_array($file, $this->files)) {
+            if (in_array($file, $this->files, strict: true)) {
                 continue;
             }
 
@@ -171,7 +171,7 @@ class DocStandardsChecker
             break;
         }
 
-        if (!$hasAdr && in_array('docs/architecture.md', $this->files)) {
+        if (!$hasAdr && in_array('docs/architecture.md', $this->files, strict: true)) {
             $this->issueHolder->setCurrentFile('docs/adr/');
             $this->issueHolder->addIssue(
                 'Missing ADR directory',
@@ -183,7 +183,7 @@ class DocStandardsChecker
     private function checkDirectoryStructure(): void
     {
         // Check for docs/ index.md
-        if (is_dir($this->rootDir . '/docs') && !in_array('docs/index.md', $this->files)) {
+        if (is_dir($this->rootDir . '/docs') && !in_array('docs/index.md', $this->files, strict: true)) {
             $this->issueHolder->setCurrentFile('docs/index.md');
             $this->issueHolder->addIssue(
                 'Missing navigation hub',
@@ -192,7 +192,7 @@ class DocStandardsChecker
         }
 
         // Check for CHANGELOG format
-        if (in_array('CHANGELOG.md', $this->files)) {
+        if (in_array('CHANGELOG.md', $this->files, strict: true)) {
             $content = $this->getFileContent('CHANGELOG.md');
             if (!preg_match('/## \[\d+\.\d+/', $content) && !preg_match('/## \d+\.\d+/', $content)) {
                 $this->issueHolder->setCurrentFile('CHANGELOG.md');
@@ -455,7 +455,7 @@ class DocStandardsChecker
             $targetPath = preg_replace('#/+#', '/', $targetPath); // normalize
 
             // Check if exists
-            if (!in_array($targetPath, $this->files) && !in_array($targetPath . '.md', $this->files)) {
+            if (!in_array($targetPath, $this->files, strict: true) && !in_array($targetPath . '.md', $this->files, strict: true)) {
                 $this->issueHolder->addIssue(
                     "Broken internal link: '" . $url . "'",
                     'Link points to a non-existent file',
@@ -505,7 +505,7 @@ class DocStandardsChecker
             $targetPath = (string) preg_replace('#/+#', '/', $targetPath);
 
             // Try with .md extension
-            if (!in_array($targetPath, $this->files) && in_array($targetPath . '.md', $this->files)) {
+            if (!in_array($targetPath, $this->files, strict: true) && in_array($targetPath . '.md', $this->files, strict: true)) {
                 $targetPath .= '.md';
             }
 
@@ -525,7 +525,7 @@ class DocStandardsChecker
 
         foreach ($this->markdownFiles as $file) {
             // Skip entry points
-            if (in_array($file, $entryPoints)) {
+            if (in_array($file, $entryPoints, strict: true)) {
                 continue;
             }
 
