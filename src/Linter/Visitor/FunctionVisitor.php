@@ -76,14 +76,18 @@ class FunctionVisitor extends AbstractVisitorChecker
 
         // Check that each variable is used more than once.
         foreach ($this->variableCounts as $variable => $count) {
-            if ($count === 1 && !isset($this->params[$variable])) {
-                $issue = sprintf(
-                    'Remove or inline variable "%s" in function "%s()"; it is referenced only once.',
-                    $variable,
-                    $this->functionName,
-                );
-                $this->addIssue($issue);
+            if ($count !== 1) {
+                continue;
             }
+            if (isset($this->params[$variable])) {
+                continue;
+            }
+            $issue = sprintf(
+                'Remove or inline variable "%s" in function "%s()"; it is referenced only once.',
+                $variable,
+                $this->functionName,
+            );
+            $this->addIssue($issue);
         }
     }
 

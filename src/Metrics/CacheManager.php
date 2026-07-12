@@ -39,7 +39,7 @@ class CacheManager
      *
      * @var int
      */
-    public const DIRECTORY_MODE = 0777;
+    public const DIRECTORY_MODE = 0o777;
 
     /** Absolute path to the main cache directory. */
     protected readonly string $cacheDir;
@@ -72,9 +72,11 @@ class CacheManager
             $files = glob($this->fileCacheDir . '/*');
             if (is_array($files)) {
                 foreach ($files as $file) {
-                    if (is_file($file)) {
-                        unlink($file);
+                    if (!(is_file($file))) {
+                        continue;
                     }
+
+                    unlink($file);
                 }
             }
         } else {

@@ -125,7 +125,7 @@ class DocStandardsChecker
 
         $this->markdownFiles = array_filter(
             $this->files,
-            fn(string $file): bool => (bool) preg_match('/\.md$/i', $file),
+            static fn(string $file): bool => (bool) preg_match('/\.md$/i', $file),
         );
 
         $this->checkRequiredFiles();
@@ -140,27 +140,35 @@ class DocStandardsChecker
     {
         // Check root files
         foreach ($this->requiredFiles['root'] as $file => $description) {
-            if (!in_array($file, $this->files)) {
-                $this->issueHolder->setCurrentFile($file);
-                $this->issueHolder->addIssue('Missing required file: ' . $description);
+            if (in_array($file, $this->files)) {
+                continue;
             }
+
+            $this->issueHolder->setCurrentFile($file);
+            $this->issueHolder->addIssue('Missing required file: ' . $description);
         }
 
         // Check docs structure
         foreach ($this->requiredFiles['docs'] as $file => $description) {
-            if (!in_array($file, $this->files)) {
-                $this->issueHolder->setCurrentFile($file);
-                $this->issueHolder->addIssue('Missing required documentation: ' . $description);
+            if (in_array($file, $this->files)) {
+                continue;
             }
+
+            $this->issueHolder->setCurrentFile($file);
+            $this->issueHolder->addIssue('Missing required documentation: ' . $description);
         }
 
         // Check for ADR directory
         $hasAdr = false;
         foreach ($this->files as $file) {
-            if (str_starts_with((string) $file, 'docs/adr/') && preg_match('/^\d{4}-/', basename((string) $file))) {
-                $hasAdr = true;
-                break;
+            if (!str_starts_with((string) $file, 'docs/adr/')) {
+                continue;
             }
+            if (!preg_match('/^\d{4}-/', basename((string) $file))) {
+                continue;
+            }
+            $hasAdr = true;
+            break;
         }
 
         if (!$hasAdr && in_array('docs/architecture.md', $this->files)) {
@@ -371,12 +379,14 @@ class DocStandardsChecker
 
             // Check for fluff words
             foreach ($this->forbiddenWords as $word) {
-                if (preg_match(sprintf('/\b%s\b/i', $word), $blockText)) {
-                    $this->issueHolder->addIssue(
-                        "Fluff word detected: '" . $word . "'",
-                        'Remove words that can alienate struggling users',
-                    );
+                if (!(preg_match(sprintf('/\b%s\b/i', $word), $blockText))) {
+                    continue;
                 }
+
+                $this->issueHolder->addIssue(
+                    "Fluff word detected: '" . $word . "'",
+                    'Remove words that can alienate struggling users',
+                );
             }
 
             // Check for passive voice indicators - heuristic
@@ -459,12 +469,14 @@ class DocStandardsChecker
         $this->issueHolder->setCurrentFile($file);
 
         foreach ($this->securityPatterns as $pattern => $description) {
-            if (preg_match($pattern, $content)) {
-                $this->issueHolder->addIssue(
-                    'Security risk: ' . $description,
-                    'Use placeholder variables like <YOUR_API_KEY> instead of exposing credentials',
-                );
+            if (!(preg_match($pattern, $content))) {
+                continue;
             }
+
+            $this->issueHolder->addIssue(
+                'Security risk: ' . $description,
+                'Use placeholder variables like <YOUR_API_KEY> instead of exposing credentials',
+            );
         }
     }
 
@@ -534,9 +546,11 @@ class DocStandardsChecker
     {
         $text = '';
         foreach ($node->iterator() as $child) {
-            if (method_exists($child, 'getLiteral')) {
-                $text .= $child->getLiteral();
+            if (!(method_exists($child, 'getLiteral'))) {
+                continue;
             }
+
+            $text .= $child->getLiteral();
         }
 
         return $text;

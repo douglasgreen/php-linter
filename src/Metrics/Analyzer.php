@@ -121,14 +121,14 @@ class Analyzer
      *
      * @var int
      */
-    public const NPATH_COMPLEXITY_LIMIT = 10000;
+    public const NPATH_COMPLEXITY_LIMIT = 10_000;
 
     /**
      * Maximum Halstead effort allowed.
      *
      * @var int
      */
-    public const HALSTEAD_EFFORT_LIMIT = 135000;
+    public const HALSTEAD_EFFORT_LIMIT = 135_000;
 
     /**
      * Minimum maintainability index required.

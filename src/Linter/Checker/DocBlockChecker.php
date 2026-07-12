@@ -124,10 +124,12 @@ class DocBlockChecker extends AbstractNodeChecker
         // Extract text from the first PhpDocTextNode
         $text = '';
         foreach ($phpDocNode->children as $child) {
-            if ($child instanceof PhpDocTextNode) {
-                $text = $child->text;
-                break;
+            if (!($child instanceof PhpDocTextNode)) {
+                continue;
             }
+
+            $text = $child->text;
+            break;
         }
 
         // Attempt to get summary (first line of text)

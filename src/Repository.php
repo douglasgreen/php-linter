@@ -46,9 +46,11 @@ class Repository
     {
         $matches = [];
         foreach ($this->files as $file) {
-            if (static::getFileType($file) === 'php') {
-                $matches[] = $file;
+            if (static::getFileType($file) !== 'php') {
+                continue;
             }
+
+            $matches[] = $file;
         }
 
         return $matches;

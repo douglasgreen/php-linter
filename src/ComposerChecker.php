@@ -224,14 +224,16 @@ class ComposerChecker
     {
         $required = ['name', 'description', 'type'];
         foreach ($required as $field) {
-            if (empty($this->composer[$field])) {
-                $this->addIssue(
-                    self::MUST,
-                    'Missing required field',
-                    'composer.json',
-                    sprintf("Field '%s' is required", $field),
-                );
+            if (!(empty($this->composer[$field]))) {
+                continue;
             }
+
+            $this->addIssue(
+                self::MUST,
+                'Missing required field',
+                'composer.json',
+                sprintf("Field '%s' is required", $field),
+            );
         }
     }
 
@@ -351,10 +353,12 @@ class ComposerChecker
 
             // Check all are strings
             foreach ($keywords as $kw) {
-                if (!is_string($kw) || empty(trim($kw))) {
-                    $this->addIssue(self::MUST, 'Invalid keyword', 'keywords', 'Keywords must be non-empty strings');
-                    break;
+                if (is_string($kw) && !empty(trim($kw))) {
+                    continue;
                 }
+
+                $this->addIssue(self::MUST, 'Invalid keyword', 'keywords', 'Keywords must be non-empty strings');
+                break;
             }
         }
     }
@@ -757,25 +761,29 @@ class ComposerChecker
 
                 // Security checks
                 foreach ($this->securityPatterns as $pattern => $desc) {
-                    if (preg_match($pattern, $cmd)) {
-                        $this->addIssue(
-                            self::MUST,
-                            'Security risk',
-                            'scripts.' . $event,
-                            sprintf("%s: '%s'", $desc, $cmd),
-                        );
+                    if (!(preg_match($pattern, $cmd))) {
+                        continue;
                     }
+
+                    $this->addIssue(
+                        self::MUST,
+                        'Security risk',
+                        'scripts.' . $event,
+                        sprintf("%s: '%s'", $desc, $cmd),
+                    );
                 }
 
                 foreach ($this->insecurePaths as $pattern) {
-                    if (preg_match($pattern, $cmd)) {
-                        $this->addIssue(
-                            self::MUST,
-                            'Insecure path',
-                            'scripts.' . $event,
-                            sprintf("Command contains potentially dangerous path: '%s'", $cmd),
-                        );
+                    if (!(preg_match($pattern, $cmd))) {
+                        continue;
                     }
+
+                    $this->addIssue(
+                        self::MUST,
+                        'Insecure path',
+                        'scripts.' . $event,
+                        sprintf("Command contains potentially dangerous path: '%s'", $cmd),
+                    );
                 }
             }
         };
@@ -795,16 +803,17 @@ class ComposerChecker
 
             foreach ($commands as $cmd) {
                 if (
-                    preg_match('/\brm\s+-rf\b/', (string) $cmd)
-                    || preg_match('/\bsocket_|exec|system|passthru|shell_exec/', (string) $cmd)
+                    !preg_match('/\brm\s+-rf\b/', (string) $cmd) && !preg_match('/\bsocket_|exec|system|passthru|shell_exec/', (string) $cmd)
                 ) {
-                    $this->addIssue(
-                        self::MUST,
-                        'Dangerous script command',
-                        'scripts.' . $name,
-                        sprintf("Script contains potentially dangerous command: '%s'", $cmd),
-                    );
+                    continue;
                 }
+
+                $this->addIssue(
+                    self::MUST,
+                    'Dangerous script command',
+                    'scripts.' . $name,
+                    sprintf("Script contains potentially dangerous command: '%s'", $cmd),
+                );
             }
         }
     }
@@ -1008,27 +1017,31 @@ class ComposerChecker
         } else {
             $foundAuthor = false;
             foreach ($authors as $author) {
-                if (($author['name'] ?? '') === 'Douglas Green' && ($author['email'] ?? '') === 'douglas@nurd.site') {
-                    $foundAuthor = true;
+                if (($author['name'] ?? '') !== 'Douglas Green') {
+                    continue;
+                }
+                if (($author['email'] ?? '') !== 'douglas@nurd.site') {
+                    continue;
+                }
+                $foundAuthor = true;
 
-                    // Validate other fields
-                    if (($author['homepage'] ?? '') !== 'https://nurd.site/') {
-                        $this->addIssue(
-                            self::MUST,
-                            'Invalid author homepage',
-                            'authors[].homepage',
-                            "Author homepage must be 'https://nurd.site/'",
-                        );
-                    }
+                // Validate other fields
+                if (($author['homepage'] ?? '') !== 'https://nurd.site/') {
+                    $this->addIssue(
+                        self::MUST,
+                        'Invalid author homepage',
+                        'authors[].homepage',
+                        "Author homepage must be 'https://nurd.site/'",
+                    );
+                }
 
-                    if (($author['role'] ?? '') !== 'Developer') {
-                        $this->addIssue(
-                            self::MUST,
-                            'Invalid author role',
-                            'authors[].role',
-                            "Author role must be 'Developer'",
-                        );
-                    }
+                if (($author['role'] ?? '') !== 'Developer') {
+                    $this->addIssue(
+                        self::MUST,
+                        'Invalid author role',
+                        'authors[].role',
+                        "Author role must be 'Developer'",
+                    );
                 }
             }
 
@@ -1080,10 +1093,12 @@ class ComposerChecker
 
         if ($returnCode !== 0) {
             foreach ($output as $line) {
-                if (preg_match('/(error|warning):\s*(.+)/i', $line, $matches)) {
-                    $type = strtolower($matches[1]) === 'error' ? self::MUST : self::SHOULD;
-                    $this->addIssue($type, 'Composer validation', 'composer validate', $matches[2]);
+                if (!(preg_match('/(error|warning):\s*(.+)/i', $line, $matches))) {
+                    continue;
                 }
+
+                $type = strtolower($matches[1]) === 'error' ? self::MUST : self::SHOULD;
+                $this->addIssue($type, 'Composer validation', 'composer validate', $matches[2]);
             }
         }
 
@@ -1147,24 +1162,30 @@ class ComposerChecker
         // Build a list of keys in their expected order
         $sortedKeys = [];
         foreach ($expectedOrder as $key) {
-            if (in_array($key, $keys, true)) {
-                $sortedKeys[] = $key;
+            if (!(in_array($key, $keys, true))) {
+                continue;
             }
+
+            $sortedKeys[] = $key;
         }
 
         // Append any remaining keys not in the standard order
         foreach ($keys as $key) {
-            if (!in_array($key, $expectedOrder, true)) {
-                $sortedKeys[] = $key;
+            if (in_array($key, $expectedOrder, true)) {
+                continue;
             }
+
+            $sortedKeys[] = $key;
         }
 
         // Compare actual order with expected order
         $outOfOrder = [];
         foreach ($keys as $index => $key) {
-            if (!isset($sortedKeys[$index]) || $sortedKeys[$index] !== $key) {
-                $outOfOrder[] = $key;
+            if (isset($sortedKeys[$index]) && $sortedKeys[$index] === $key) {
+                continue;
             }
+
+            $outOfOrder[] = $key;
         }
 
         if ($outOfOrder !== []) {
@@ -1189,10 +1210,12 @@ class ComposerChecker
 
         // Add keys in the specified order
         foreach (self::KEY_ORDER as $key) {
-            if (array_key_exists($key, $this->composer)) {
-                $sortedData[$key] = $this->composer[$key];
-                unset($this->composer[$key]);
+            if (!(array_key_exists($key, $this->composer))) {
+                continue;
             }
+
+            $sortedData[$key] = $this->composer[$key];
+            unset($this->composer[$key]);
         }
 
         // Append any remaining keys that were not in the specified order

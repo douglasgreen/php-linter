@@ -74,15 +74,19 @@ class ClassVisitor extends AbstractVisitorChecker
     {
         // Reconcile the recorded usages with the definitions before performing checks.
         foreach (array_keys($this->usedPropertyNames) as $name) {
-            if (isset($this->properties[$name])) {
-                $this->properties[$name]['used'] = true;
+            if (!(isset($this->properties[$name]))) {
+                continue;
             }
+
+            $this->properties[$name]['used'] = true;
         }
 
         foreach (array_keys($this->usedMethodNames) as $name) {
-            if (isset($this->methods[$name])) {
-                $this->methods[$name]['used'] = true;
+            if (!(isset($this->methods[$name]))) {
+                continue;
             }
+
+            $this->methods[$name]['used'] = true;
         }
 
         $visibilities = [];

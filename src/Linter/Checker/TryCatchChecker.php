@@ -28,11 +28,13 @@ class TryCatchChecker extends AbstractNodeChecker
         }
 
         foreach ($this->node->catches as $catch) {
-            if ($catch->stmts === [] || $catch->stmts[0] instanceof Nop) {
-                $this->addIssue(
-                    'Add error handling or logging to the empty catch block. Suppressing exceptions hides bugs and makes debugging difficult.',
-                );
+            if ($catch->stmts !== [] && !$catch->stmts[0] instanceof Nop) {
+                continue;
             }
+
+            $this->addIssue(
+                'Add error handling or logging to the empty catch block. Suppressing exceptions hides bugs and makes debugging difficult.',
+            );
         }
 
         return $this->getIssues();

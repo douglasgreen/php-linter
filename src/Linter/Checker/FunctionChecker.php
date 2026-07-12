@@ -621,14 +621,18 @@ class FunctionChecker extends AbstractNodeChecker
         $returnStmts = $nodeFinder->findInstanceOf($this->node->stmts, Return_::class);
 
         foreach ($returnStmts as $returnStmt) {
-            if ($returnStmt->expr instanceof Array_) {
-                foreach ($returnStmt->expr->items as $item) {
-                    // Fix for "instanceof ArrayItem will always evaluate to true"
-                    // In nikic/php-parser 5.x, ArrayItem is the standard item type in Array_::$items
-                    if ($item->key instanceof String_) {
-                        $keys[] = $item->key->value;
-                    }
+            if (!($returnStmt->expr instanceof Array_)) {
+                continue;
+            }
+
+            foreach ($returnStmt->expr->items as $item) {
+                // Fix for "instanceof ArrayItem will always evaluate to true"
+                // In nikic/php-parser 5.x, ArrayItem is the standard item type in Array_::$items
+                if (!($item->key instanceof String_)) {
+                    continue;
                 }
+
+                $keys[] = $item->key->value;
             }
         }
 

@@ -300,14 +300,16 @@ class PackageJsonChecker
     {
         $required = ['name', 'version', 'description'];
         foreach ($required as $field) {
-            if (empty($this->package[$field])) {
-                $this->addIssue(
-                    self::MUST,
-                    'Missing required field',
-                    $field,
-                    sprintf("Field '%s' is required in package.json", $field),
-                );
+            if (!(empty($this->package[$field]))) {
+                continue;
             }
+
+            $this->addIssue(
+                self::MUST,
+                'Missing required field',
+                $field,
+                sprintf("Field '%s' is required in package.json", $field),
+            );
         }
     }
 
@@ -476,17 +478,18 @@ class PackageJsonChecker
 
         $licenses = is_array($license) ? $license : [$license];
         foreach ($licenses as $lic) {
-            if (
-                !in_array($lic, $validLicenses, true)
-                && !preg_match('/^proprietary|commercial|custom:/i', (string) $lic)
-            ) {
-                $this->addIssue(
-                    self::MAY,
-                    'Non-standard license',
-                    'license: ' . $lic,
-                    'Consider using SPDX standard identifier',
-                );
+            if (in_array($lic, $validLicenses, true)) {
+                continue;
             }
+            if (preg_match('/^proprietary|commercial|custom:/i', (string) $lic)) {
+                continue;
+            }
+            $this->addIssue(
+                self::MAY,
+                'Non-standard license',
+                'license: ' . $lic,
+                'Consider using SPDX standard identifier',
+            );
         }
     }
 
@@ -518,23 +521,27 @@ class PackageJsonChecker
 
         // Check all are strings
         foreach ($keywords as $kw) {
-            if (!is_string($kw) || empty(trim($kw))) {
-                $this->addIssue(self::MUST, 'Invalid keyword', 'keywords', 'Keywords must be non-empty strings');
-                break;
+            if (is_string($kw) && !empty(trim($kw))) {
+                continue;
             }
+
+            $this->addIssue(self::MUST, 'Invalid keyword', 'keywords', 'Keywords must be non-empty strings');
+            break;
         }
 
         // Check forbidden keywords
         $forbidden = $this->config['forbiddenKeywords'] ?? [];
         foreach ($keywords as $kw) {
-            if (in_array(strtolower((string) $kw), $forbidden, true)) {
-                $this->addIssue(
-                    self::SHOULD,
-                    'Generic keyword',
-                    'keywords: ' . $kw,
-                    'Avoid generic terms; use specific, descriptive keywords',
-                );
+            if (!(in_array(strtolower((string) $kw), $forbidden, true))) {
+                continue;
             }
+
+            $this->addIssue(
+                self::SHOULD,
+                'Generic keyword',
+                'keywords: ' . $kw,
+                'Avoid generic terms; use specific, descriptive keywords',
+            );
         }
     }
 
@@ -650,10 +657,12 @@ class PackageJsonChecker
 
                 $isAllowed = false;
                 foreach ($allowedDist as $allowed) {
-                    if (str_ends_with($base, $allowed)) {
-                        $isAllowed = true;
-                        break;
+                    if (!(str_ends_with($base, $allowed))) {
+                        continue;
                     }
+
+                    $isAllowed = true;
+                    break;
                 }
 
                 if (!$isAllowed) {
@@ -675,23 +684,25 @@ class PackageJsonChecker
             // Check each file type against expected locations
             foreach ($this->fileTypeLocations as $expectedDir => $patterns) {
                 foreach ($patterns as $pattern) {
-                    if (fnmatch($pattern, basename((string) $file))) {
-                        if (
-                            !str_starts_with((string) $file, (string) $expectedDir)
-                            && !str_starts_with((string) $file, 'src/' . $expectedDir)
-                            && !str_starts_with((string) $file, 'tests/')
-                            && !str_starts_with((string) $file, 'vendor/')
-                        ) {
-                            $this->addIssue(
-                                self::SHOULD,
-                                'File location',
-                                $file,
-                                sprintf("File should be in '%s' directory", $expectedDir),
-                            );
-                        }
-
-                        break 2;
+                    if (!(fnmatch($pattern, basename((string) $file)))) {
+                        continue;
                     }
+
+                    if (
+                        !str_starts_with((string) $file, (string) $expectedDir)
+                        && !str_starts_with((string) $file, 'src/' . $expectedDir)
+                        && !str_starts_with((string) $file, 'tests/')
+                        && !str_starts_with((string) $file, 'vendor/')
+                    ) {
+                        $this->addIssue(
+                            self::SHOULD,
+                            'File location',
+                            $file,
+                            sprintf("File should be in '%s' directory", $expectedDir),
+                        );
+                    }
+
+                    break 2;
                 }
             }
         }
@@ -705,10 +716,12 @@ class PackageJsonChecker
         // Check for config files
         $possibleFiles = ['.prettierrc.json', '.prettierrc', '.prettierrc.js', '.prettierrc.cjs', 'prettier.config.js'];
         foreach ($possibleFiles as $file) {
-            if (file_exists($this->rootDir . '/' . $file)) {
-                $configFile = $file;
-                break;
+            if (!(file_exists($this->rootDir . '/' . $file))) {
+                continue;
             }
+
+            $configFile = $file;
+            break;
         }
 
         if ($configFile === null && $prettierField === null) {
@@ -734,16 +747,18 @@ class PackageJsonChecker
         // Check installed plugins match config
         $devDeps = $this->package['devDependencies'] ?? [];
         foreach ($devDeps as $pkg => $version) {
-            if (str_starts_with((string) $pkg, 'prettier-plugin-')) {
-                $pluginName = str_replace('prettier-plugin-', '', (string) $pkg);
-                if (!in_array($pkg, $plugins) && !in_array($pluginName, $plugins)) {
-                    $this->addIssue(
-                        self::SHOULD,
-                        'Unconfigured Prettier plugin',
-                        (string) $pkg,
-                        sprintf("Plugin '%s' installed but not listed in Prettier config plugins array", $pkg),
-                    );
-                }
+            if (!(str_starts_with((string) $pkg, 'prettier-plugin-'))) {
+                continue;
+            }
+
+            $pluginName = str_replace('prettier-plugin-', '', (string) $pkg);
+            if (!in_array($pkg, $plugins) && !in_array($pluginName, $plugins)) {
+                $this->addIssue(
+                    self::SHOULD,
+                    'Unconfigured Prettier plugin',
+                    (string) $pkg,
+                    sprintf("Plugin '%s' installed but not listed in Prettier config plugins array", $pkg),
+                );
             }
         }
     }
@@ -773,18 +788,22 @@ class PackageJsonChecker
         $foundLegacyFile = '';
 
         foreach ($legacyConfigs as $file) {
-            if (file_exists($this->rootDir . '/' . $file)) {
-                $hasLegacy = true;
-                $foundLegacyFile = $file;
-                break;
+            if (!(file_exists($this->rootDir . '/' . $file))) {
+                continue;
             }
+
+            $hasLegacy = true;
+            $foundLegacyFile = $file;
+            break;
         }
 
         foreach ($flatConfigs as $file) {
-            if (file_exists($this->rootDir . '/' . $file)) {
-                $hasFlat = true;
-                break;
+            if (!(file_exists($this->rootDir . '/' . $file))) {
+                continue;
             }
+
+            $hasFlat = true;
+            break;
         }
 
         if ($hasLegacy) {
@@ -813,16 +832,18 @@ class PackageJsonChecker
                     $devDeps = array_keys($this->package['devDependencies'] ?? []);
 
                     foreach ($devDeps as $pkg) {
-                        if (str_starts_with((string) $pkg, 'eslint-plugin-') || $pkg === '@eslint/js') {
-                            $shortName = str_replace('eslint-plugin-', '', (string) $pkg);
-                            if (!str_contains($content, $shortName) && !str_contains($content, (string) $pkg)) {
-                                $this->addIssue(
-                                    self::SHOULD,
-                                    'Unconfigured ESLint plugin',
-                                    (string) $pkg,
-                                    sprintf("Plugin '%s' installed but may not be imported in eslint.config.js", $pkg),
-                                );
-                            }
+                        if (!str_starts_with((string) $pkg, 'eslint-plugin-') && $pkg !== '@eslint/js') {
+                            continue;
+                        }
+
+                        $shortName = str_replace('eslint-plugin-', '', (string) $pkg);
+                        if (!str_contains($content, $shortName) && !str_contains($content, (string) $pkg)) {
+                            $this->addIssue(
+                                self::SHOULD,
+                                'Unconfigured ESLint plugin',
+                                (string) $pkg,
+                                sprintf("Plugin '%s' installed but may not be imported in eslint.config.js", $pkg),
+                            );
                         }
                     }
                 }
@@ -837,11 +858,13 @@ class PackageJsonChecker
         $configFile = '';
 
         foreach ($configFiles as $file) {
-            if (file_exists($this->rootDir . '/' . $file)) {
-                $hasConfig = true;
-                $configFile = $file;
-                break;
+            if (!(file_exists($this->rootDir . '/' . $file))) {
+                continue;
             }
+
+            $hasConfig = true;
+            $configFile = $file;
+            break;
         }
 
         // Check package.json field
@@ -870,27 +893,29 @@ class PackageJsonChecker
 
         $devDeps = array_keys($this->package['devDependencies'] ?? []);
         foreach ($devDeps as $pkg) {
-            if (str_starts_with((string) $pkg, 'stylelint-')) {
-                $shortName = str_replace('stylelint-', '', (string) $pkg);
-                // Check if it's a plugin (stylelint-plugin-*)
-                if (str_starts_with((string) $pkg, 'stylelint-plugin-')) {
-                    if (!in_array($pkg, $plugins) && !in_array($shortName, $plugins)) {
-                        $this->addIssue(
-                            self::SHOULD,
-                            'Unconfigured Stylelint plugin',
-                            (string) $pkg,
-                            sprintf("Plugin '%s' installed but not in stylelint config plugins", $pkg),
-                        );
-                    }
-                } elseif (!in_array($pkg, $extends) && !str_contains($shortName, 'config')) {
-                    // It's likely a config or other tool
+            if (!(str_starts_with((string) $pkg, 'stylelint-'))) {
+                continue;
+            }
+
+            $shortName = str_replace('stylelint-', '', (string) $pkg);
+            // Check if it's a plugin (stylelint-plugin-*)
+            if (str_starts_with((string) $pkg, 'stylelint-plugin-')) {
+                if (!in_array($pkg, $plugins) && !in_array($shortName, $plugins)) {
                     $this->addIssue(
-                        self::MAY,
-                        'Stylelint tool check',
+                        self::SHOULD,
+                        'Unconfigured Stylelint plugin',
                         (string) $pkg,
-                        sprintf("Verify '%s' is properly configured", $pkg),
+                        sprintf("Plugin '%s' installed but not in stylelint config plugins", $pkg),
                     );
                 }
+            } elseif (!in_array($pkg, $extends) && !str_contains($shortName, 'config')) {
+                // It's likely a config or other tool
+                $this->addIssue(
+                    self::MAY,
+                    'Stylelint tool check',
+                    (string) $pkg,
+                    sprintf("Verify '%s' is properly configured", $pkg),
+                );
             }
         }
     }
@@ -963,28 +988,32 @@ class PackageJsonChecker
 
         foreach ($deps as $pkg => $version) {
             foreach ($devTools as $tool) {
-                if (str_starts_with((string) $pkg, $tool) || $pkg === $tool) {
-                    $this->addIssue(
-                        self::MUST,
-                        'Dev tool in dependencies',
-                        'dependencies: ' . $pkg,
-                        sprintf("'%s' should be in devDependencies, not dependencies", $pkg),
-                    );
-                    break;
+                if (!str_starts_with((string) $pkg, $tool) && $pkg !== $tool) {
+                    continue;
                 }
+
+                $this->addIssue(
+                    self::MUST,
+                    'Dev tool in dependencies',
+                    'dependencies: ' . $pkg,
+                    sprintf("'%s' should be in devDependencies, not dependencies", $pkg),
+                );
+                break;
             }
         }
 
         // Check for wildcards
         foreach (array_merge($deps, $devDeps) as $pkg => $version) {
-            if ($version === '*' || $version === 'latest') {
-                $this->addIssue(
-                    self::MUST,
-                    'Wildcard dependency',
-                    $pkg . ': ' . $version,
-                    "Avoid '*' or 'latest'; use explicit version constraints",
-                );
+            if ($version !== '*' && $version !== 'latest') {
+                continue;
             }
+
+            $this->addIssue(
+                self::MUST,
+                'Wildcard dependency',
+                $pkg . ': ' . $version,
+                "Avoid '*' or 'latest'; use explicit version constraints",
+            );
         }
 
         $seen = [];
@@ -994,29 +1023,37 @@ class PackageJsonChecker
         }
 
         foreach ($devDeps as $pkg => $ver) {
-            if (isset($seen[$pkg]) && $seen[$pkg]['ver'] !== $ver) {
-                $this->addIssue(
-                    self::SHOULD,
-                    'Version inconsistency',
-                    $pkg,
-                    sprintf(
-                        "Version '%s' in devDependencies differs from '%s' in dependencies",
-                        $ver,
-                        $seen[$pkg]['ver'],
-                    ),
-                );
+            if (!isset($seen[$pkg])) {
+                continue;
             }
+            if ($seen[$pkg]['ver'] === $ver) {
+                continue;
+            }
+            $this->addIssue(
+                self::SHOULD,
+                'Version inconsistency',
+                $pkg,
+                sprintf(
+                    "Version '%s' in devDependencies differs from '%s' in dependencies",
+                    $ver,
+                    $seen[$pkg]['ver'],
+                ),
+            );
         }
 
         foreach ($peerDeps as $pkg => $ver) {
-            if (isset($seen[$pkg]) && $seen[$pkg]['ver'] !== $ver) {
-                $this->addIssue(
-                    self::SHOULD,
-                    'Peer dependency mismatch',
-                    $pkg,
-                    sprintf("Peer dependency version '%s' differs from installed '%s'", $ver, $seen[$pkg]['ver']),
-                );
+            if (!isset($seen[$pkg])) {
+                continue;
             }
+            if ($seen[$pkg]['ver'] === $ver) {
+                continue;
+            }
+            $this->addIssue(
+                self::SHOULD,
+                'Peer dependency mismatch',
+                $pkg,
+                sprintf("Peer dependency version '%s' differs from installed '%s'", $ver, $seen[$pkg]['ver']),
+            );
         }
     }
 
@@ -1327,16 +1364,20 @@ class PackageJsonChecker
         if (!empty($contributors) && is_array($contributors)) {
             $foundDouglas = false;
             foreach ($contributors as $contributor) {
-                if (is_array($contributor) && ($contributor['name'] ?? '') === 'Douglas Green') {
-                    $foundDouglas = true;
-                    if (($contributor['role'] ?? '') !== 'Developer') {
-                        $this->addIssue(
-                            self::MUST,
-                            'Invalid contributor role',
-                            'contributors',
-                            "Douglas Green role must be 'Developer'",
-                        );
-                    }
+                if (!is_array($contributor)) {
+                    continue;
+                }
+                if (($contributor['name'] ?? '') !== 'Douglas Green') {
+                    continue;
+                }
+                $foundDouglas = true;
+                if (($contributor['role'] ?? '') !== 'Developer') {
+                    $this->addIssue(
+                        self::MUST,
+                        'Invalid contributor role',
+                        'contributors',
+                        "Douglas Green role must be 'Developer'",
+                    );
                 }
             }
 
@@ -1379,24 +1420,30 @@ class PackageJsonChecker
         // Build a list of keys in their expected order
         $sortedKeys = [];
         foreach ($expectedOrder as $key) {
-            if (in_array($key, $keys, true)) {
-                $sortedKeys[] = $key;
+            if (!(in_array($key, $keys, true))) {
+                continue;
             }
+
+            $sortedKeys[] = $key;
         }
 
         // Append any remaining keys not in the standard order
         foreach ($keys as $key) {
-            if (!in_array($key, $expectedOrder, true)) {
-                $sortedKeys[] = $key;
+            if (in_array($key, $expectedOrder, true)) {
+                continue;
             }
+
+            $sortedKeys[] = $key;
         }
 
         // Compare actual order with expected order
         $outOfOrder = [];
         foreach ($keys as $index => $key) {
-            if (!isset($sortedKeys[$index]) || $sortedKeys[$index] !== $key) {
-                $outOfOrder[] = $key;
+            if (isset($sortedKeys[$index]) && $sortedKeys[$index] === $key) {
+                continue;
             }
+
+            $outOfOrder[] = $key;
         }
 
         if ($outOfOrder !== []) {
@@ -1421,10 +1468,12 @@ class PackageJsonChecker
 
         // Add keys in the specified order
         foreach (self::KEY_ORDER as $key) {
-            if (array_key_exists($key, $this->package)) {
-                $sortedData[$key] = $this->package[$key];
-                unset($this->package[$key]);
+            if (!(array_key_exists($key, $this->package))) {
+                continue;
             }
+
+            $sortedData[$key] = $this->package[$key];
+            unset($this->package[$key]);
         }
 
         // Append any remaining keys that were not in the specified order

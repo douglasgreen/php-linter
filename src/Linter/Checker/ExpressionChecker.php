@@ -101,9 +101,11 @@ class ExpressionChecker extends AbstractNodeChecker
                 $this->checkCondition($subNode, $clauseType);
             } elseif (is_array($subNode)) {
                 foreach ($subNode as $node) {
-                    if ($node instanceof Node) {
-                        $this->checkCondition($node, $clauseType);
+                    if (!($node instanceof Node)) {
+                        continue;
                     }
+
+                    $this->checkCondition($node, $clauseType);
                 }
             }
         }

@@ -118,15 +118,17 @@ class MagicNumberVisitor extends AbstractVisitorChecker
     public function checkDuplicates(): void
     {
         foreach ($this->counts as $value => $count) {
-            if ($count > 1) {
-                $lines = $this->lines[$value];
-                $this->addIssue(sprintf(
-                    'Replace the magic number %s with a named constant. It appears %d times on lines %s. Centralizing this value improves maintainability and readability.',
-                    $value,
-                    $count,
-                    implode(', ', $lines),
-                ));
+            if ($count <= 1) {
+                continue;
             }
+
+            $lines = $this->lines[$value];
+            $this->addIssue(sprintf(
+                'Replace the magic number %s with a named constant. It appears %d times on lines %s. Centralizing this value improves maintainability and readability.',
+                $value,
+                $count,
+                implode(', ', $lines),
+            ));
         }
     }
 }

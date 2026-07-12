@@ -42,19 +42,21 @@ class ComposerFile
     public function convertClassNameToFileName(string $className): ?string
     {
         foreach ($this->psr4Mappings as $namespace => $paths) {
-            if (str_starts_with($className, $namespace)) {
-                $relativeClass = substr($className, strlen($namespace));
-                $relativePath = str_replace('\\', DIRECTORY_SEPARATOR, $relativeClass) . '.php';
+            if (!(str_starts_with($className, $namespace))) {
+                continue;
+            }
 
-                if (is_array($paths)) {
-                    foreach ($paths as $path) {
-                        $fullPath = rtrim($path, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR . $relativePath;
-                        return ltrim($fullPath, DIRECTORY_SEPARATOR);
-                    }
-                } else {
-                    $fullPath = rtrim($paths, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR . $relativePath;
+            $relativeClass = substr($className, strlen($namespace));
+            $relativePath = str_replace('\\', DIRECTORY_SEPARATOR, $relativeClass) . '.php';
+
+            if (is_array($paths)) {
+                foreach ($paths as $path) {
+                    $fullPath = rtrim($path, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR . $relativePath;
                     return ltrim($fullPath, DIRECTORY_SEPARATOR);
                 }
+            } else {
+                $fullPath = rtrim($paths, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR . $relativePath;
+                return ltrim($fullPath, DIRECTORY_SEPARATOR);
             }
         }
 
